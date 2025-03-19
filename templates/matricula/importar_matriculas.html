@@ -1,0 +1,38 @@
+{% extends 'base/home_newtemplate.html' %}
+{% block title %}Listar Matriculas{% endblock title %}
+{% block form %}
+
+
+
+<form method="POST" class="post-form" enctype="multipart/form-data">{%csrf_token%}	
+		<div class="row">
+			<div class="col-md-12">
+				<h3 align="center">Importar Matrículas</h3>
+			</div>
+		</div>
+		<div class="row">
+			{{form.as_p}}
+			<div class="row">
+				<div class="col-md-12">
+					<strong>Antes de Subir Tu Archivo</strong>
+				</div>
+					
+			</div>
+			<div class="row">
+				<div class="col-md-12">
+					<label>Conoce la Estructura de Datos para Importar Matrículas con Alumnos Nuevos</label>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-md-12">
+					<label>Descarga y utiliza nuestro archivo de muestra para ver exactamente cómo organizamos los datos, clic <a href="{% url 'app_plantilla_matriculados'%}" target="_blank">aquí</a> para descargar. Completa los campos obligatorios, a fín de realizar tu importación correctamente.</label>
+				</div>
+			</div>
+
+		</div>
+		<button type="submit" class="btn btn-info">Importar</button>
+
+
+</form>
+
+{% endblock %}

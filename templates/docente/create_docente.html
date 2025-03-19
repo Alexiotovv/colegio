@@ -1,0 +1,251 @@
+{% extends 'base/home_newtemplate.html' %}
+{% block title %}Registrar Docentes{% endblock %}
+{% block form %}
+<h3>Registro de Docente</h3>
+<form method="POST">{% csrf_token %}
+<h2>{{ usu.first_name }} {{ usu.last_name }}</h2>
+<div class="row">
+	<div class="col-md-6">
+		<label for="text">Dni</label>
+		<input type="text" class="form-control" name="DNI">
+		
+		<label for="text">Dirección</label>
+		<input type="text" class="form-control" name="Direccion">
+
+		<label for="text">Fecha de Nacimiento</label>
+		<input type="date" class="form-control" name="FechaNacimiento">
+
+		<label for="text">Sexo</label>
+		<select class="form-control" name="Sexo">
+			<option value="M">Masculino</option>
+			<option value="F">Femenino</option>
+		</select>
+		<label for="text">Teléfono</label>
+		<input type="text" class="form-control" name="Telefono">
+
+	</div>
+	<div class="col-md-6">
+		
+		<label for="text">Seleccione GradoNivel</label>
+				<div class="container">
+					<div class="row">
+						<div class="form-group">
+							<div class="custom-control custom-checkbox">
+				      			<input type="checkbox" class="custom-control-input" id="customCheck1" name="1PRIM">
+				      			<label class="custom-control-label" for="customCheck1">1PRIM </label>
+				      			<label></label>
+				      			<label></label>
+				    		</div>	
+						</div>
+						<div class="form-group">
+							<div class="custom-control custom-checkbox">
+				      			<input type="checkbox" class="custom-control-input" id="customCheck2" name="2PRIM">
+				      			<label class="custom-control-label" for="customCheck2">2PRIM </label>
+				      			<label></label>
+				      			<label></label>
+				    		</div>	
+						</div>
+						<div class="form-group">
+							<div class="custom-control custom-checkbox">
+					      		<input type="checkbox" class="custom-control-input" id="customCheck3" name="3PRIM">
+					      		<label class="custom-control-label" for="customCheck3">3PRIM</label>
+					      		<label></label>
+				      			<label></label>
+					    	</div>	
+						</div>
+
+						<div class="form-group">
+							<div class="custom-control custom-checkbox">
+					      		<input type="checkbox" class="custom-control-input" id="customCheck4" name="4PRIM">
+					      		<label class="custom-control-label" for="customCheck4">4PRIM</label>
+					      		<label></label>
+				      			<label></label>
+					    	</div>	
+						</div>
+
+						<div class="form-group">
+							<div class="custom-control custom-checkbox">
+					      		<input type="checkbox" class="custom-control-input" id="customCheck5" name="5PRIM">
+					      		<label class="custom-control-label" for="customCheck5">5PRIM</label>
+					      		<label></label>
+				      			<label></label>
+					    	</div>	
+						</div>
+
+						<div class="form-group">
+							<div class="custom-control custom-checkbox">
+					      		<input type="checkbox" class="custom-control-input" id="customCheck6" name="6PRIM">
+					      		<label class="custom-control-label" for="customCheck6">6PRIM</label>
+					      		<label></label>
+				      			<label></label>
+					    	</div>	
+						</div>
+					</div>
+				</div>	
+
+				<div class="container">
+					<div class="row">
+						<div class="form-group">
+							<div class="custom-control custom-checkbox">
+					      		<input type="checkbox" class="custom-control-input" id="customCheck1-1" name="1SEC">
+					      		<label class="custom-control-label" for="customCheck1-1">1SEC</label>
+					      		<label></label>
+					      		<label></label>
+					    	</div>	
+						</div>
+
+						<div class="form-group">
+							<div class="custom-control custom-checkbox">
+					      		<input type="checkbox" class="custom-control-input" id="customCheck1-2" name="2SEC">
+					      		<label class="custom-control-label" for="customCheck1-2">2SEC</label>
+					      		<label></label>
+					      		<label></label>
+					    	</div>	
+						</div>
+
+						<div class="form-group">
+							<div class="custom-control custom-checkbox">
+					      		<input type="checkbox" class="custom-control-input" id="customCheck1-3" name="3SEC">
+					      		<label class="custom-control-label" for="customCheck1-3">3SEC</label>
+					      		<label></label>
+					      		<label></label>
+					    	</div>	
+						</div>
+
+						<div class="form-group">
+							<div class="custom-control custom-checkbox">
+					      		<input type="checkbox" class="custom-control-input" id="customCheck1-4" name="4SEC">
+					      		<label class="custom-control-label" for="customCheck1-4">4SEC</label>
+					      		<label></label>
+					      		<label></label>
+					    	</div>	
+						</div>
+
+						<div class="form-group">
+							<div class="custom-control custom-checkbox">
+					      		<input type="checkbox" class="custom-control-input" id="customCheck1-5" name="5SEC">
+					      		<label class="custom-control-label" for="customCheck1-5">5SEC</label>
+					      		<label></label>
+					      		<label></label>
+					    	</div>	
+						</div>
+					</div>
+				</div>
+	
+		<label for="text">Seleccione Secciones</label>
+		
+		<div class="container">
+					<div class="row">
+						<div class="form-group">
+							<div class="custom-control custom-checkbox">
+					      		<input type="checkbox" class="custom-control-input" id="customCheck1-A" name="A">
+					      		<label class="custom-control-label" for="customCheck1-A">A</label>
+					      		<label></label>
+					      		<label></label>
+					      		<label></label>
+					      		<label></label>
+					    	</div>	
+						</div>
+
+						<div class="form-group">
+							<div class="custom-control custom-checkbox">
+					      		<input type="checkbox" class="custom-control-input" id="customCheck1-B" name="B">
+					      		<label class="custom-control-label" for="customCheck1-B">B</label>
+					      		<label></label>
+					      		<label></label>
+					      		<label></label>
+					      		<label></label>
+					    	</div>	
+						</div>
+
+						<div class="form-group">
+							<div class="custom-control custom-checkbox">
+					      		<input type="checkbox" class="custom-control-input" id="customCheck1-C" name="C">
+					      		<label class="custom-control-label" for="customCheck1-C">C</label>
+					      		<label></label>
+					      		<label></label>
+					      		<label></label>
+					      		<label></label>
+					    	</div>	
+						</div>
+
+						<div class="form-group">
+							<div class="custom-control custom-checkbox">
+					      		<input type="checkbox" class="custom-control-input" id="customCheck1-D" name="D">
+					      		<label class="custom-control-label" for="customCheck1-D">D</label>
+					      		<label></label>
+					      		<label></label>
+					      		<label></label>
+					      		<label></label>
+					    	</div>	
+						</div>
+
+						<div class="form-group">
+							<div class="custom-control custom-checkbox">
+					      		<input type="checkbox" class="custom-control-input" id="customCheck1-E" name="E">
+					      		<label class="custom-control-label" for="customCheck1-E">E</label>
+					      		<label></label>
+					      		<label></label>
+					      		<label></label>
+					      		<label></label>
+					    	</div>	
+						</div>
+
+						<div class="form-group">
+							<div class="custom-control custom-checkbox">
+					      		<input type="checkbox" class="custom-control-input" id="customCheck1-F" name="F">
+					      		<label class="custom-control-label" for="customCheck1-F">F</label>
+					      		<label></label>
+					      		<label></label>
+					      		<label></label>
+					      		<label></label>
+					    	</div>	
+						</div>
+
+						<div class="form-group">
+							<div class="custom-control custom-checkbox">
+					      		<input type="checkbox" class="custom-control-input" id="customCheck1-G" name="G">
+					      		<label class="custom-control-label" for="customCheck1-G">G</label>
+					      		<label></label>
+					      		<label></label>
+					      		<label></label>
+					      		<label></label>
+					    	</div>	
+						</div>
+					</div>
+					<label for="text">Tutor Grado</label>	
+						<select class="form-control" name="tutor_grado">
+							<option value="-">-</option>
+							<option value="1PRIM">1PRIM</option>
+							<option value="2PRIM">2PRIM</option>
+							<option value="3PRIM">3PRIM</option>
+							<option value="4PRIM">4PRIM</option>
+							<option value="5PRIM">5PRIM</option>
+							<option value="6PRIM">6PRIM</option>
+							<option value="1SEC">1SEC</option>
+							<option value="2SEC">2SEC</option>
+							<option value="3SEC">3SEC</option>
+							<option value="4SEC">4SEC</option>
+							<option value="5SEC">5SEC</option>
+						</select>
+						<label for="text">Tutor Sección</label>
+						<select class="form-control" name="tutor_seccion">
+							<option value="-">-</option>
+							<option value="A">A</option>
+							<option value="B">B</option>
+							<option value="C">C</option>
+							<option value="D">D</option>
+							<option value="E">E</option>
+							<option value="F">F</option>
+							<option value="G">G</option>
+						</select>	
+
+
+		</div>
+
+	</div>
+</div>
+	<br>
+		<button href="{% url 'app_docente_nuevo' usu.id %}" type="submit" class="btn btn-success" value="Guardar">Guardar Docente</button>
+</form>
+{% endblock form %}

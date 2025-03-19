@@ -1,0 +1,55 @@
+{% extends 'base/home_newtemplate.html' %}
+{% block title %}Listar Avance de Notas Buscadas{% endblock title %}
+{% block form %}
+<div class="col-md-12">			
+			<h3 style="text-align: center;">Avance de Notas </h3>
+	<div class="col-md-12">
+		<table id="example2" class="table table-striped table-bordered">
+		  <thead>
+		    <tr>
+		      <th scope="col">Id</th>
+		      <th scope="col">Apellidos,Nombres</th>
+		      <th scope="col">Grado</th>
+		      <th scope="col">Sección</th>
+		      <th scope="col">Año</th>
+		      <th scope="col">Curso/Evaluación</th>
+			  <th scope="col">Competencia</th>
+		      <th scope="col">Docente</th>
+		      <th scope="col">Periodo</th>
+		      <th scope="col">Nota</th>
+		      <th scope="col">Acciones</th>
+		    </tr>
+		  </thead>
+		  <tbody>
+		      {% for notas in notita %}
+			      <tr class= "class-default">
+			      	<td>{{ notas.id }}</td>
+			      	<td>{{ notas.Matricula.Alumno }}</td>
+			      	<td>{{ notas.Matricula.Grado }}</td>
+			      	<td>{{ notas.Matricula.Seccion }}</td>
+			      	<td>{{ notas.Matricula.AnoAcademico }}</td>
+			      	<td>{{ notas.Curso }}</td>
+					<td>{{ notas.Competencias.nombre_competencia }}</td>
+			      	<td>{{ notas.Docente }}</td>
+			      	<td>{{ notas.PAcademico }}</td>
+			      	<td>{{ notas.Nota }}</td>
+			      	<td>
+					<a href="" class="btn btn-success"><span class="eye-solid icon"></span>__</a>
+					{% for group in user.groups.all %}
+						{% if group.name == 'Administrador' %}
+						<a href="{% url 'app_avancenotas_edit' notas.id %}" class="btn btn-warning"><span class="edit-solid icon"></span>__</a>
+						<!-- <a href="{% url 'app_notas_avancedelete' notas.id %}" class="btn btn-danger"><span class="trash-solid icon"></span>__</a> -->
+						{% endif %}
+					{% endfor %}
+			      	</td>
+			      </tr>	
+		      {% endfor %}
+		  </tbody>
+		</table>
+		<div>
+		</div>
+	</div>
+	</div>
+
+
+{% endblock %}

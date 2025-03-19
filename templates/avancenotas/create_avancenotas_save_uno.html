@@ -1,0 +1,42 @@
+{% extends 'base/home_newtemplate.html' %}
+{% block title %}IngresoAvanceNotasxAlumno {% endblock title %}
+{% block active_no %} active {% endblock%}
+{% block form %}	
+	<div class="col-sm-9">
+		<div class="text" text align="center">
+			<h3>Ingreso de Avance de Notas Por Alumno</h3>
+		</div>
+			<form action="" method="POST">{% csrf_token %}		
+			<div class="form-group">
+				<label>Seleccione Alumno</label>
+				<select class="single-select" name="Alumno">
+				{% for m in matri %}
+					<option value="{{m.id}}">{{ m.Matricula}}</option>
+				{% endfor %}
+				</select>
+			</div>
+
+			<div class="form-group">
+				<label>Seleccione Curso</label>
+				<select class="single-select" name="Curso">
+				{% for cursos in curso %}
+					<option value="{{cursos.id}}">{{ cursos}}</option>
+				{% endfor %}
+				</select>
+			</div>
+
+			<div class="form-group">
+				<label for="text">Nota</label>
+				<input type="text" name="Nota" class="form-control">
+			</div>
+			<div class="form-group">
+				<label for="text">Simulacro Nota</label>
+					<input type="text" name="SimulacroNota" class="form-control" placeholder="-">
+			</div>
+
+				<button type="submit" class="btn btn-success" value="Guardar">Guardar Matrícula</button>
+			</form>
+		</div>
+
+
+{% endblock %}

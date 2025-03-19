@@ -1,0 +1,21 @@
+{% extends 'base/home_newtemplate.html' %}
+{% block title %}Nueva Competencias{% endblock %}
+{% block active_compe %}active{% endblock %}
+{% block form %}
+
+	<form method="POST">
+		{% csrf_token %}
+		<h6>Nueva Competencias</h6>
+		<label for="">Nombre de Competencia</label>
+        <input type='text' id='nombre_competencia' name='nombre_competencia' class="form-control">
+        <label for="">Nivel de Competencia</label>
+        <select name="nivel" id="nivel"  class="form-control">
+            <option value="PRIM">PRIM</option>
+            <option value="SEC">SEC</option>
+        </select>
+        <label for="">Orden de Competencia</label>
+        <input type='text' id='Orden' name='Orden' class="form-control">
+        <br>
+        <button type="submit" class="btn btn-success">Guardar</button>
+	</form>
+{% endblock %}

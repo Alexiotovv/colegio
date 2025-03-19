@@ -1,0 +1,49 @@
+{% extends 'base/home_newtemplate.html' %}
+{% block title %}Asignar Competencias{% endblock %}
+{% block active_compe %}active{% endblock %}
+{% block form %}
+
+	<form method="POST">
+		{% csrf_token %}
+		<h6>Competencias Asignadas a Este Curso:</h6>
+		<h6>{{nombre_curso}}</h6>
+		<div class="row">
+			
+			<div class="col-md-6">
+				<label>Seleccione una Competencia</label>
+					<select class="form-control" name="Competencias">
+						{% for cc in compe %}
+							<option value="{{cc.id}}">{{cc.Competencias}}</option>
+						{% endfor %}
+					</select>
+			</div>
+			<div class="col-sm-4">
+				<label></label>
+				<button type="submit" class="btn btn-success" value="Guardar">Guardar Curso</button>
+			</div>	
+			
+		</div>
+
+			<table class="table table-hover" id="example" class="display">
+				<thead>
+				  <tr>
+					<th scope="col" style="width: 60px;">Id</th>
+					<th scope="col" style="width: 60px;">Nivel</th>
+					<th scope="col">Nombre de Competencia</th>
+					<!-- <th scope="col">Acciones</th> -->
+				  </tr>
+				</thead>
+				<tbody>
+					{% for lc in lista_competencias %}
+						<tr class= "class-default">
+							<td>{{ lc.id }}</td>
+							<td>{{ lc.Competencias.nivel}}</td>
+							<td>{{ lc.Competencias.nombre_competencia }}</td>	
+							
+						</tr>	
+					{% endfor %}
+				</tbody>
+			  </table>
+
+	</form>
+{% endblock %}

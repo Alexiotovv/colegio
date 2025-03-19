@@ -1,0 +1,639 @@
+{% extends 'base/home_newtemplate.html' %}
+{% block title %}Registro Notas por Alumno{% endblock title %}
+{% block form %}
+
+    <div class="row row-cols-12 row-cols-md-12 row-cols-lg-12 row-cols-xl-12">
+        <div class="col">
+            <h6 class="mb-0 text-uppercase">Registro de Notas del Bimestre/Alumno</h6>
+            <hr/>
+            <div class="card">
+                <div class="card-body">
+                    <ul class="nav nav-tabs nav-primary" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <a class="nav-link active" data-bs-toggle="tab" href="#primaryhome" role="tab" aria-selected="true">
+                                <div class="d-flex align-items-center">
+                                    <div class="tab-icon"><i class='bx bxs-save font-18 me-1'></i>
+                                    </div>
+                                    <div class="tab-title">Registro de Notas del Bimestre/Alumno</div>
+                                </div>
+                            </a>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <a class="nav-link" data-bs-toggle="tab" href="#primaryprofile" role="tab" aria-selected="false">
+                                <div class="d-flex align-items-center">
+                                    <div class="tab-icon"><i class='bx bxs-pencil font-18 me-1'></i>
+                                    </div>
+                                    <div class="tab-title">Editar Notas del Bimestre/Alumno</div>
+                                </div>
+                            </a>
+                        </li>
+                        
+                    </ul>
+                    <div class="tab-content py-3">
+                        <div class="tab-pane fade show active" id="primaryhome" role="tabpanel">
+                            <form id="formGuardarAvanceNotasPorAlumno">
+                                {% csrf_token %}
+                                <div class="row">
+                                    <select id="CursoTemp" name="CursoTemp" hidden>
+                                    </select>
+                                    <div class="col-xl-2 col-lg-2">
+                                        <label for="" class="form-label">Periodo</label>
+                                        <select class="form-select form-select" id="PAcademico" name="PAcademico">
+                                               
+                                            {% for p in lista_periodos %}
+                                                    <option value="{{p.id}}" selected>{{p.Nombre}}</option>    
+                                            {% endfor %}
+                                            <option value="--" selected>--</option>
+                                        </select>
+                                    </div>
+                                        <div class="col-xl-5 col-lg-4">
+                                            <label for="" class="form-label">Alumno</label>
+                                            <select class="single-select" id="Matricula" name="Matricula">
+                                                <option value="--">--</option>    
+                                                {% for a in alu %}
+                                                    <option value="{{a.id}}">{{a}}</option>    
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    
+                                    <div class="col-xl-3 col-lg-2">
+                                        <label for="" class="form-label">Curso</label>
+                                        <select class="form-select form-select" id="Cursos" name="Cursos">
+                                            <option value="--">--</option>    
+                                        </select>
+                                    </div>
+                                    
+                                        
+                                    
+                                    <div class="col-xl-2 col-lg-2">
+                                        <label for="" class="form-label">AÑO</label>
+                                        <select class="form-select form-select" id="Academico" name="Academico" disabled>
+                                            {% for a in aac %}
+                                                <option value="{{a.id}}">{{a.Ano}}</option>    
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                        
+                                <br>
+                                <div class="row">
+                                    <div class="col-xl-3">
+                                        <h5>Competencias</h5>
+                                    </div>
+                                    <div class="col-xl-9">
+                                        Notas por Defecto:
+                                        <button type="button" class="btn btn-outline-info" id="btnDefectoGuion">--</button>
+                                        <button type="button" class="btn btn-outline-info" id="btnDefectoND">ND</button>
+                                        <button type="button" class="btn btn-outline-info" id="btnDefectoCND">CND</button>
+                                        <button type="button" class="btn btn-outline-info" id="btnDefectoTRAS">TRAS</button>
+                                        <button type="button" class="btn btn-outline-info" id="btnDefectoEXO">EXO</button>
+                                    </div>
+                                </div>
+                                <div class="table-responsive">
+                                    <table id="ListaCompetencias" class="table table-striped table-bordered">
+                                        <thead>
+                                            <tr>
+                                                <th>Id</th>
+                                                <th>NombreCompetencia</th>
+                                                <th>Nota/Eval</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            
+                                        </tbody>
+                                    </table>
+                                </div>
+                        
+                                <br>
+                                <div class="row">
+                                    <div class="col-xl-4 col-lg-4">
+                                        <button type="button" class="btn btn-info btnEnviar">Grabar</button>
+                                    </div>
+                                    
+                                </div>
+                            </form>
+                        </div>
+
+                        <div class="tab-pane fade" id="primaryprofile" role="tabpanel">
+                            <form id="formEditarAvanceNotasPorAlumno">
+                                {% csrf_token %}
+                                <div class="row">
+                                    <select id="CursoTempe" name="CursoTempe" hidden></select>
+                                    <div class="col-xl-2 col-lg-2">
+                                        <label for="" class="form-label">Periodo</label>
+                                        <select class="form-select form-select" id="PAcademicoe" name="PAcademicoe">
+                                            <option value="--" selected>--</option>    
+                                            {% for p in lista_periodos %}
+                                                <option value="{{p.id}}" selected>{{p.Nombre}}</option>    
+                                            {% endfor %}
+                                            <option value="--" selected>--</option>
+                                        </select>
+                                    </div>                                    
+                                    </select>
+                                        <div class="col-xl-5 col-lg-4">
+                                            <label for="" class="form-label">Alumno</label>
+                                            <select class="single-select" id="Matriculae" name="Matriculae">
+                                                <option value="--">--</option>    
+                                                {% for a in alu %}
+                                                    <option value="{{a.id}}">{{a}}</option>    
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    
+                                    <div class="col-xl-3 col-lg-2">
+                                        <label for="" class="form-label">Curso</label>
+                                        <select class="form-select form-select" id="Cursose" name="Cursose">
+                                            <option value="--">--</option>    
+                                        </select>
+                                    </div>
+                                    
+                                        
+                                    
+                                    <div class="col-xl-2 col-lg-2">
+                                        <label for="" class="form-label">AÑO</label>
+                                        <select class="form-select form-select" id="Academicoe" name="Academicoe" disabled>
+                                            {% for a in aac %}
+                                                <option value="{{a.id}}">{{a.Ano}}</option>    
+                                            {% endfor %}
+                                        </select>
+                                    </div>  
+                                </div>
+
+                                <br>
+                                <div class="row">
+                                    <div class="col-xl-3">
+                                        <h5>Competencias</h5>
+                                    </div>
+                                    <div class="col-xl-9">
+                                        Notas por Defecto:
+                                        <button type="button" class="btn btn-outline-info" id="btnDefectoGuione">--</button>
+                                        <button type="button" class="btn btn-outline-info" id="btnDefectoNDe">ND</button>
+                                        <button type="button" class="btn btn-outline-info" id="btnDefectoCNDe">CND</button>
+                                        <button type="button" class="btn btn-outline-info" id="btnDefectoTRASe">TRAS</button>
+                                        <button type="button" class="btn btn-outline-info" id="btnDefectoEXOe">EXO</button>
+                                    </div>
+                                </div>
+
+                                <div class="table-responsive">
+                                    <table id="ListaCompetenciase" class="table table-striped table-bordered">
+                                        <thead>
+                                            <tr>
+                                                <th>Id</th>
+                                                <th>NombreCompetencia</th>
+                                                <th>Nota/Eval</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            
+                                        </tbody>
+                                    </table>
+                                </div>
+                        
+                                <br>
+                                <div class="row">
+                                    <div class="col-xl-4 col-lg-4">
+                                        <button type="button" class="btn btn-info btnActualizar">Actualizar</button>
+                                    </div>
+                                    
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+    
+{% endblock %}
+
+{% block js1 %}
+    <!-- script para edicion -->
+    
+    <script>
+
+        $(document).on("click",".btnActualizar",function(){
+            if ($("#Cursose").val()=='--') {
+                alert("Seleccione un Curso");
+            }else{
+                var serializedData = $("#formEditarAvanceNotasPorAlumno").serialize();
+                // alert(serializedData);
+                $.ajax({
+                    type: "POST",
+                    url: "/notas/actualizar_notas_competencias/",
+                    data: serializedData,
+                    dataType: "json",
+                    success: function (response) {
+                        round_success_noti();
+                    },
+                    error: function (response) {
+                        round_error_noti()
+                    }
+                });
+            }
+        });
+
+        var lista2 =[];
+        var cant2=0;
+
+
+        $("#PAcademicoe").change(function(){
+            var serializedData = $("#formEditarAvanceNotasPorAlumno").serialize();
+            $.ajax({
+                type: "POST",
+                url: "/notas/obtener_notas_existentes_editar_bim/",
+                data: serializedData,
+                dataType: "json",
+                success: function (response) { 
+                    var curId='-'
+                    $("#CursoTempe").empty();
+                    $.each(response, function (key, item){
+                        if (curId!=item.Curso_id) {
+                            curId=item.Curso_id;
+                            $("#CursoTempe").append('<option value="' + item.Curso_id + '">"'+item.Curso_id+'"</option>');
+                        }
+                    });     
+                }
+            });
+            
+            nivel=($("#Matriculae option:selected").text()).substr(($("#Matriculae option:selected").text().length)-6,3);
+            if (nivel=='RIM') {
+                nivel='PRIM';
+            }
+            
+            $.ajax({
+                type: "GET",
+                url: "/notas/buscar_bim_cursos_nivel/"+nivel,
+                dataType: "json",
+                success: function (response) {
+                    // alert(response.cursos_nivel[0].["Nombre"]);
+                    $("#Cursose").empty();
+                    $("#Cursose").append('<option value=-->--</option>');
+                    $.each(response, function (key, item){
+                        var hay=0;            
+                        $("#CursoTempe option").each(function(){
+                            if ($(this).attr('value')==item.id) {
+                                hay=1;
+                            }
+                        });
+                        if (hay==1) {
+                            $("#Cursose").append('<option value="' + item.id + '">' + item.Nivel +"-"+ item.Nombre + '</option>');
+                        }else{
+                            $("#Cursose").append('<option disabled value="' + item.id + '">' + item.Nivel +"-"+ item.Nombre + '</option>');
+                        }
+                    });                    
+                }
+            });
+
+            $("#ListaCompetenciase tbody").html("");
+        });
+
+        $("#Cursose").change(function(){
+            id=$("#Cursose").val();
+            // Obtener Competencias
+            var dataTable = $('#ListaCompetenciase').DataTable();
+            dataTable.rows().remove().draw();
+            var serializedData = $("#formEditarAvanceNotasPorAlumno").serialize();
+            
+            $.ajax({
+                type: "POST",
+                url: "/notas/obtener_bim_competencias_editare/",
+                data:serializedData,
+                dataType: "json",
+                success: function (response) {
+                    $("#ListaCompetenciase tbody").html("");
+                    cant2=0;
+                    $.each(response, function (key, item) {
+                        cant2=cant2+1;
+                        lista2[key]= item.id;
+                        $("tbody").append('<tr>\
+                                <td>'+item.id+'</td>\
+                                <td>'+item.Competencias__nombre_competencia+'</td>\
+                                <td>'+"<input type='text' oninput='PromedioEditar()' class='form-control form-control-sm' id='nota"+ item.id +"' value='"+ item.Nota +"' name=nota"+ item.id +">    <input hidden type='text' class='form-control form-control-sm' id='"+ item.id +"' value='"+ item.id +"' name="+ item.id +"></>     </>"+'</td>\
+                            </tr');
+                    });
+                    // $("#nota"+lista2[cant2]+"").attr("readonly");
+
+                    $("#ListaCompetencias tbody").html("");
+                    // alert($("#nota"+ lista2[index]+""));
+                }
+                
+            });
+            
+
+            $('#ListaCompetenciase').DataTable({
+            "destroy":true,
+            "columnDefs":[
+            { "width": "5%", "targets": 0 },
+            { "width": "20%", "targets": 1 },
+            { "width": "20%", "targets": 2 },
+            ],
+            searching: false,
+            paging: false,
+            info: false,
+            ordering:false,
+            });
+
+        });
+
+        $("#Matriculae").change(function(){
+            var serializedData = $("#formEditarAvanceNotasPorAlumno").serialize();
+            $.ajax({
+                type: "POST",
+                url: "/notas/obtener_notas_existentes_editar_bim/",
+                data: serializedData,
+                dataType: "json",
+                success: function (response) { 
+                    var curId='-'
+                    $("#CursoTempe").empty();
+                    $.each(response, function (key, item){
+                        if (curId!=item.Curso_id) {
+                            curId=item.Curso_id;
+                            $("#CursoTempe").append('<option value="' + item.Curso_id + '">"'+item.Curso_id+'"</option>');
+                        }
+                    });     
+                }
+            });
+            
+            nivel=($("#Matriculae option:selected").text()).substr(($("#Matriculae option:selected").text().length)-6,3);
+            if (nivel=='RIM') {
+                nivel='PRIM';
+            }
+            
+            $.ajax({
+                type: "GET",
+                url: "/notas/buscar_bim_cursos_nivel/"+nivel,
+                dataType: "json",
+                success: function (response) {
+                    // alert(response.cursos_nivel[0].["Nombre"]);
+                    $("#Cursose").empty();
+                    $("#Cursose").append('<option value=-->--</option>');
+                    $.each(response, function (key, item){
+                        var hay=0;
+                        
+                        $("#CursoTempe option").each(function(){
+                            if ($(this).attr('value')==item.id) {
+                                hay=1;
+                            }
+                        });
+                        if (hay==1) {
+                            $("#Cursose").append('<option value="' + item.id + '">' + item.Nivel +"-"+ item.Nombre + '</option>');
+                        }else{
+                            $("#Cursose").append('<option disabled value="' + item.id + '">' + item.Nivel +"-"+ item.Nombre + '</option>');
+                        }
+                    });                    
+                }
+            });
+
+            $("#ListaCompetenciase tbody").html("");
+        });
+    </script>
+    <!-- cierra script para edición -->
+
+    <script>
+        $(document).on("click",".btnEnviar",function(){
+            if ($("#Cursos").val()=='--') {
+                alert("Seleccione un Curso");
+            }else{
+                var serializedData = $("#formGuardarAvanceNotasPorAlumno").serialize();
+                // alert(serializedData);
+                $.ajax({
+                    type: "POST",
+                    url: "/notas/guardar_bim_notas_por_alumno/",
+                    data: serializedData,
+                    dataType: "json",
+                    success: function (response) {
+                        round_success_noti();
+                    },
+                    error: function (response) {
+                        round_error_noti()
+                    }
+                });
+
+                //REPITE LA MISMA FUNCION DE SELECCIONAR MATRICULA ONCHANGE
+                $("#CursoTemp").append('<option value="' + $("#Cursos").val() + '">"'+$("#Cursos").val()+'"</option>');
+
+                nivel=($("#Matricula option:selected").text()).substr(($("#Matricula option:selected").text().length)-6,3);
+                if (nivel=='RIM') {
+                    nivel='PRIM';
+                }
+                
+                $.ajax({
+                    type: "GET",
+                    url: "/notas/buscar_bim_cursos_nivel/"+nivel,
+                    dataType: "json",
+                    success: function (response) {
+                        // alert(response.cursos_nivel[0].["Nombre"]);
+                        $("#Cursos").empty();
+                        $("#Cursos").append('<option value=-->--</option>');
+                        $.each(response, function (key, item){
+                            var hay=0;
+                            $("#CursoTemp option").each(function(){
+                                if ($(this).attr('value')==item.id) {
+                                    hay=1;
+                                }
+                            });
+                            if (hay==1) {
+                                $("#Cursos").append('<option disabled value="' + item.id + '">' + item.Nivel +"-"+ item.Nombre + '</option>');
+                            }else{
+                                $("#Cursos").append('<option value="' + item.id + '">' + item.Nivel +"-"+ item.Nombre + '</option>');
+                            }
+                        });                    
+                    }
+                });
+                $("form input[type=text]").each(function() { this.value = '' });
+            }
+
+        });
+    </script>
+    
+    <script> 
+        
+
+        $("#Matricula").change(function(){
+            
+            var serializedData = $("#formGuardarAvanceNotasPorAlumno").serialize();
+            $.ajax({
+                type: "POST",
+                url: "/notas/obtener_notas_existentes/",
+                data: serializedData,
+                dataType: "json",
+                success: function (response) { 
+                    var curId='-'
+                    $("#CursoTemp").empty();
+                    $.each(response, function (key, item){
+                        if (curId!=item.Curso_id) {
+                            curId=item.Curso_id;
+                            $("#CursoTemp").append('<option value="' + item.Curso_id + '">"'+item.Curso_id+'"</option>');
+                        }
+                    });     
+                }
+            });
+            
+            nivel=($("#Matricula option:selected").text()).substr(($("#Matricula option:selected").text().length)-6,3);
+            if (nivel=='RIM') {
+                nivel='PRIM';
+            }
+            
+            $.ajax({
+                type: "GET",
+                url: "/notas/buscar_bim_cursos_nivel/"+nivel,
+                dataType: "json",
+                success: function (response) {
+                    // alert(response.cursos_nivel[0].["Nombre"]);
+                    $("#Cursos").empty();
+                    $("#Cursos").append('<option value=-->--</option>');
+                    $.each(response, function (key, item){
+                        var hay=0;
+                        $("#CursoTemp option").each(function(){
+                            if ($(this).attr('value')==item.id) {
+                                hay=1;
+                            }
+                        });
+                        if (hay==1) {
+                            $("#Cursos").append('<option disabled value="' + item.id + '">' + item.Nivel +"-"+ item.Nombre + '</option>');
+                            
+                        }else{
+                            $("#Cursos").append('<option value="' + item.id + '">' + item.Nivel +"-"+ item.Nombre + '</option>');
+                        }
+                    });                    
+                }
+            });
+            $("#ListaCompetencias tbody").html("");
+        });
+        
+        var lista =[];
+        var cant=0;
+        $("#Cursos").change(function(){
+            id=$("#Cursos").val();
+            // Obtener Competencias
+            var dataTable = $('#ListaCompetencias').DataTable();
+            dataTable.rows().remove().draw();
+            $.ajax({
+                type: "GET",
+                url: "/notas/obtener_bim_competencias/"+id,
+                dataType: "json",
+                success: function (response) {
+                    $("#ListaCompetencias tbody").html("");
+                    cant=0;
+                    $.each(response, function (key, item) {
+                        cant=cant+1;
+                        lista[key]= item.id;
+                        // Promedio(cant,item.id);
+                        $("tbody").append('<tr>\
+                                <td>'+item.id+'</td>\
+                                <td>'+item.nombre_competencia+'</td>\
+                                <td>'+"<input type='text' oninput='Promedio()' class='form-control form-control-sm' id='"+ item.id +"' name='"+ item.id +"'></>"+'</td>\
+                            </tr');
+                    });
+                    $("#ListaCompetenciase tbody").html("");
+                    // $("#"+lista[cant]+"").attr("readonly"); //fue comentado para poder editar el promedio
+
+                    // Promedio();
+                    // alert('la cantidad de item es: '+lista.length);
+                }
+            });
+        });
+
+        function Promedio() {
+            var prom=0;
+            var prom_final=0;
+            // alert("escribiste en el input");
+            for (let index = 0; index < lista.length-1; index++) {
+                prom= parseInt(prom) + Number($("#"+ lista[index] + "").val());                
+            }
+            prom_final=Math.round(prom/(cant-1));
+            if (prom_final>0) {
+                $("#"+lista[lista.length-1]+"").val(prom_final);        
+            }
+            
+
+        }
+
+        function PromedioEditar() {
+            // alert("escribiste en el input de editar");
+            var prom=0;
+            var prom_final=0;
+            // alert("escribiste en el input");
+            for (let index = 0; index < lista2.length-1; index++) {
+                prom = parseInt(prom) + Number($("#nota"+ lista2[index] + "").val());
+            }
+
+            prom_final=Math.round(prom/(cant2-1));
+            if (prom_final>0) {
+                $("#nota"+lista2[lista2.length-1]+"").val(prom_final);    
+            }
+            
+            
+            
+        }
+        
+        $("#btnDefectoGuion").click(function(){
+            for (let index = 0; index < lista.length; index++) {
+                $("#"+lista[index]).val("--");
+            }
+        });
+        $("#btnDefectoND").click(function(){
+            for (let index = 0; index < lista.length; index++) {
+                $("#"+lista[index]).val("ND");
+            }
+        });
+        $("#btnDefectoCND").click(function(){
+            for (let index = 0; index < lista.length; index++) {
+                $("#"+lista[index]).val("CND");
+            }
+        });
+        $("#btnDefectoTRAS").click(function(){
+            for (let index = 0; index < lista.length; index++) {
+                $("#"+lista[index]).val("TRAS");
+            }
+        });
+        $("#btnDefectoEXO").click(function(){
+            for (let index = 0; index < lista.length; index++) {
+                $("#"+lista[index]).val("EXO");
+            }
+        });
+
+
+        $("#btnDefectoGuione").click(function(){
+            for (let index = 0; index < lista2.length; index++) {
+                $("#nota"+lista2[index]).val("--");
+            }
+        });
+        $("#btnDefectoNDe").click(function(){
+            for (let index = 0; index < lista2.length; index++) {
+                $("#nota"+lista2[index]).val("ND");
+            }
+        });
+        $("#btnDefectoCNDe").click(function(){
+            for (let index = 0; index < lista2.length; index++) {
+                $("#nota"+lista2[index]).val("CND");
+            }
+        });
+        $("#btnDefectoTRASe").click(function(){
+            for (let index = 0; index < lista2.length; index++) {
+                $("#nota"+lista2[index]).val("TRAS");
+            }
+        });
+        $("#btnDefectoEXOe").click(function(){
+            for (let index = 0; index < lista2.length; index++) {
+                $("#nota"+lista2[index]).val("EXO");
+            }
+        });
+        $('#ListaCompetencias').DataTable({
+            "destroy":true,
+            "columnDefs":[
+            { "width": "5%", "targets": 0 },
+            { "width": "20%", "targets": 1 },
+            { "width": "20%", "targets": 2 },
+            ],
+            searching: false,
+            paging: false,
+            info: false,
+            ordering:false,
+        });
+            
+    </script>
+{% endblock %}

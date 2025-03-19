@@ -1,0 +1,107 @@
+{% extends 'base/home_newtemplate.html' %}
+{% block title %}MatriculaNuevo{% endblock title %}
+{% block form %}
+
+		<!-- <div class="row">
+            <div class="col-6">
+                
+            </div>
+            <div class="col-6">
+                
+            </div>
+        </div> -->
+        <h6 style="text-align:center;">REGISTRO DE MATRÍCULA {{ano.Ano}}</h6>
+		
+        <form id="formmat">{%csrf_token%}
+                    <div class="row">
+                        <div class="col-xl-6">
+                                <label class="form-label">Seleccione Alumno</label>
+                                <select name="alumno" class="single-select" required>
+                                    {% for alu in alu %}
+                                        <option value="{{alu.id}}">{{alu.DNI}}-{{alu}}</option>  
+                                    {% endfor %}
+                                </select>
+                        </div>
+
+                        <div class="col-xl-2">
+                            <label class="form-label">Grado</label>
+                            <select name="grado" class="single-select" required>
+                                <option value="1PRIM">1PRIM</option>
+                                <option value="2PRIM">2PRIM</option>
+                                <option value="3PRIM">3PRIM</option>
+                                <option value="4PRIM">4PRIM</option>
+                                <option value="5PRIM">5PRIM</option>
+                                <option value="6PRIM">6PRIM</option>
+                                <option value="1SEC">1SEC</option>
+                                <option value="2SEC">2SEC</option>
+                                <option value="3SEC">3SEC</option>
+                                <option value="4SEC">4SEC</option>
+                                <option value="5SEC">5SEC</option>
+                            </select>
+                        </div>
+
+                        <div class="col-xl-2">
+                            <label class="form-label">Seccion</label>
+                            <select name="seccion" class="single-select" required>
+                                <option value="A">A</option>
+                                <option value="B">B</option>
+                                <option value="C">C</option>
+                                <option value="D">D</option>
+                                <option value="E">E</option>
+                                <option value="F">F</option>
+                                <option value="G">G</option>
+                            </select>
+                        </div>
+
+                        <div class="col-xl-2">
+                            <label class="form-label">Año Académico</label>
+                            <select name="academico" class="single-select" required>
+                                {% for a in ano %}
+                                    <option value="{{a.id}}">{{a.Ano}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-xl-2">
+                            <label class="form-label">Fecha Matricula</label>
+                            <input type="date" name="fechamat" id="fechamat" class="form-control">
+                        </div>
+                    </div>
+        
+        <div class="row">
+            <div class="col-xl-3">
+                <br>
+                <button type="button" id="btnGuardar" class="btn btn-success" value="Guardar">Guardar Matrícula</button>
+            </div>
+        </div>
+		</form>
+
+{% endblock %}
+
+{% block js1 %}
+    <script>
+        $("#btnGuardar").click(function(){
+            var serializedData=$("#formmat").serialize();
+            $.ajax({
+                type: "POST",
+                url: "/matricula/guardanuevamatricula/",
+                data: serializedData,
+                dataType: "json",
+                success: function (response) {    
+                    if (response.Mensaje=='existe'){
+                        round_warning_noti("El alumno ya se encuentra matriculado");
+                    }else{
+                        round_success_noti();
+                    }
+                },
+                error: function (response) {
+                    round_error_noti();
+                }
+
+            });
+        });
+
+        var fecha = new Date();
+        document.getElementById("fechamat").value = fecha.toJSON().slice(0,10);        
+    </script>
+
+{% endblock js1 %}

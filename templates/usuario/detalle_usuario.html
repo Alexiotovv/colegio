@@ -1,0 +1,34 @@
+{% extends 'base/home_newtemplate.html' %}
+{% block title %}Detalle Usuario{% endblock title %}
+{% block active_us %} active {% endblock%}
+{% block form %}
+<form method="post">
+	{% csrf_token %}
+<div class="container">
+	<div>
+			<h3>Detalle Usuario</h3>
+	</div>
+		<table class="table table-hover">
+		  <tbody>
+		  	    <tr>
+			      	<td>Id</td>
+			      	<td>{{object.id}}</td>
+			    </tr>
+		  	    <tr>
+			      	<td>Nombre</td>
+			      	<td>{{object.first_name}}</td>
+			    </tr>	
+		  	    <tr>
+			      	<td>Apellidos</td>
+			      	<td>{{object.last_name}}</td>
+			    </tr>	
+		      	<tr>
+			      	<td>Correo</td>
+			      	<td>{{object.email}}</td>
+			    </tr>
+		  </tbody>
+		</table>
+		<a class="btn btn-success" href="{% url 'app_docente_editar' object.id %}">Registrar Como Docente</a>
+</div>	
+</form>
+{% endblock %}

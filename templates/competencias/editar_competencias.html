@@ -1,0 +1,26 @@
+{% extends 'base/home_newtemplate.html' %}
+{% block title %}Competencias{% endblock %}
+{% block active_compe %}active{% endblock %}
+{% block form %}
+
+	<form method="POST">
+		{% csrf_token %}
+		<h6>Editar Competencias</h6>
+		<div class="row">		
+            <div class="col-12">
+                <label for="">Nivel</label>
+                {{form.nivel}}
+                <label for="">Orden</label>
+                {{form.Orden}}
+                <label for="">Nombre de Competencia</label>
+                {{form.nombre_competencia}}
+                <label for="">Estado</label>
+                {{form.status}}
+                <br>
+                <button href="" type="submit" class="btn btn-success">Guardar</button>
+            </div>
+        </div>
+			
+
+	</form>
+{% endblock %}

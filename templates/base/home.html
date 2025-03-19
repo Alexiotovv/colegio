@@ -1,0 +1,183 @@
+{% extends 'base/base.html' %}
+{% load staticfiles %}
+
+
+{% block css %}
+  <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/static/css/bootstrap.scss">
+  <link rel="stylesheet" href="/static/fonts/ionic.css">
+  <link rel="stylesheet" href="/static/css/jquery.dataTables.min.css">
+  <link rel="stylesheet" href="/static/fonts/style.css">
+
+{% endblock css %}
+
+{% block content %}
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="#">CÉSAR VALLEJO</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarColor01" aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarColor01">
+      <ul class="navbar-nav me-auto">
+        <li class="nav-item active">
+          <a class="nav-link" href="https://colcoopcv.com">Inicio
+            <span class="visually-hidden"></span>
+          </a>
+        </li>
+
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Actividades</a>
+          <div class="dropdown-menu">
+              <a class="dropdown-item" href="https://aulavirtual.cvallejoiquitos.com/">Aula Virtual</a>
+              <a class="dropdown-item" href="https://drive.google.com/open?id=1hj6qnxE2NzqMH4NiR8SeNw0efhEaH6BT">Manual Ingreso de Notas</a>
+
+          </div>
+        </li>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+            Bienvenido: {{ user.first_name }}
+          </a>
+          <div class="dropdown-menu">
+              <a class="dropdown-item" href="{% url 'logout' %}">Cerrar Sesión</a>     
+
+          </div>
+        </li>
+
+      </ul>
+      
+    </div>
+  </div>
+</nav>
+
+<div class="row">
+{% for group in user.groups.all %}
+    {% if group.name == 'Java' %}
+      <div class="col-md-12 col-xs-12 col-lg-12 col-xl-12">
+        {% block erp %}
+
+        {% endblock %}
+      </div>
+    {% else %}
+      <!--Opciones del Menú Izquierda-->
+      <div class="list-group col-md-2 col-xs-2"> 
+        {% for group in user.groups.all %}
+          {% if group.name == 'Administrador'%}
+            <a href="{% url 'app_alumno_listar' %}" class="list-group-item list-group-item-action {% block active_a %}{% endblock %}"><span class="icon-users"></span> Alumnos</a>
+          {% endif %}
+        {% endfor %}
+
+        {% for group in user.groups.all %}
+          {% if group.name == 'Administrador' %}
+          <a href="{% url 'app_docente_listar'%}" class="list-group-item list-group-item-action {% block active_d %}{% endblock %}"><span class="icon-user-tie"></span> Docentes</a>
+          {% endif %}
+        {% endfor %}
+
+        {% for group in user.groups.all %}
+          {% if group.name == 'Administrador' %}
+          <a href="{% url 'app_usuario_listar'%}" class="list-group-item list-group-item-action {% block active_us %}{% endblock %}"><span class="icon-user-check"></span> Usuarios</a>
+          {% endif %}
+        {% endfor %}
+        
+        {% for group in user.groups.all %}
+          {% if group.name == 'Administrador' %}
+          <a href="{% url 'app_curso_listar' %}" class="list-group-item list-group-item-action {% block active_c %}{% endblock %}"><span class="icon-file-text"></span> Evaluaciones</a>
+          {% endif %}
+        {% endfor %}
+      
+        {% for group in user.groups.all %}
+        {% if group.name == 'Administrador' %}
+        
+        <a href="{% url 'app_listar_competencias' %}" class="list-group-item list-group-item-action {% block active_compe %}{% endblock %}"><span class="icon-file-text"></span> Competencias</a>
+        {% endif %}
+      {% endfor %}
+
+        {% for group in user.groups.all %}
+          {% if group.name == 'Administrador' %}
+          <a href="{% url 'app_academico_listar' %}" class="list-group-item list-group-item-action {% block active_ac %}{% endblock %}"><span class="icon-table"></span> AñoAcademico</a>
+          {% endif %}
+        {% endfor %}      
+
+        {% for group in user.groups.all %}
+          {% if group.name == 'Administrador' %}
+            <a href="{% url 'app_pacademico_listar' %}" class="list-group-item list-group-item-action {% block active_pa %}{% endblock %}"><span class="icon-calendar"></span> PeriodoAcadémico</a>
+          {% endif %}
+        {% endfor %}
+        
+        {% for group in user.groups.all %}
+          {% if group.name == 'Administrador' %}
+            <a href="{% url 'app_matricula_listar' %}" class="list-group-item list-group-item-action {% block active_ma %}{% endblock %}"><span class="icon-clipboard"></span> Matriculas</a>
+          {% endif %}
+        {% endfor %}    
+
+        {% for group in user.groups.all %}
+          {% if group.name == 'Administrador' or  group.name == 'Docente' or group.name == 'Asistente'%}
+            <a href="{% url 'app_opcion_notas' %}" class="list-group-item list-group-item-action {% block active_no %}{% endblock %}"><span class="icon-file-text2"></span> Notas</a>
+          {% endif %}
+        {% endfor %}
+
+        {% for group in user.groups.all %}
+          {% if group.name == 'Administrador' or group.name == 'Asistente' %}
+          <a href="{% url 'app_opcion_imprimir_comp' %}" class="list-group-item list-group-item-action {% block active_oo %}{% endblock %}"><span class="icon-printer"></span> Imprimir Evaluaciones</a>
+          {% endif %}
+        {% endfor %}
+      </div>
+
+    <div class="col-md-10 col-xs-10 col-lg-10 col-xl-10">
+      {% block form %}{% endblock %}
+    </div>
+
+
+
+  {% endif %}
+{% endfor %}
+
+
+
+{% endblock %}
+
+    {% block footer %}
+      {% for group in user.groups.all %}
+        {% if group.name == 'Java' %}
+          <div class="footer">
+            <blockquote class="blockquote text-center">
+            <p class="mb-0">MovisXioto - 2019</p>
+            <footer class="blockquote-footer">Powered by XiotoSystem - alexiotovv@gmail.com<cite title="Source Title">- bootswatch</cite></footer>
+          </blockquote>
+          </div>
+        {% else %}
+          <div class="footer">
+            <blockquote class="blockquote text-center">
+            <p class="mb-0">ColSoft</p>
+            <footer class="blockquote-footer">Powered by XiotoSystem - alexiotovv@gmail.com<cite title="Source Title">- bootswatch</cite></footer>
+          </blockquote>
+          </div>
+        {% endif %}
+      {% endfor %}
+
+    {% endblock %}
+
+    {% block variable %}
+    {% endblock variable %}
+    
+</body>
+
+{% block js %}
+<script src="https://bootswatch.com/_vendor/jquery/dist/jquery.min.js"></script>
+<script src="https://bootswatch.com/_vendor/popper.js/dist/umd/popper.min.js"></script>
+<script src="https://bootswatch.com/_vendor/bootstrap/dist/js/bootstrap.min.js"></script>
+<script src="https://bootswatch.com/_assets/js/custom.js"></script>
+<script type="text/javascript" src="/static/js/dataTables.js"></script>
+<script type="text/javascript" src="/static/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="/static/js/dataTables.buttons.min.js"></script>
+<script type="text/javascript" src="/static/js/jszip.min.js"></script>
+<script type="text/javascript" src="/static/js/buttons.html5.min.js"></script>
+<script type="text/javascript" src="/static/js/jquery-3.3.1.min.js"></script>
+
+<script type="text/javascript" src="/static/js/bootstrap.min.js"></script>
+
+
+{% endblock js %}
+

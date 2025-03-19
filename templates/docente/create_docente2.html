@@ -1,0 +1,49 @@
+{% extends 'base/home_newtemplate.html' %}
+{% block title %}Registrar Docentes{% endblock %}
+
+{% block form %}
+<div class="page-wrapper">
+    <div class="page-content">
+		{% if existe == 'si' %}
+			<div class="alert border-0 border-start border-5 border-success alert-dismissible fade show py-2">
+				<div class="d-flex align-items-center">
+					<div class="font-35 text-success"><i class='bx bxs-check-circle'></i>
+					</div>
+					<div class="ms-3">
+						<h6 class="mb-0 text-success">Profesor</h6>
+						<div>Este Usuario ya es Profesor</div>
+					</div>
+				</div>
+				<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+			</div>
+			<button href="{% url 'app_usuario_listar'%}" class="bt btn-outline-info"><i class="fadeIn animated bx bx-undo">Regresar</i></button>
+		{% else %}
+			<div class="alert border-0 border-start border-5 border-danger alert-dismissible fade show py-2">
+				<div class="d-flex align-items-center">
+					<div class="font-35 text-danger"><i class='bx bxs-message-square-x'></i>
+					</div>
+					<div class="ms-3">
+						<h6 class="mb-0 text-danger">No Profesor</h6>
+						<div>Este usuario no es Profesor</div>
+					</div>
+				</div>
+				<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+			</div>
+				<button href="{% url 'app_docente_nuevo' usu.id %}" type="submit" class="btn btn-success" value="Guardar">Guardar Como Profesor</button>
+		{% endif %}
+
+		<h3>Registro de Docente</h3>
+		
+		<form method="POST">{% csrf_token %}
+			<h2>{{ usu.first_name }} {{ usu.last_name }}</h2>
+			<div class="row">
+				<div class="col-md-6">
+					<input type="date" style="visibility: hidden;" value="2021-01-01" class="form-control" name="FechaNacimiento">
+				</div>
+			</div>
+				<br>
+		</form>
+	</div>
+</div>
+
+{% endblock form %}

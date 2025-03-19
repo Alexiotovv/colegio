@@ -1,0 +1,283 @@
+{% extends 'base/home_newtemplate.html' %}
+{% block title %}
+    AvanceNotas
+{% endblock title %}
+{% block form %}
+    <h5 style="text-align: center;">REGISTRO AVANCE DE NOTAS {{ ano.Ano }} - {{ paca.Nombre }}</h5>
+    <h5>Curso: {{ curso.Nombre }}</h5>
+    <h5>GradoNivel: {{ grado }}| Seccion: {{ seccion }}</h5>
+    <form id="f1" name="f1">
+        {% csrf_token %}
+        <div class="text" text-align="center">
+            <h3>Lista de Alumnos - Avance</h3>
+        </div>
+        <div class="col-md-12 col-lg-12 col-xs-12">
+            <table class="table table-hover" class="display">
+                <thead>
+                    <tr>
+                        <th scope="col">Nro/Apellidos y Nombres</th>
+                        <th scope="col">Competencias</th>
+                        <th scope="col">Calificativo</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if alumnos %}
+                        {% for alu in alumnos %}
+                            <td>{{ forloop.counter }}</td>
+                            {% for comp in lista_compe %}
+                                <tr class= "class-default">
+                                    <td>{{ alu.Alumno.ApellidoPaterno }} {{ alu.Alumno.ApellidoMaterno }} {{ alu.Alumno.Nombres }}</td>
+                                    <td>{{ comp.Competencias.nombre_competencia }}</td>
+                                    <td>
+                                        <input maxlength="110"
+                                               size="50"
+                                               type="text"
+                                               name="{{ comp.Competencias.id }}"
+                                               id="{{alu.id}}{{ comp.id }}f1"
+                                               class="form-control"
+                                               onblur="cero_izquierda('{{alu.id}}{{comp.id}}');"
+                                                onchange="valida_datos('{{alu.id}}{{comp.id}}');"
+                                               placeholder="Ej. 09,15 ó A,B etc">
+                                               
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        {% endfor %}
+                    {% else %}
+                        <div class="alert alert-dismissible alert-danger">
+                            <button type="button" class="close" data-dismiss="alert">&times;</button>
+                            <strong>Lo Sentimos!</strong> Ya Existen Notas Registradas para el Grado:<STRONG>{{ grado }}</STRONG>, Sección: <STRONG>"{{ seccion }}",</STRONG> Curso: <strong>{{ curso.Nombre }},</strong> de éste Año y Periodo Académico. Por favor, revise sus Notas en <a href="{% url 'app_buscar_avancenotas' %}">Búsqueda Avanzada</a> o intente Nuevamente en <a href="{% url 'app_avancenota_nuevo' %}">Ingresar Notas de Libreta x Grado</a>, Gracias..!!
+                        </div>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    {% if alumnos %}
+        <button type="button"
+                class="btn btn-primary"
+                data-bs-toggle="modal" 
+                data-bs-target="#myModal"
+				id="revisar"
+                onclick="copia();">
+            Revisar Avance de Notas antes de Guardar
+        </button>
+    {% endif %}
+</form>
+
+
+<form action="" method="POST" id="f2" onsubmit="return valida();">
+    {% csrf_token %}
+    <!--The Modal-->
+    <div class="modal fade" id="myModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h5 class="modal-title">REVISANDO LOS AVANCES DE NOTAS...</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <!-- Modal body -->
+                <div class="modal-body">
+                    <!--<h4>REVISANDO LAS NOTAS</h4>-->
+                    <div text-align="center">
+                        <p>
+                            <strong>{{ ano.Ano }} - {{ paca.Nombre }} - {{ curso.Nombre }} - {{ grado }} - {{ seccion }}</strong>
+                        </p>
+                    </div>
+                    <div class="col-md-12 col-lg-12 col-xs-12">
+                        <table class="table table-hover" class="display" id="tabla1">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Nro/Apellidos y Nombres</th>
+                                    <th scope="col">Competencias</th>
+                                    <th scope="col">Calificativo</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% if alumnos %}
+                                    {% for alu in alumnos %}
+                                        <td>{{ forloop.counter }}</td>
+                                        {% for comp in lista_compe %}
+                                            <tr class= "class-default">
+                                                <td>
+                                                    {{ alu.Alumno.ApellidoPaterno }} {{ alu.Alumno.ApellidoMaterno }} {{ alu.Alumno.Nombres }}
+                                                </td>
+                                                <td>
+                                                    {{ comp.Competencias.nombre_competencia }}
+                                                </td>
+                                                <td>		
+                                                    <textarea maxlength="110"
+                                                              type="text"
+                                                              name="{{alu.id}}{{comp.Competencias.id}}"
+                                                              id="{{alu.id}}{{comp.id}}"
+                                                              class="form-control"
+                                                              onblur="poner_readonly_nota('{{alu.id}}{{comp.id}}');"
+                                                              placeholder="Ej. 09,15 ó A,B etc"
+                                                              readonly="readonly"></textarea>
+                                                    <button type="button"
+                                                            class="btn btn-warning btn-sm"
+                                                            onclick="poner_cursor('{{alu.id}}{{comp.id}}');">
+                                                        Corregir
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    {% endfor %}
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="col-6">
+                        <button type="submit" class="btn btn-success">
+                            Guardar Avance de Notas
+                        </button>
+                    </div>
+                </div>
+                <!-- Modal footer -->
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+<script type="text/javascript">
+		function poner_cursor(id){//FormaModalNota
+			document.getElementById(id).readOnly = false;
+			document.getElementById(id).focus();
+			document.getElementById(id).select()
+		}
+
+		function poner_readonly_nota(id){//FormaModal Nota
+			document.getElementById(id).readOnly = true;
+			var texto="";
+			texto=document.getElementById(id).value.trim();
+			document.getElementById(id).value = texto.toUpperCase();
+
+			if (texto.length==1) {
+				if ((texto==0 || texto==1 || texto==2 || texto==3 || texto==4 || texto==5 || texto==6 || texto==7 || texto==8 || texto==9)){
+					document.getElementById(id).value = "0"+texto;
+				}
+			}
+			//Aqui recien copia del Modal al F1 solo la Nota
+			document.getElementById(id+'f1').value= document.getElementById(id).value
+		}
+
+		function copia(){//copia en ambos sentidos de Form1 y Form2 o viceversa
+		   	//var contador =0;			
+		   	//var x = ((document.getElementById("f1").length-2));
+			//var id = (document.getElementById("f1").comp.id) ;
+			//var form = (document.getElementsById(form1);
+			//alert(x);
+		   	//for (var i = 0; i < form.elements.length; i ++){
+				//Solamente de F1 a F2
+				//document.getElementById(i).value = document.getElementById(i+'f1').value.trim();
+			//	valores= form[i].value;
+				//document.getElementById(contador+'uno').value = document.getElementById(contador+'f1uno').value.trim();
+				//Esto es de F2 a F1
+			//}
+			//document.getElementById("6").value=document.getElementById("6f1").value;
+			
+            // var elements = document.getElementsByTagName("input")
+			// for (var i = 1; i < elements.length; i++) {
+			// 	var id=(elements[i].id);
+			// 	var nuevo_id=(id.substr(0,id.length-2));
+			// 	document.getElementById(nuevo_id).value = document.getElementById(id).value;
+			// 	//alert(id);
+				
+			// }
+
+            var elements = document.getElementById("f1").elements
+			for (var i = 1; i < elements.length; i++) {
+				var id=(elements[i].id);
+				var nuevo_id=(id.substr(0,id.length-2));
+				document.getElementById(nuevo_id).value = document.getElementById(id).value;
+            }
+            
+		}
+
+		function cero_izquierda(id){//Form1
+			/////////////////copiado del poner_read_only_nota
+			var texto=document.getElementById(id+'f1').value.trim();
+            var nuevotexto="";
+			if (texto.length==1) {
+                if ((texto=='0' || texto=='1' || texto=='2' || texto=='3' || texto=='4' || texto=='5' || texto=='6' || texto=='7' || texto=='8' || texto=='9')){
+                    document.getElementById(id+'f1').value = "0"+texto;
+                }   
+            }        
+
+            //document.getElementById(id+'f1').value = texto.toUpperCase();
+			
+            //if (nota>=0 && nota<10){
+            //    document.getElementById(id).value = "0"+ String(nota);			
+            //}else{
+            
+                    
+            //    }	
+            // }
+
+            ////////////////////////cierra copiado...//////////////////////////////
+
+
+			// texto=document.getElementById(id+'f1').value.trim();
+			// texto2=document.getElementById(id+'f1uno').value.trim();
+            
+			// document.getElementById(id+'f1').value = texto.toUpperCase();
+            // // console.log(texto)
+			// document.getElementById(id+'f1uno').value = texto2.toUpperCase();
+
+			// if (texto.length==1) {
+			// 	if ((texto==0 || texto==1 || texto==2 || texto==3 || texto==4 || texto==5 || texto==6 || texto==7 || texto==8 || texto==9)){
+			// 		document.getElementById(id+'f1').value = "0"+texto;
+			// 	}
+			// }
+			// if (texto2.length==1) {
+			// 	if ((texto2==0 || texto2==1 || texto2==2 || texto2==3 || texto2==4 || texto2==5 || texto2==6 || texto2==7 || texto2==8 || texto2==9)){
+			// 		document.getElementById(id).value = "0"+texto2;
+			// 	}
+			// }				
+		}
+
+        function valida_datos(id) {
+            var nota=document.getElementById(id+'f1').value.trim();
+            nota=nota.toUpperCase();
+            if ((nota>=0 && nota<=20) || (nota=='A' || nota=='B' || nota=='C' || nota=='AD' || nota=='EXO' || nota=='TRAS' || nota=='ND'|| nota=='CND')){
+                document.getElementById(id+'f1').value=nota.toUpperCase();
+            }else{
+                alert('Valores válidos: De 0-20, A, B, C, AD, EXO, TRAS, CND, ND');
+                document.getElementById(id+'f1').value = '';
+                document.getElementById(id+'f1').focus();
+            }
+         }
+
+		function valida()
+		{
+			var ok=true;
+            var elements = document.getElementById("f2").elements;
+            var msg="Debe completar todas las casillas de Evaluación/Nota desde 01 hasta 20 o A,B,C,AD,EXO o TRAS para poder Guardar";
+            var num=0;
+            for (var i = 0, element; element = elements[i++];) {
+                if (element.type === "text"){
+                    num=element.value;
+                    if (num.length==0) {
+                        ok=false; 
+                    }
+                }
+            }
+
+            if (ok == false) {
+                alert(msg);
+                return false;
+
+            }
+            
+            if (ok == true){
+                return true;
+            }
+		}
+
+</script>
+
+
+{% endblock %}

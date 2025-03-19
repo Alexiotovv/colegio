@@ -1,0 +1,15 @@
+{% extends 'base/home_newtemplate.html' %}
+{% block title %}RegistroPeriodoAcademico{% endblock %}
+{% block active_pa %}active{%endblock%}
+{% block form %}
+	<form method="POST">
+		{% csrf_token %}
+		<h3>Registro de Periodo Académico</h3>
+		<div class="col-md-6">
+			{{form.as_p}}
+			<button type="submit" class="btn btn-success" value="Guardar">Guardar Periodo Académico</button>
+    	</div>	
+	</form>
+</div>
+
+{% endblock %}

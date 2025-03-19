@@ -1,0 +1,32 @@
+{% extends 'base/home.html' %}
+{% block title %}Registrar Apoderado {% endblock %}
+{% block active_ap %}active{%endblock%}
+{% block form %}
+<h3>Registro de Apoderado</h3>
+<form action="" method="POST">{% csrf_token %}
+<div class="row">
+	<div class="col-md-6">
+		<label for="text">Dni</label>
+		{{form.DNI}}
+		<label for="text">Nombres</label>
+		{{form.Nombres}}
+		<label for="text">Apellido Paterno</label>
+		{{form.ApellidoPaterno}}
+		<label for="text">Apellido Materno</label>
+		{{form.ApellidoMaterno}}	
+	</div>
+	<div class="col-md-6">
+		<label for="text">Dirección</label>
+		{{form.Direccion}}
+		<label for="text">Sexo</label>
+		{{form.Sexo}}
+		<label for="text">Teléfono</label>
+		{{form.Telefono}}
+		<label for="text">Correo Electrónico</label>
+		{{form.Email}}
+	</div>
+</div>
+<br></br>
+<button type="submit" class="btn btn-success" value="Guardar">Guardar Apoderado</button>
+</form>
+{% endblock %}

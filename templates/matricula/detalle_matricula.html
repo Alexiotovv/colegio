@@ -1,0 +1,50 @@
+{% extends 'base/home.html' %}
+{% block title %}Detalle Matricula{% endblock title %}
+{% block active_ma %}active{%endblock%}
+{% block form %}
+<form method="POST" action="/matricula/event/" id="systemForm">
+	{% csrf_token %}
+<div class="container">
+	<div>
+		<h3>Detalle de Matrícula</h3>
+	</div>
+		<table class="table table-hover">
+		  <tbody>
+		  	    <tr>
+			      	<td>DNI</td>
+			      	<td>{{object.Alumno.DNI}}</td>
+			    </tr>
+		  	    <tr>
+			      	<td>Alumno</td>
+			      	<td>{{object.Alumno}}</td>
+			    </tr>
+		  	    <tr>
+			      	<td>Año Academico</td>
+			      	<td>{{object.AnoAcademico}}</td>
+			    </tr>
+		  	    <tr>
+			      	<td>Grado</td>
+			      	<td>{{object.Grado}}</td>
+			    </tr>
+			    <tr>
+			      	<td>Sección</td>
+			      	<td>{{object.Seccion}}</td>
+			    </tr>
+			    <tr>
+			      	<td>Fecha de Matrícula</td>
+			      	<td>{{object.FechaMat}}</td>
+			    </tr>
+		  </tbody>
+		</table>
+		{% for group in user.groups.all %}
+			
+			{% if group.name == 'Administrador' %}
+				<a class="btn btn-warning" href="{% url 'app_matricula_editar' object.id %}">Editar Matricula</a>
+				<a class="btn btn-danger" href="{% url 'app_matricula_delete' object.id %}">Eliminar Matricula</a>
+				
+			{% endif %}
+		{% endfor %}
+		
+</div>
+</form>
+{% endblock %}

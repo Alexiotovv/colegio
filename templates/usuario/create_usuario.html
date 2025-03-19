@@ -1,0 +1,184 @@
+{% extends 'base/home_newtemplate.html' %}
+{% block title %}Registro Usuario{% endblock title %}
+{% block active_us %} active {% endblock%}
+{% block form %}
+
+<form method="POST">{%csrf_token%}
+{% for group in user.groups.all %}
+	{% if group.name == 'Administrador' or group.name == 'Asistente' %}
+	<h5>CREAR USUARIO</h5>
+	<div class="row">	
+		<div class="col-md-10">
+			{% if success %}
+				<div class="alert alert-dismissible alert-success">
+		  			<button type="button" class="close" data-dismiss="alert">&times;</button>
+		  			<strong>Bien Hecho!</strong> El usuario se ha registrado Correctamente. <a href="#" class="alert-link">!</a>.
+				</div>
+			{% endif %}
+			<div class="form-group">
+				<!--{{form.as_p}}-->
+				
+				<p>
+				<label>Nombre de Usuario:</label>
+				<input type="text" name="username" class="form-control" maxlength="150" autofocus required id="id_username" onfocus="FechaActual()">
+				<span class="helptext">Requerido. 150 carácteres como máximo. Únicamente letras, dígitos y @/./+/-/_</span>
+				</p>
+				
+				<p>
+				<label>Nombre:</label>
+				<input type="text" name="first_name" class="form-control" maxlength="30" required id="id_first_name">
+				</p>
+				
+				<p>
+				<label>Apellidos:</label>
+				<input type="text" name="last_name" class="form-control" maxlength="150" id="id_last_name">
+				</p>
+
+				<p>
+				<label>Dirección de Correo Electrónico</label>
+				<input type="email" name="email" class="form-control" maxlength="150" required id="id_email">
+				</p>
+
+				<p>
+				<label for="id_is_active">Activo:</label>
+				<input type="checkbox" name="is_active" id="id_is_active" checked="">
+				<span class="helptext">
+					Indica si el usuario debe ser tratado como activo. Desmarque esta opción en lugar de borrar la cuenta.
+				</span>
+				</p>
+
+				<p>
+				<label for="id_is_staff">Es Staff:</label>
+				<input type="checkbox" name="is_staff" id="id_is_staff">
+				<span class="helptext">Indica si el usuario puede entrar en este sitio de administración.</span>
+				</p>
+
+				<p>
+				<label for="id_id_superuser">Es superusuario:</label>
+				<input type="checkbox" name="is_superuser" id="id_is_superuser">
+				<span class="helptext">Indica que este usuario tiene todos los permisos sin asignárselos explícitamente.</span>
+				</p>
+				
+				<p>
+				<div class="row" style="vertical-align: center; justify-content: center;align-items: center;">
+					<div class="col">
+						<div class="form-group">
+							<label>Grupos Disponibles:</label>
+							{{form.groups}}	
+						</div>
+					</div>
+					<div class="col">
+						<a class="btn btn-outline-primary" onclick="pasar(1)"><</a>	
+						<a class="btn btn-outline-primary" onclick="pasar(2)">></a>
+					</div>
+					<div class="col">
+						<div class="form-group">
+							<label for="exampleSelect2">Grupo Elegido</label>
+							<select class="form-control" id="sel2" name="Lista">
+							</select>
+						</div>
+					</div>
+				</div>
+				</p>
+
+				<p>
+					<label for="id_password1">Contraseña</label>
+					<input type="password" name="password1" required id="id_password1" class="form-control">
+					<span class="helptext"></span>
+					<ul>
+						<li>Su contraseña no puede asemejarse tanto a su otra información personal.
+						<li>Su contraseña debe contener al menos 8 caracteres.</li>
+						<li>Su contraseña no puede ser una clave utilizada comunmente.</li>
+						<li>Su contraseña no puede ser completamente numérica.</li>
+					</ul>
+				</p>
+				<p>
+				<label for="id_password2">Contraseña (confirmación)</label>
+					<input type="password" name="password2" required id="id_password2" class="form-control">
+				</p>
+				<p>
+				<p>
+					<div class="row">
+						<div class="col-md-4">
+							<label for="is_date_joined_0">Fecha de Alta</label>
+							
+							<input type="date" name="date_joined_0" size="10" id="id_date_joined_0" required="" class="form-control">
+							<span class="datetimeshorcuts"><a href="Hoy"></a></span>
+						</div>
+						<div class="col-md-4">
+							<label>Hora de Alta</label>
+							<input type="time" name="date_joined_1" size="8" id="id_date_joined_1" required="" class="form-control">
+						</div>
+					</div>
+				</p>
+				<button type="submit" class="btn btn-primary">Registrar</button>
+				</p>
+			</div>
+		</div>
+	</div>
+	{% endif %}
+{% endfor %}
+</form>
+
+<script type="text/javascript">
+	function pasar(valor) {
+		if (valor==2) {
+		    obj=document.getElementById('sel1');
+		    if (obj.selectedIndex==-1) {//comprueba si no hay elemento seleccionado
+		     	return
+		    };
+		    valor=obj.value;
+
+		    txt=obj.options[obj.selectedIndex].text;
+		    obj.options[obj.selectedIndex]=null;
+		    obj2=document.getElementById('sel2');
+		    opc = new Option(txt,valor);
+		    eval(obj2.options[obj2.options.length]=opc);
+
+		}else{
+			obj=document.getElementById('sel2');
+		    if (obj.selectedIndex==-1) {//comprueba si no hay elemento seleccionado
+		    	return
+		    };
+		    valor=obj.value;
+
+		    txt=obj.options[obj.selectedIndex].text;
+		    obj.options[obj.selectedIndex]=null;
+		    obj1=document.getElementById('sel1');
+		    opc = new Option(txt,valor);
+		    eval(obj1.options[obj1.options.length]=opc);
+		}
+	}
+
+	function FechaActual() {
+	
+		var f = new Date();
+
+		mes= f.getMonth()+1;
+		dia=f.getDate();
+		ano=f.getFullYear();
+
+		hora= f.getHours();
+		min=f.getMinutes();
+		sec=f.getSeconds();
+		
+		if (dia<10) {
+			dia="0"+dia;
+		}
+		
+		if (mes<10) {
+			mes="0"+mes
+		}
+		if (hora<10) {
+			hora='0'+hora
+		}
+		fecha_actual= ano+"-"+mes+"-"+dia;
+		hora_actual = hora+':'+min;
+		document.getElementById('id_date_joined_0').value=fecha_actual
+		document.getElementById('id_date_joined_1').value=hora_actual;
+		
+	}
+</script>
+{% endblock %}
+
+

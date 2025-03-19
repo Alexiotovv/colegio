@@ -1,0 +1,18 @@
+{% extends 'base/home_newtemplate.html' %}
+{% block title %}Listar Matriculas{% endblock title %}
+{% block form %}
+<form method="POST">{%csrf_token%}
+	<div class="row">
+	<div class="col-md-12">
+		<h5 style="text-align: center;">Todos los Alumnos serán matriculados al siguiente año.</h5>
+	</div>
+	<div class="row">
+		<div class="col-md-12">
+			<button type="submit"class="btn btn-danger">Proceder..</button>
+		</div>
+	</div>
+</div>
+</form>
+
+
+{% endblock %}

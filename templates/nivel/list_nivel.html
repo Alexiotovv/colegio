@@ -1,0 +1,47 @@
+{% extends 'base/home.html' %}
+{% block title %}ListarNiveles{% endblock %}
+{% block active_ni %} active {% endblock %}
+
+{% block form %}
+<h3>Lista de Niveles</h3>
+	<div class="col-md-12">
+		<br></br>
+		<a href="{% url 'app_create_nivel' %}"><button type="submit" class="btn btn-info">Nuevo Nivel</button></a>
+	</div>
+	<div class="text" text align="center">
+		<h3>Lista de todos los Niveles</h3>
+	</div>
+	<div class="col-md-12">
+		<table id="example" class="table table-hover">
+			<thead>
+				<tr>
+					<th scope="col">Id</th>
+					<th scope="col">Nombre Nivel</th>
+					<th scope="col">Acciones</th>
+				</tr>
+			</thead>
+			<tbody>
+		  	{% if object_list %}
+		      {% for nivel in object_list %}
+		      	<tr class="default">
+		      		<td>{{nivel.id}}</td>
+		      		<td>{{nivel.Nombre}}</td>
+		      		<td>
+		      			{% for group in user.groups.all %}
+	                	{% if group.name == 'Docentes' %}
+	                		--
+	                	{% endif %}
+	                	{% if group.name == 'Administrador' %}
+						<a href="{% url 'app_update_nivel' nivel.id %}" target="_blank" class="btn btn-warning"><span class="edit-solid icon"></span>__</a>
+						<a href="{% url 'app_delete_nivel' nivel.id %}" target="_blank" class="btn btn-danger"><span class="trash-solid icon"></span>__</a>
+						{% endif %}
+					{% endfor %}
+		      		</td>
+		      	</tr>
+		      {% endfor %}
+		    {%endif%}
+			</tbody>
+		</table>
+	</div>
+
+{% endblock %}

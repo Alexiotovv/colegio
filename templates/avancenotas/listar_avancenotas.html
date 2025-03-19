@@ -1,0 +1,106 @@
+{% extends 'base/home_newtemplate.html' %}
+{% block title %}Listar Avance Notas{% endblock title %}
+{% block active_no %} active {% endblock%}
+{% block form %}
+
+<div class="col-md-12">
+	<br>
+	{% if grabo == 'registrado' %}
+		<div class="alert alert-dismissible alert-success">
+	  	<button type="button" class="close" data-dismiss="alert">&times;</button>
+	  	<strong>Bien Hecho!</strong> Sus notas del Grado <STRONG>{{ grado }}</STRONG>, Sección <STRONG>"{{ seccion }}"</STRONG> de la Evaluación/Nota <strong>{{ curso.Nombre }}</strong> se han registrado Correctamente. <a href="#" class="alert-link">Muchas Gracias..!</a>.
+	</div>
+
+	{% endif %}
+	<div class="row">
+		<h5>Ingresar Avance de Notas:</h5>
+	</div>
+	<div class="row">
+	{% for group in user.groups.all %}
+			{% if group.name == 'Administrador' or group.name == 'Asistente'%}
+
+		<div class="col-md-3">
+			<a href="{% url 'app_avancenota_nuevo_comp' %}"><button type="submit" class="btn btn-info" style="width:100%;"><span class="icon-library"></span> Por Grado/Competencias</button></a>
+		</div>
+
+		<div class="col-md-3">
+			<a href="{% url 'app_avancenota_nuevo_uno' %}"><button type="submit" class="btn btn-primary" style="width:100%;"><span class="icon-user"></span> Por Alumno</button></a>
+		</div>
+		<div class="col-md-3">
+			<a href="{% url 'app_delete_avancenotasxcurso' %}" type="submit" class="btn btn-danger" style="width:100%;"><span class="icon-book"></span> Eliminar A. Notas</a>
+		</div>
+		<div class="col-md-3">
+			<a href="{% url 'app_buscar_avancenotas' %}"><button type="submit" class="btn btn-warning" style="width:100%;"><span class="icon-search"></span> Búsqueda de Notas </button></a>
+		</div>
+		{% endif %}
+	{% endfor %}
+	</div>
+
+	<div class="row">
+		{% for group in user.groups.all %}
+			{% if group.name == 'Docente'%}
+				{% if  chk_avance == 'on'  %}
+					<div class="col-md-3">
+						<a href="{% url 'app_avancenota_nuevo_comp' %}"><button type="submit" class="btn btn-info" style="width:100%;"><span class="icon-library"></span> Por Grado/Competencias</button></a>
+					</div>
+				{% endif %}
+
+				<div class="col-md-3">
+					<a href="{% url 'app_buscar_avancenotas' %}"><button type="submit" class="btn btn-warning" style="width:100%;"><span class="icon-search"></span> Búsqueda de Notas </button></a>
+				</div>
+			{% endif %}
+		{% endfor %}
+	</div>
+
+	<div class="row">
+	 	<p><strong>Nota: Puede revisar su Avance de Notas Ingresadas, haciendo clic en el botón de Búsqueda de Notas.</strong> Gracias : )</p>
+	</div>
+		<h5 style="text-align: center;">Avance de Notas del Bimestre Recién Ingresadas</h5>
+
+	<div class="col-md-12">
+		<table id="example" class="table table-hover">
+		  <thead>
+		    <tr>
+		      <th scope="col">Nro</th>
+		      <th scope="col">Apellidos,Nombres</th>
+		      <th scope="col">Grado</th>
+		      <th scope="col">Sección</th>
+		      <th scope="col">Año</th>
+		      <th scope="col">Curso/Evaluación</th>
+		      <th scope="col">Nota</th>
+		      <th scope="col">Simulacro</th>
+		      <th scope="col">Acciones</th>
+		    </tr>
+		  </thead>
+		  <tbody>
+		      {% for notas in notita %}
+			      <tr class= "class-default">
+			      	<td>{{ forloop.counter }}</td>
+			      	<td>{{ notas.Matricula.Alumno }}</td>
+			      	<td>{{ notas.Matricula.Grado }}</td>
+			      	<td>{{ notas.Matricula.Seccion }}</td>
+			      	<td>{{ notas.Matricula.AnoAcademico }}</td>
+			      	<td>{{ notas.Curso }}</td>
+			      	<td>{{ notas.Nota }}</td>
+			      	<td>{{ notas.SimulacroNota }}</td>
+			      	<td>
+					{% for group in user.groups.all %}
+						{% if group.name == 'Administrador' or group.name == 'Docentes' %}
+						<a href="{% url 'app_avancenotas_edit' notas.id %}" class="btn btn-warning"><span class="edit-solid icon"></span>__</a>
+						{% endif %}
+
+						{% if group.name == 'Administrador'%}
+						<!--<a href="" class="btn btn-success"><span class="eye-solid icon"></span>__</a>-->
+						<a href="{% url 'app_notas_avancedelete' notas.id %}" class="btn btn-danger"><span class="trash-solid icon"></span>__</a>
+						{% endif %}
+					{% endfor %}
+			      	</td>
+			      </tr>	
+		      {% endfor %}
+		  </tbody>
+		</table>
+		<div>
+		</div>
+	</div>
+</div>
+{% endblock %}

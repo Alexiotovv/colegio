@@ -1,0 +1,20 @@
+{% extends 'base/home_newtemplate.html' %}
+{% block title %}Notas{% endblock title %}
+{% block form %}
+<div class="page-wrapper">
+    <div class="page-content">
+<h3 align="CENTER">REGISTRO DE NOTAS {{ano.Ano}} - {{paca.Nombre}}</h3>
+<h5>DNI: {{doce.DNI}} | Profesor: {{doce.User.first_name}} {{doce.User.last_name}}</h5>
+
+<form method="POST">{%csrf_token%}
+<div class="row">
+	
+</div>
+<br>
+
+</form>
+</div>
+</div>
+
+{% endblock %}
+

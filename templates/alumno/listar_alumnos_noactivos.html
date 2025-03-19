@@ -1,0 +1,57 @@
+{% extends 'base/home_newtemplate.html' %}
+{% block title %}Listar Alumnos{% endblock title %}
+{% block active_a %} active {% endblock%}
+{% block form %}
+	<div class="col-md-12">
+		<br></br>
+		<a href="{% url 'app_alumno_nuevo' %}"><button type="submit" class="btn btn-info">Nuevo Alumno</button></a>
+		<a href="{% url 'app_alumno_listar' %}" class="btn btn-success">Alumnos Activos</a>
+	</div>
+		<div class="text" text align="center">
+			<h3>Lista de Alumnos Egresados/Retirados</h3>
+		</div>
+		<div class="table-responsive">
+		<table id="example" class="table table-hover">
+		  <thead>
+		    <tr>
+		      <th scope="col">Id</th>
+		      <th scope="col">DNI</th>
+		      <th scope="col">Apellidos</th>
+		      <th scope="col">Nombres</th>
+		      <th scope="col">Sexo</th>
+		      <th scope="col">FechNacimiento</th>
+		      <th scope="col">Acciones</th>
+		    </tr>
+		  </thead>
+		  <tbody>
+		      {% for alumnos in list_alumnos %}
+			      <tr class= "class-default">
+			      	<td>{{ alumnos.id }}</td>
+			      	<td>{{ alumnos.DNI }}</td>
+			      	<td>{{ alumnos.ApellidoPaterno }} {{ alumnos.ApellidoMaterno }}</td>
+			      	<td>{{ alumnos.Nombres }}</td>
+			      	<td>{{ alumnos.Sexo }}</td>
+			      	<td>{{ alumnos.FechaNacimiento }}</td>
+			      	<td>
+ 					{% for group in user.groups.all %}
+	                	{% if group.name == 'Docentes' %}
+	                		--
+	                	{% endif %}
+	                	{% if group.name == 'Administrador' %}
+						<a href="{% url 'app_alumno_detalle' alumnos.id %}" target="_blank" class="btn btn-success"><span class="eye-solid icon"></span>__</a>
+						<a href="{% url 'app_alumno_editar' alumnos.id %}" target="_blank" class="btn btn-warning"><span class="edit-solid icon"></span>__</a>
+						<a href="{% url 'app_alumno_delete' alumnos.id %}" target="_blank" class="btn btn-danger"><span class="trash-solid icon"></span>__</a>
+						{% endif %}
+					{% endfor %}
+			      	</td>
+			      </tr>	
+		      {% endfor %}
+		  </tbody>
+		</table>
+		<div>
+
+		</div>
+	</div>
+
+
+{% endblock %}

@@ -1,0 +1,59 @@
+{% extends 'base/home_newtemplate.html' %}
+{% block title %} Listar Docentes{% endblock %}
+{% block form %}
+<div class="row">
+<div class="col-md-12 col-lg-12 col-xs-12 col-xl-12">
+	<br></br>
+	<a href="{% url 'app_usuario_listar' %}"><button type="submit" class="btn btn-info">Nuevo Docente</button></a>
+
+			<div class="text" text align="center">
+				<h3>Lista de todos los Docentes</h3>
+			</div>
+		<div class="table-responsive">
+		<table class="table table-hover" id="example2" class="table table-striped table-bordered">
+		  <thead>
+		    <tr>
+		      <th scope="col">Id</th>
+		      <th scope="col">DNI</th>
+		      <th scope="col">Nombres</th>
+		      <th scope="col">Apellidos</th>
+		      <th scope="col">GradoNivel</th>
+			  <th scope="col">Tutor</th>
+		      <th scope="col">Seccion</th>
+		      <th scope="col">Cursos</th>
+		      <th scope="col">Acciones</th>
+		    </tr>
+		  </thead>
+		  <tbody>
+		  	{% if object_list %}
+		      {% for docentes in object_list %}
+			      <!--<tr class= "class-default" onclick="window.location='{% url 'app_docente_detalle' docentes.id %}';">  -->
+			      	<td>{{ docentes.User.id }}</td>
+			      	<td>{{ docentes.DNI }}</td>
+			      	<td>{{ docentes.User.first_name }}</td>
+			      	<td>{{ docentes.User.last_name }}</td>
+			      	<td>{{ docentes.GradoNivel }}</td>
+					<td>{{ docentes.TutorGrado }}-{{ docentes.TutorSeccion }}</td>
+					<td>{{ docentes.Seccion }}</td>
+			      	<td>
+			      		<a href="{% url 'app_docentecurso_create' docentes.id %}" class="btn btn-outline-success"><span class=""></span>Asignar Cursos</a>
+			      	</td>
+
+			      	<td>
+
+					<a href="{% url 'app_docente_detalle' docentes.id %}" class="btn btn-primary btn-small"><span class="eye-solid icon"></span>__</a>
+
+					<a href="{% url 'app_docente_editar' docentes.id %}" class="btn btn-warning"><span class="edit-solid icon"></span>__</a>
+					
+					<a href="{% url 'app_docente_delete' docentes.id %}" class="btn btn-danger"><span class="trash-solid icon"></span>__</a>				
+
+			      	</td>
+			      </tr>	
+		      {% endfor %}
+		     {% endif %}
+		  </tbody>
+		</table>
+		</div>
+</div>
+</div>
+{% endblock form %}

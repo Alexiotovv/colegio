@@ -1,0 +1,39 @@
+{% extends 'base/home_newtemplate.html' %}
+{% block title %}Detalle Curso{% endblock title %}
+{% block active_c %}active{% endblock %}
+{% block form %}
+<form method="post">
+	{% csrf_token %}
+<div class="container">
+	<div>
+			<h3>Detalle del Curso</h3>
+	</div>
+		<table class="table table-hover">
+		  <tbody>
+		  	    <tr>
+			      	<td>Id</td>
+			      	<td>{{object.id}}</td>
+			    </tr>
+		  	    <tr>
+			      	<td>Codigo del Curso</td>
+			      	<td>{{object.CodCurso}}</td>
+			    </tr>	
+		  	    <tr>
+			      	<td>Nombre de Curso</td>
+			      	<td>{{object.Nombre}}</td>
+			    </tr>	
+		      	<tr>
+			      	<td>Tipo de Evaluación</td>
+			      	<td>{{object.Tipo}}</td>
+			    </tr>
+			    <tr>
+			      	<td>Grados</td>
+			      	<td>{{object.Grados}}</td>
+			    </tr>
+		  </tbody>
+		</table>
+		<a class="btn btn-warning" href="{% url 'app_curso_editar' object.id %}">Editar Curso</a>
+</div>	
+</form>
+	
+{% endblock %}

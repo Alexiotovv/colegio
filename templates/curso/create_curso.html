@@ -1,0 +1,131 @@
+{% extends 'base/home_newtemplate.html' %}
+{% block title %}RegistrarCursos{% endblock %}
+{% block active_c %}active{% endblock %}
+{% block form %}
+
+	<form action="" id="formularioCurso" method="POST">
+		{% csrf_token %}
+		<h3>Registro de Curso</h3>
+		<div class="row">
+			<div class="col-md-6">
+				<label>Codigo de Evaluacion</label>
+				<input type="text" name="CodEvaluacion" class="form-control">	
+				
+				<label>Nombre de Evaluacion</label>
+				<input type="text" name="NombreEvaluacion" class="form-control">	
+				
+				<label>Orden de Impresión</label>
+				<input type="text" name="Orden" class="form-control">	
+
+				<label>Nivel</label>
+				<select name="Nivel" id="nivel" class="single-select">
+					<option value="PRIM">PRIM</option>
+					<option value="SEC">SEC</option>
+				</select>
+
+				<label>Tipo de Evaluacion</label>
+				<select name="TipoEvaluacion" class="single-select">
+					<option value="CURSO">CURSO</option>
+					<option value="ACTITUDINAL">ACTITUDINAL</option>
+					<option value="INASISTENCIAS">INASISTENCIAS </option>
+					<option value="DEL PADRE DE FAMILIA">DEL PADRE DE FAMILIA</option>
+					<option value="APRECIACIÓN DEL TUTOR">APRECIACIÓN DEL TUTOR</option>
+				</select>
+			</div>
+
+			<div class="col-md-6">
+				<label>Seleccione GradoNivel al que pertenece la Evaluación</label>
+				<div class="row">
+					<div class="col-md-6">
+						<div class="form-group">
+								<div class="custom-control custom-checkbox">
+						      		<input type="checkbox" class="custom-control-input" id="customCheck1" name="1PRIM" checked="">
+						      		<label class="custom-control-label" for="customCheck1">1PRIM</label>
+						    	</div>	
+						</div>
+
+						<div class="form-group">
+								<div class="custom-control custom-checkbox">
+						      		<input type="checkbox" class="custom-control-input" id="customCheck2" name="2PRIM" checked="on">
+						      		<label class="custom-control-label" for="customCheck2">2PRIM</label>
+						    	</div>	
+						</div>
+
+						<div class="form-group">
+								<div class="custom-control custom-checkbox">
+						      		<input type="checkbox" class="custom-control-input" id="customCheck3" name="3PRIM" checked="on">
+						      		<label class="custom-control-label" for="customCheck3">3PRIM</label>
+						    	</div>	
+						</div>
+
+						<div class="form-group">
+								<div class="custom-control custom-checkbox">
+						      		<input type="checkbox" class="custom-control-input" id="customCheck4" name="4PRIM" checked="on">
+						      		<label class="custom-control-label" for="customCheck4">4PRIM</label>
+						    	</div>	
+						</div>
+
+						<div class="form-group">
+								<div class="custom-control custom-checkbox">
+						      		<input type="checkbox" class="custom-control-input" id="customCheck5" name="5PRIM" checked="on">
+						      		<label class="custom-control-label" for="customCheck5">5PRIM</label>
+						    	</div>	
+						</div>
+
+						<div class="form-group">
+								<div class="custom-control custom-checkbox">
+						      		<input type="checkbox" class="custom-control-input" id="customCheck6" name="6PRIM" checked="on">
+						      		<label class="custom-control-label" for="customCheck6">6PRIM</label>
+						    	</div>	
+						</div>
+
+					</div>
+					
+					<div class="col-md-6">
+						<div class="form-group">
+								<div class="custom-control custom-checkbox">
+						      		<input type="checkbox" class="custom-control-input" id="customCheck1-1" name="1SEC" checked="on">
+						      		<label class="custom-control-label" for="customCheck1-1">1SEC</label>
+						    	</div>	
+						</div>
+
+						<div class="form-group">
+								<div class="custom-control custom-checkbox">
+						      		<input type="checkbox" class="custom-control-input" id="customCheck1-2" name="2SEC" checked="on">
+						      		<label class="custom-control-label" for="customCheck1-2">2SEC</label>
+						    	</div>	
+						</div>
+
+						<div class="form-group">
+								<div class="custom-control custom-checkbox">
+						      		<input type="checkbox" class="custom-control-input" id="customCheck1-3" name="3SEC" checked="on">
+						      		<label class="custom-control-label" for="customCheck1-3">3SEC</label>
+						    	</div>	
+						</div>
+
+						<div class="form-group">
+								<div class="custom-control custom-checkbox">
+						      		<input type="checkbox" class="custom-control-input" id="customCheck1-4" name="4SEC" checked="on">
+						      		<label class="custom-control-label" for="customCheck1-4">4SEC</label>
+						    	</div>	
+						</div>
+
+						<div class="form-group">
+								<div class="custom-control custom-checkbox">
+						      		<input type="checkbox" class="custom-control-input" id="customCheck1-5" name="5SEC" checked="on">
+						      		<label class="custom-control-label" for="customCheck1-5">5SEC</label>
+						    	</div>	
+						</div>
+
+					</div>
+				</div>
+			</div>
+		</div>
+		<br>
+		<div class="row container">
+			<button type="submit" class="btn btn-success" value="Guardar">Guardar Curso</button>
+		</div>
+	</form>
+
+
+{% endblock %}

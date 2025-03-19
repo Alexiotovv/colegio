@@ -1,0 +1,57 @@
+{% extends 'base/home_newtemplate.html' %}
+{% block title %}Detalle Alumno{% endblock title %}
+{% block active_a %}active{%endblock%}
+{% block form %}
+<form method="POST" action="/matricula/event/" id="systemForm">
+	{% csrf_token %}
+<div class="container">
+	<div>
+		<h3>Detalle del Alumno</h3>
+	</div>
+		<table class="table table-hover">
+		  <tbody>
+		  	    <tr>
+			      	<td>Id</td>
+			      	<td>{{object.id}}</td>
+			    </tr>
+		  	    <tr>
+			      	<td>Dni</td>
+			      	<td>{{object.DNI}}</td>
+			    </tr>
+		  	    <tr>
+			      	<td>Nombres</td>
+			      	<td>{{object.Nombres}}</td>
+			    </tr>
+		      	<tr>
+			      	<td>Apellido Paterno</td>
+			      	<td>{{object.ApellidoPaterno}}</td>
+			    </tr>
+			    <tr>
+			      	<td>Apellido Materno</td>
+			      	<td>{{object.ApellidoMaterno}}</td>
+			    </tr>
+			    <tr>
+			      	<td>Dirección</td>
+			      	<td>{{object.Direccion}}</td>
+			    </tr>	
+			    <tr>
+			      	<td>Fecha de Nacimiento</td>
+			      	<td>{{object.FechaNacimiento}}</td>
+			    </tr>	
+			    <tr>
+			      	<td>Sexo</td>
+			      	<td>{{object.Sexo}}</td>
+			    </tr>
+			    <tr>
+			      	<td>Estado</td>
+			      	<td>{{object.Estado}}</td>
+			    </tr>
+		  </tbody>
+		</table>
+		<a class="btn btn-warning" href="{% url 'app_alumno_editar' object.id %}">Editar Alumno</a>
+		<a class="btn btn-danger" href="{% url 'app_alumno_delete' object.id %}">Eliminar Alumno</a>
+		<a class="btn btn-info" href="{% url 'app_matricula_event' object.id %}">Matricular Alumno</a>
+		
+</div>
+</form>
+{% endblock %}

@@ -1,0 +1,46 @@
+{% extends 'base/home.html' %}
+{% block title %}Listar Grados{%endblock%}
+{% block active_gr %} active {% endblock%}
+{% block form %}
+<div class="col-md-12">
+		<div class="form-group"><label></label></div>			
+				<div class="btn-group" role="role-group">
+					<a href="{% url 'app_grado_create' %}"><button type="submit" class="btn btn-info">Nuevo Grado</button></a>
+				</div>
+		<div class="text" text align="center">
+			<h3>Lista de Grados</h3>
+		</div>
+
+	<div class="col-md-12">
+		<table class="table table-hover" id="example" class="display">
+		  <thead>
+		    <tr>
+		      <th scope="col">Id</th>
+		      <th scope="col">Grado</th>		      
+		      <th scope="col">Acciones</th>
+		    </tr>
+		  </thead>
+		  <tbody>
+		  	{% if object_list %}
+		      {% for grado in object_list %}
+			      <tr class= "class-default">
+			      	<td>{{ grado.id }}</td>
+			      	<td>{{ grado.Nombre }}</td>
+			      	<td>
+					<a href="{% url 'app_grado_update' grado.id %}" class="btn btn-warning"><span class="edit-solid icon"></span>__</a>
+				
+					<a href="{% url 'app_grado_delete' grado.id %}" class="btn btn-danger"><span class="trash-solid icon"></span>__</a>
+
+			      	</td>
+			      </tr>	
+		      {% endfor %}
+		     {% endif %}
+		  </tbody>
+		</table>
+		<div>
+
+		</div>
+	</div>
+</div>
+
+{% endblock %}

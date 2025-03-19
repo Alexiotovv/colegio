@@ -1,0 +1,46 @@
+{% extends 'base/home_newtemplate.html' %}
+{% block title %}Actualizar Docentes{% endblock %}
+{% block form %}
+<h3>Actualizar Docente</h3>
+<form method="POST">{% csrf_token %}
+<h2>{{ docente.User.first_name }} {{ docente.User.last_name }}</h2>
+<div class="row">
+	<div class="col-md-6">
+		<label for="text">DNI</label>
+		{{form.DNI}}	
+		<label for="text">Dirección</label>
+		{{form.Direccion}}
+
+		<label for="text">Fecha de Nacimiento</label>
+		{{form.FechaNacimiento}}
+
+		<label for="text">Sexo</label>
+		{{form.Sexo}}
+
+		<label for="text">Teléfono</label>
+		{{form.Telefono}}
+	</div>
+	
+	<div class="col-md-6">
+		
+		<label for="text">Email</label>
+		{{form.Email}}
+		
+		<label for="text"> GradoNivel</label>
+		{{form.GradoNivel}}				
+	
+		<label for="text">Secciones</label>
+		{{form.Seccion}}
+
+		<label for="text">Tutor Grado</label>
+		{{form.TutorGrado}}
+
+		<label for="text">Tutor Sección</label>
+		{{form.TutorSeccion}}
+	</div>
+
+</div>
+<br>
+		<button type="submit" class="btn btn-success" value="Guardar">Guardar Docente</button>
+</form>
+{% endblock form %}

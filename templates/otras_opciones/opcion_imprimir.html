@@ -1,0 +1,39 @@
+{% extends 'base/home.html' %}
+{% block title %}Listar Notas{% endblock title %}
+{% block active_oo %} active {% endblock%}
+{% block form %}
+<div class="col-md-12">
+		<div class="form-group"><label></label></div>
+			<h3 align="center">Seleccione una Opción para Imprimir:</h3>
+		<br>
+	</div>
+<div class="row-md-12">
+	<div class="row" align="center">
+			<div class="col-md-6">
+				<a href="" class="btn btn-outline-primary" style="height:60px; width:160px">Libretas de Notas</a>
+			</div>
+			<div class="col-md-6">
+				<a href="{% url 'app_imprimir_avances_comp' %}" class="btn btn-outline-success" style="height:60px; width:160px">Avance de Notas</a>
+			</div>
+	</div>
+	<br>
+	<div class="row" align="center">
+		<div class="col-md-6">
+			<a href="" class="btn btn-outline-primary" style="height:60px; width:160px">Consolidado de Libreta de Notas</a>
+		</div>
+		<div class="col-md-6">
+			<a href="" class="btn btn-outline-success" style="height:60px; width:160px">Consolidado de Anvance de Notas</a>
+		</div>
+
+	</div>
+	<br>
+	<div class="row">
+		<div class="col-md-12" align="center">
+			<a href="" class="btn btn-outline-info" style="height:60px; width:160px">Resumen Anual Notas</a>
+		</div>
+	</div>
+
+</div>
+
+	
+{% endblock %}

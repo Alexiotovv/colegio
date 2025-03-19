@@ -1,0 +1,55 @@
+{% extends 'base/home_newtemplate.html' %}
+{% block title %}Registrar Año Academico{% endblock %}
+{%block active_ac%}active{%endblock%}
+{% block form %}
+<div class="col-md-10">
+	<form action="" id="formularioAlumno" method="POST">
+		{% csrf_token %}
+		<h3>Registro de Año Académico</h3>
+		<div class="row">
+			<div class="col-md-8">
+				<label>Año</label>
+				<input class="form-control" type="number" id="ano" name="ano" onblur="cuatro_digitos()">
+				<label>Fecha Inicio</label>
+				<input class="form-control" type="date" name="fechainicio" id="fechainicio">
+				<label>Fecha Final</label>
+				<input class="form-control" type="date" name="fechafinal" id="fechafinal">
+			    <br>
+			    <button type="submit" class="btn btn-success" value="Guardar">Guardar Año</button>
+			</div>
+		</div>
+		
+	</form>
+</div>
+<script type="text/javascript">
+	function cuatro_digitos() {
+		var ano = 0;
+		var cano = new Date();
+		ano = document.getElementById('ano').value;
+		if (ano>2019 && ano<2099) {
+			document.getElementById('ano').value = ano;
+		}else{
+			document.getElementById('ano').value = cano.getFullYear();
+		}
+	}
+
+	window.onload = function(){
+	  	var fecha = new Date(); //Fecha actual
+	  	var mes = fecha.getMonth()+1; //obteniendo mes
+	  	var dia = fecha.getDate(); //obteniendo dia
+	  	var ano = fecha.getFullYear(); //obteniendo año
+	  	if(dia<10)
+	    	dia='0'+dia; //agrega cero si el menor de 10
+	  	if(mes<10)
+	    	mes='0'+mes //agrega cero si el menor de 10
+
+		var cano = new Date();
+
+	  	document.getElementById('fechainicio').value=ano+"-"+mes+"-"+dia;
+	  	document.getElementById('fechafinal').value=ano+"-"+mes+"-"+dia;
+	  	document.getElementById('ano').value = cano.getFullYear();
+	}
+
+
+</script>
+{% endblock %}

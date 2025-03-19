@@ -1,0 +1,40 @@
+{% extends 'base/home_newtemplate.html' %}
+{% block title %}RegistrarAlumnos{% endblock %}
+
+{% block form %}
+<!--
+<div id="miModal" class="modal">
+  <button type="button" class="close" data-dismiss="alert">&times;</button>
+  <strong>Registro Guardado Satisfactoriamente..!</strong> <a href="#" class="alert-link"></a>
+</div>-->
+{% if perms.docente.add_docente %}
+	<h3>Registro de Alumnos</h3>	
+	<form method="POST">{% csrf_token %}
+	<div class="row">
+
+		<div class="col-md-6">
+			<label for="text">Dni</label>
+			{{form.DNI}}
+			<label for="text">Nombres</label>
+			{{form.Nombres}}
+			<label for="text">Apellido Paterno</label>
+			{{form.ApellidoPaterno}}
+			<label for="text">Apellido Materno</label>
+			{{form.ApellidoMaterno}}
+		</div>
+		<div class="col-md-6">
+			<label for="text">Sexo</label>
+	    	{{form.Sexo}}
+			<label for="Date">Fecha de Nacimiento</label>
+			{{form.FechaNacimiento}}	
+			<label for="text">Dirección</label>
+			{{form.Direccion}}	
+			<label for="text">Estado</label>
+			{{form.Estado}}	
+		</div>
+	</div>
+	<br></br>
+			<button type="submit" class="btn btn-success" value="Guardar" href="#miModal">Guardar Alumno</button>	
+	</form>
+{% endif %}
+{% endblock %}

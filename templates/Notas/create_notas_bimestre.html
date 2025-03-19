@@ -1,0 +1,52 @@
+{% extends 'base/home_newtemplate.html' %}
+{% block title %}NotasBimestre{% endblock title %}
+{% block form %}
+<h3 align="CENTER">REGISTRO DE NOTAS {{ano.Ano}}</h3>
+<h5>DNI: {{doce.DNI}} | Profesor: {{doce.User.first_name}} {{doce.User.last_name}}</h5>
+
+<form method="POST">{%csrf_token%}
+<div class="row">
+	<div class="col-md-6">
+		<label>Seleccione Periodo Académico</label>
+		<select class="single-select" name="bimestres">
+			{% for paca in paca_list %}
+				<option value="{{paca.id}}">{{ paca.Nombre }}</option>
+			{% endfor %}
+		</select>
+	</div>
+	<div class="col-md-6">
+		<label>Seleccione Curso</label>
+		<select class="single-select" name="curso">
+			{% for cursos in curso_list %}
+				<option value="{{cursos.Curso.id}}">{{ cursos.Curso}}</option>
+			{% endfor %}
+		</select>
+	</div>
+</div>
+<div class="row">
+	<div class="col-md-6">
+		<label>Seleccione GradoNivel</label>
+		<select class="single-select" name="grados">
+			{% for grados in grados_list %}
+				<option value="{{grados}}">{{ grados }}</option>
+			{% endfor %}
+		</select>
+	</div>
+	<div class="col-md-6">
+		<label>Seleccione Sección</label>
+		<select class="single-select" name="secciones">
+			{% for secciones in secciones_list %}
+				<option value="{{secciones}}">{{ secciones }}</option>
+			{% endfor %}
+		</select>
+	</div>
+</div>
+<br>
+<div class="row">
+	<div class="col-md-4">
+		<button type="submit" class="btn btn-outline-primary" href="{url 'app_nota_nuevo_save_bimestre'}">Seleccionar</button>
+	</div>	
+</div>
+</form>
+{% endblock %}
+

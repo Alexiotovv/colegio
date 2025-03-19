@@ -1,0 +1,25 @@
+{% extends 'base/home_newtemplate.html' %}
+{% block title %}Editar Competencias{% endblock %}
+{% block active_compe %}active{% endblock %}
+{% block form %}
+
+	<form method="POST">
+		{% csrf_token %}
+		<h6>Editar Asignaciones Competencias</h6>
+		<div class="row">		
+            <label for="">Id</label>
+            <input type="text" name="id_competencia" value="{{ide}}" class="form-control">
+            <label for="">Nivel</label>
+            <select name="nivel" class="form-control">
+                <option value="PRIM">PRIM</option>
+                <option value="SEC">SEC</option>
+            </select>
+            
+            <label for="">Nombre de Competencia</label>
+            <input type="text" name="nombre_competencia" value="{{nombre.nombre_competencia}}" class="form-control">
+            <button href="" type="submit" class="btn btn-success">Guardar</button>
+        </div>
+			
+
+	</form>
+{% endblock %}

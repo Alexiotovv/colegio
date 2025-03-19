@@ -1,0 +1,200 @@
+{% extends 'base/home_newtemplate.html' %}
+{% block title %}Notas{% endblock title %}
+{% block form %}
+<h3 align="CENTER">REGISTRO DE NOTAS {{ano.Ano}} - {{paca.Nombre}}</h3>
+<H4><strong>Curso: {{curso.Nombre}}</strong></H4>
+<h5><strong>GradoNivel: {{grado}}| Seccion: {{seccion}}</strong></h5>
+
+<form id="f1" name="f1">{%csrf_token%}
+		<h5 style="text-align: center;">Lista de Alumnos</h5>
+	<div class="col-md-12 col-lg-12 col-xs-12">
+		<table class="table table-hover" class="display">
+		  <thead>
+		    <tr>
+		      <th scope="col">Nro</th>
+		      <th scope="col">Apellidos y Nombres</th>
+		      <th scope="col">Evaluación/Nota</th>
+		    </tr>
+		  </thead>
+
+		  <tbody>
+		  	{% if alumnos %}
+			  	{% for alu in alumnos %}
+				    <tr class= "class-default">
+				    	<!--<td>{{ alu.Alumno.id }}</td>-->
+				      	<td>{{ forloop.counter }}</td>
+						<!--<td>{{ alu.Alumno.DNI }}</td>-->
+				      	<td>{{ alu.Alumno.ApellidoPaterno }} {{ alu.Alumno.ApellidoMaterno }} {{ alu.Alumno.Nombres }}</td>
+				      	<td>
+				      		{% if curso.Tipo == 'INASISTENCIAS' %}
+				      			<input maxlength="60" size="70" type="number" name="{{ alu.id }}" id= "{{ forloop.counter }}f1" class="form-control" onblur="cero_izquierda('{{ forloop.counter }}');">
+				      		{% else %}
+				      			<input maxlength="60" size="70" type="text" name="{{ alu.id }}" id= "{{ forloop.counter }}f1" class="form-control" onblur="cero_izquierda('{{ forloop.counter }}');">
+				      		{% endif %}
+				      	</td>
+				    </tr>	
+			    {% endfor %}
+		  	{% else %}
+		  		<div class="alert alert-dismissible alert-danger">
+				  <button type="button" class="close" data-dismiss="alert">&times;</button>
+				  <strong>Los Sentimos!</strong> Ya Existen Notas Registradas para el Grado:<STRONG>{{ grado }}</STRONG>, Sección: <STRONG>"{{ seccion }}",</STRONG> Curso: <strong>{{ curso.Nombre }},</strong> de éste Año y Periodo Académico. Por favor, revise sus Notas en <a href="{% url 'app_buscar_notas' %}">Búsqueda Avanzada </a> o intente Nuevamente en <a href="{% url 'app_nota_nuevo' %}">Ingresar Notas de Libreta x Grado</a>, Gracias..!!
+				</div>
+				
+		  	{% endif %}
+
+		  </tbody>
+		</table>
+	</div>
+	{% if alumnos %}
+		<button type="button" class="btn btn-primary"  data-bs-toggle="modal" data-bs-target="#myModal" onclick="copia();">
+    	Revisar Notas antes de Guardar
+  		</button>
+  	{% endif %}
+
+</form>
+
+
+<form action="" method="POST" id="f2">{%csrf_token%}
+<!--The Modal-->
+<div class="modal fade" id="myModal" tabindex="-1" aria-hidden="true">
+	<div class="modal-dialog modal-xl">
+		<div class="modal-content">
+		        <!-- Modal Header -->
+		        <div class="modal-header">
+		         <h5 class="modal-title">REVISANDO LAS NOTAS...</h5>
+
+				 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+		        </div>
+        		<!-- Modal body -->
+		        <div class="modal-body">
+		          <!--<h4>REVISANDO LAS NOTAS</h4>-->
+		          <div align="center"><p><strong>{{ano.Ano}} - {{paca.Nombre}} - {{curso.Nombre}} - {{grado}} - {{seccion}}</strong></p></div>
+		          
+		          	<div class="col-md-12 col-lg-12 col-xs-12">
+						<table class="table table-hover" class="display">
+						  <thead>
+						    <tr>
+						      <th scope="col">Nro</th>
+						      <th scope="col">Apellidos y Nombres</th>
+						      <th scope="col">Evaluación/Nota</th>
+						      <th scope="col">Acción</th>
+						    </tr>
+						  </thead>
+						  <tbody>
+						      {% for alu in alumnos %}
+							      <tr class= "class-default">
+							      	<td>{{ forloop.counter }}</td>
+							      	<td>{{ alu.Alumno.ApellidoPaterno }} {{ alu.Alumno.ApellidoMaterno }} {{ alu.Alumno.Nombres }}</td>
+							      	<td>
+							      		<textarea size="60" maxlength="60" type="text" name="{{ alu.id }}" id= "{{ forloop.counter }}" class="form-control" readonly="readonly" size="120" onblur="poner_readonly('{{ forloop.counter }}');"></textarea>
+							      	</td>
+							      	<td>
+							      		<button type="button" class="btn btn-warning btn-sm" onclick="poner_cursor('{{ forloop.counter }}');">Corregir</button>
+							      	</td>
+							      </tr>	
+						      {% endfor %}
+						  </tbody>
+						</table>
+					
+					</div>
+						<div class="col-6">
+							<button type="submit" class="btn btn-success">Guardar Notas</button>	
+						</div>
+		        	</div>
+		        <!-- Modal footer -->
+
+		        <div class="modal-footer">
+		          <button class="btn btn-danger" data-dismiss="modal">Cerrar</button>
+		        </div>
+
+    		</div>
+		</div>
+			
+  	</div>
+</form>
+
+<script type="text/javascript">
+	function poner_cursor(id){
+		document.getElementById(id).readOnly = false;
+		document.getElementById(id).focus();
+		document.getElementById(id).select()
+		//document.getElementById(id+'f1').focus().select();
+	}
+	function poner_readonly(id){
+		document.getElementById(id).readOnly = true;
+		var contador =0;
+	   	var x = document.getElementById("f1").length -2;
+	   	//este bucle copia los cambios ddel modalf2 al f1
+	   	for (var i = 0, mayor = x; i < mayor; i ++){
+			contador ++;
+			document.getElementById(contador+'f1').value = document.getElementById(contador).value.trim();
+		}
+
+		var texto="";
+		texto=document.getElementById(id).value.trim();
+		document.getElementById(id).value = texto.toUpperCase();
+		if (texto.length==1) {
+			if ((texto==0 || texto==1 || texto==2 || texto==3 || texto==4 || texto==5 || texto==6 || texto==7 || texto==8 || texto==9)){
+				document.getElementById(id).value = "0"+texto;
+			}
+		}	
+
+	}
+	function copia(){
+	   	//document.getElementById(id).value = document.getElementById(id+'f1').value;
+	   	var contador =0;
+	   	var x = document.getElementById("f1").length -2;
+	   	for (var i = 0, mayor = x; i < mayor; i ++){
+			contador ++;
+			document.getElementById(contador).value = document.getElementById(contador+'f1').value.trim();
+		}
+
+	}
+
+	function cero_izquierda(id){
+		var texto="";
+		texto=document.getElementById(id+'f1').value.trim();
+		document.getElementById(id+'f1').value = texto.toUpperCase();
+		if (texto.length==1) {
+			if ((texto==0 || texto==1 || texto==2 || texto==3 || texto==4 || texto==5 || texto==6 || texto==7 || texto==8 || texto==9)){
+				document.getElementById(id+'f1').value = "0"+texto;
+			}
+		}		
+	}
+
+
+	function valida()
+	{
+		var ok=true;
+		var contador =0;
+		var texto = "";
+		var msg="Debe completar todas las casillas de Evaluación/Nota, rellene con Guión (-) si el Alumno aún No tiene Nota, Exo (Exonerado), para poder Guardar";
+		var x = document.getElementById("f1").length -2;
+		
+		for (var i = 0, mayor = x; i < mayor; i ++){
+			contador ++;
+			texto = document.getElementById(contador).value;
+			//texto = f.elements[contador].value
+			if (texto.length == 0) {
+				ok=false;
+			}
+		}
+
+		if (ok == false) {
+			alert(msg);
+			return false;
+
+		}
+		
+		if (ok == true){
+			return true;
+		}
+	}
+
+</script>
+
+{% endblock %}
+
+
+
+

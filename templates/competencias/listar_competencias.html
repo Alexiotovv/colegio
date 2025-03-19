@@ -1,0 +1,61 @@
+{% extends 'base/home_newtemplate.html' %}
+{% block title %}Listar Alumnos{% endblock title %}
+{% block active_compe %} active {% endblock%}
+{% block form %}
+		<div class="text" text align="center">
+			<h3>Lista de Competencias</h3>
+		</div>
+		<div>
+			
+		<a href="{% url 'app_nueva_competencia' %}" class="btn btn-primary">Nueva Competencia</a>	
+		</div>
+	<div class="table-responsive">
+		<table id="example2" class="table table-striped table-bordered">
+		  <thead>
+		    <tr>
+		      <th scope="col">Id</th>
+			  <th scope="col">Nivel</th>
+			  <th scope="col">Tipo</th>
+			  <th scope="col">Curso</th>
+		      <th scope="col">Nombre de Competencia</th>
+			  <th scope="col">Estado</th>
+		      <th scope="col">Acciones</th>
+		    </tr>
+		  </thead>
+		  <tbody>
+		      {% for lc in lista_competencias %}
+			      <tr class= "class-default">
+			      	<td>{{ lc.id }}</td>
+					  <td>{{ lc.nivel }}</td>
+					  <td>{{ lc.Tipo }}</td>
+					  <td>{{ lc.Nombre }}</td>
+			      	<td>{{ lc.nombre_competencia }}</td>
+					<td>
+						{% if lc.status %}
+							HABILITADO
+						{% else %}
+							INHABILITADO
+						{% endif %} 
+					</td>
+			      	<td>
+						{% for group in user.groups.all %}
+							{% if group.name == 'Docentes' %}
+								--
+							{% endif %}
+							{% if group.name == 'Administrador' %}					
+								<a href="{% url 'app_editar_competencias' lc.id %}" class="btn btn-warning"><span class="edit-solid icon"></span>__</a>
+								{% comment %} <a href="{% url 'app_eliminar_competencias' lc.id %}" class="btn btn-danger"><span class="trash-solid icon"></span>__</a> {% endcomment %}
+							{% endif %}
+						{% endfor %}
+			      	</td>
+			      </tr>	
+		      {% endfor %}
+		  </tbody>
+		</table>
+		<div>
+
+		</div>
+	</div>
+
+
+{% endblock %}

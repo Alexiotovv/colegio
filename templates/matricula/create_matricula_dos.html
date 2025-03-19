@@ -1,0 +1,64 @@
+{% extends 'base/home.html' %}
+{% block title %}Matricular{% endblock title %}
+{% block form %}
+<div class="page-wrapper">
+    <div class="page-content">
+		<h6 align="CENTER">REGISTRO DE MATRÍCULA {{ano.Ano}}</h6>
+		<form method="POST">{%csrf_token%}
+            <div class="card">
+                <div class="card-body">
+                    {% if guar == 'ok' %}
+                    <div class="alert border-0 border-start border-5 border-success alert-dismissible fade show py-2">
+                        <div class="d-flex align-items-center">
+                            <div class="font-35 text-success"><i class='bx bxs-check-circle'></i>
+                            </div>
+                            <div class="ms-3">
+                                <h6 class="mb-0 text-success">Matrícula!</h6>
+                                <div>Regitro Guardado!</div>
+                            </div>
+                        </div>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                    {% endif %}
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label>Alumno</label>
+                            {{form.Alumno}}
+                        </div>
+                        <div class="col-md-2">
+                            <label>Grado</label>
+                            {{form.Grado}}
+                        </div>
+                        <div class="col-md-2">
+                            <label>Sección</label>
+                            {{form.Seccion}}
+                        </div>
+                        <div class="col-md-2">
+                            <label>Nivel</label>
+                            {{form.Nivel}}
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-2">
+                            <label>Turno</label>
+                            {{form.Turno}}
+                        </div>
+                        <div class="col-md-2">
+                            <label>Año Académico</label>
+                            {{form.AnoAcademico}}
+                        </div>
+                        <div class="col-md-3">
+                            <label>Fecha Matricula</label>
+                            {{form.FechaMat}}
+                        </div>
+                    </div>
+                </div>
+		    </div>
+
+		<button type="submit" class="btn btn-success" value="Guardar">Guardar Matrícula</button>
+		</form>
+	</div>
+</div>
+
+{% endblock %}
+

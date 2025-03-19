@@ -1,0 +1,67 @@
+{% extends 'base/home_newtemplate.html' %}
+{% block title %}Listar Usuarios{% endblock title %}
+{% block active_us %} active {% endblock%}
+{% block form %}
+
+	{% for group in user.groups.all %}
+    	{% if group.name == 'Administrador' or group.name == 'Asistente' %}
+	<div class="row">
+		<h5>Gestión de Usuarios:</h5>
+	</div>
+	<div class="row">
+		<div class="col-md-4">	
+			<a href="{% url 'app_usuario_create' %}" target="" class="btn btn-info" style="width:100%"><span class="icon-user-plus"></span> Nuevo Usuario</a>
+		</div>
+		<div class="col-md-4">
+			<a href="https://colcoopcv.com/admin/auth/user/" target="_blank" style="width:100%;" class="btn btn-warning">Editar Usuario</a>
+		</div>
+		<div class="col-md-4">
+			<a href="https://colcoopcv.com/admin/" target="_blank" class="btn btn-danger" style="width:100%">Gestión Usuarios</a>	
+		</div>
+	</div>
+
+		
+		<div class="text" text align="center">
+			<h3>Lista de Usuarios</h3>
+		</div>
+	<div class="col-md-12">
+		<table id="example2" class="table table-striped table-bordered">
+		  <thead>
+		    <tr>
+		      <th scope="col">Nro</th>
+		      <th scope="col">Nombre Usuario</th>
+		      <th scope="col">Nombre</th>
+		      <th scope="col">Apellido</th>
+		      <th scope="col">Correo</th>
+		      <th scope="col" style="width:15%;">Acciones</th>
+		    </tr>
+		  </thead>
+		  <tbody>
+		      {% for usu in object_list %}
+			      <tr class= "class-default">
+			      	<td>{{ usu.id }}</td>
+			      	<td>{{ usu.username }}</td>
+			      	<td>{{ usu.first_name }}</td>
+			      	<td>{{ usu.last_name }}</td>
+			      	<td>{{ usu.email }}</td>
+			      	<td>					
+					{% for group in user.groups.all %}
+						{% if group.name == 'Administrador' %}
+						<a href="{% url 'app_docente_nuevo' usu.id %}" class="btn btn-outline-success"><span class="icon-user-tie"></span></a>
+						<a href="" class="btn btn-outline-danger"><span class="icon-cog"></span></a>
+						<a href="" class="btn btn-outline-warning"><span class="icon-key"></span></a>
+						{% endif %}
+					{% endfor %}
+			      	</td>
+			      </tr>	
+		      {% endfor %}
+		  </tbody>
+		</table>
+		<div>
+		</div>
+	</div>
+
+	  {% endif %}
+{% endfor %}
+
+{% endblock %}

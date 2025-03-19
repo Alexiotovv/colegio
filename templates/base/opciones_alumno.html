@@ -1,0 +1,70 @@
+{% extends 'base/base.html' %}
+{% load staticfiles %}
+{% block css %}
+  <!--<meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">-->
+  <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/static/css/bootstrap.scss">
+  <link rel="stylesheet" href="/static/fonts/ionic.css">
+  <link rel="stylesheet" href="/static/css/jquery.dataTables.min.css">
+{% endblock css %}
+<body>
+{% block content %}
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <a class="navbar-brand" href="#">CÉSAR VALLEJO</a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor02" aria-controls="navbarColor02" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <div class="collapse navbar-collapse" id="navbarColor02">
+    <ul class="navbar-nav mr-auto">
+    </ul>
+
+<ul class="nav nav-pills navbar-collapse">
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="true">{{ user.username|capfirst }} {{ user.last_name|capfirst }}</a>
+        <div class="dropdown-menu" x-placement="bottom-start" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(0px, 40px, 0px);">
+          <a class="dropdown-item" href="#">Cambiar la Contraseña</a>
+          <div class="dropdown-divider"></div>
+          <a class="dropdown-item" href="{% url 'logout' %}">Cerrar Sesión</a>
+        </div>
+      </li>
+</ul>
+  </div>
+</nav>
+<div class="row col-xs-12">
+  <div class="list-group col-sm-2">
+    <a href="" class="list-group-item list-group-item-action {% block activema %}{% endblock %}">Matricular</a>
+    <a href="" class="list-group-item list-group-item-action {% block actived %}{% endblock %}">IngresarNotas</a>
+    <a href="" class="list-group-item list-group-item-action {% block activec %}{% endblock %}">Relacionar Apoderados</a>
+    <a href="" class="list-group-item list-group-item-action {% block activeap %}{% endblock %}">Otras Opciones</a>
+    
+  </div> 
+  {% block Home%} {% endblock %}
+  {% block form %} 
+
+  {% endblock %} 
+</div>
+{% endblock %}
+    {% block footer %}
+      <div class="footer">
+        <blockquote class="blockquote text-center">
+        <p class="mb-0">Colegio César Vallejo - 2019</p>
+        <footer class="blockquote-footer">Desarrollado por Alex Vásquez<cite title="Source Title">- Bootstrap</cite></footer>
+      </blockquote>
+      </div>
+    {% endblock %}
+
+</body>
+
+
+{% block js %}
+   <script src="https://bootswatch.com/_vendor/jquery/dist/jquery.min.js"></script>
+   <script src="https://bootswatch.com/_vendor/popper.js/dist/umd/popper.min.js"></script>
+   <script src="https://bootswatch.com/_vendor/bootstrap/dist/js/bootstrap.min.js"></script>
+   <script src="https://bootswatch.com/_assets/js/custom.js"></script>
+
+   <script type="text/javascript" src="/static/js/jquery.dataTables.min.js"></script>
+   <script type="text/javascript" src="/static/js/dataTables.js"></script>
+
+
+
+{% endblock js %}

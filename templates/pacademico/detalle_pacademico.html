@@ -1,0 +1,34 @@
+{% extends 'base/home_newtemplate.html' %}
+{% block title %}Detalle Periodo Academico{% endblock title %}
+{% block active_pa %} active {% endblock%}
+{% block form %}
+<form method="post">
+	{% csrf_token %}
+<div class="container">
+	<div>
+			<h3>Detalle del Periodo Académico</h3>
+	</div>
+		<table class="table table-hover">
+		  <tbody>
+		  	    <tr>
+			      	<td>Id</td>
+			      	<td>{{object.id}}</td>
+			    </tr>
+		  	    <tr>
+			      	<td>Año</td>
+			      	<td>{{object.Nombre}}</td>
+			    </tr>	
+		  	    <tr>
+			      	<td>Fecha Inicio</td>
+			      	<td>{{object.FechaInicio}}</td>
+			    </tr>	
+		      	<tr>
+			      	<td>Fecha Final</td>
+			      	<td>{{object.FechaFinal}}</td>
+			    </tr>
+		  </tbody>
+		</table>
+		<a class="btn btn-warning" href="{% url 'app_pacademico_editar' object.id %}">Editar Periodo Académico</a>
+</div>	
+</form>
+{% endblock %}

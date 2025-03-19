@@ -1,0 +1,27 @@
+{% extends 'base/home_newtemplate.html' %}
+{% block title %}RegistrarPeriodoAcademico{% endblock %}
+{% block active_pa %}active{%endblock%}
+{% block form %}
+
+	<form method="POST">
+		{% csrf_token %}
+		<h3>Registro de Periodo Académico</h3>
+		<div class="col-md-6">
+			<label>Nombre</label>
+			<input type="text" name="Nombre" class="form-control">
+			<label>FechaInicio</label>
+			<input type="date" name="FechaInicio" class="form-control">
+			<label>FechaFinal</label>
+			<input type="date" name="FechaFinal" class="form-control">
+			<label for="text">Estado</label>
+			<select class="single-select" name="Status">
+				<option value="Activo">Activo</option>
+				<option value="Inactivo">Inactivo</option>
+			</select>
+			<br>
+			<button type="submit" class="btn btn-success" value="Guardar">Guardar Periodo Académico</button>
+    	</div>
+	</form>
+</div>
+
+{% endblock %}

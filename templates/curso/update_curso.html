@@ -1,0 +1,28 @@
+{% extends 'base/home_newtemplate.html' %}
+{% block title %}EditarCurso{% endblock %}
+{% block active_c %}active{% endblock %}
+{% block form %}
+<div class="row">
+	<form action="" id="formularioCurso" method="POST">
+		{% csrf_token %}
+		<h3>Editar Evaluación</h3>
+		<label>Codigo Curso</label>
+		{{ form.CodCurso }}
+		<label>Nombre Curso</label>
+		{{ form.Nombre }}
+		<label>Tipo</label>
+		{{ form.Tipo }}
+		<label>Orden de Impresión</label>
+		{{ form.Orden }}
+		<label>Nivel al que Pertenece</label>
+		{{ form.Nivel }}
+
+		<label> GradoNivel del Curso</label>
+		{{form.Grados}}
+	    <br>
+	    <button type="submit" class="btn btn-success" value="Guardar">Guardar Curso</button>
+		
+	</form>
+</div>
+
+{% endblock %}

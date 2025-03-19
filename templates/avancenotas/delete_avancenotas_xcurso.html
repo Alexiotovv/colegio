@@ -1,0 +1,166 @@
+{% extends 'base/home_newtemplate.html' %}
+{% block title %}EliminarAvanceNotasxCurso {% endblock title %}
+{% block form %}	
+<div class="col-md-12">
+	<br>
+	{% if msje == 'eliminado' %}
+	<div class="alert alert-dismissible alert-success">
+	  <button type="button" class="close" data-dismiss="alert">&times;</button>
+	  <strong>Eliminado!</strong> Los avances de Notas Seleccionados, fueron eliminados.<a href="#" class="alert-link"></a>
+	</div>
+	{% endif %}
+
+	<div class="text" text align="center">
+		<h3>Eliminar Avance de Notas x Curso</h3>
+	</div>
+	<form action="" method="POST">{% csrf_token %}	
+		<div class="row">
+			<div class="col-md-4">
+				<label>Seleccione Año</label>
+				<select class="single-select" name="Ano" id="Ano">
+					{% for a in ano %}
+						<option value="{{a.id}}">{{ a.Ano}}</option>
+					{% endfor %}
+				</select>
+			</div>
+			<div class="col-md-4">
+				<label>Seleccione Bimestre</label>
+				<select class="form-control" name="PAcademico" id="PAcademico">
+					{% for p in pac %}
+						<option value="{{p.id}}">{{ p.Nombre}}</option>
+					{% endfor %}
+				</select>
+			</div>
+		
+			<div class="col-md-4">
+				<label>Seleccione Curso</label>
+				<select class="form-control" name="Curso" id="Curso">
+				{% for c in cur %}
+					<option value="{{c.id}}">{{ c}}</option>
+				{% endfor %}
+				</select>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-md-4">
+				<br>
+				<label>Seleccione Grado</label>
+				<select class="form-control" name="Grado" id="Grado">	
+					<option value="1PRIM">1PRIM</option>
+					<option value="2PRIM">2PRIM</option>
+					<option value="3PRIM">3PRIM</option>
+					<option value="4PRIM">4PRIM</option>
+					<option value="5PRIM">5PRIM</option>
+					<option value="6PRIM">6PRIM</option>
+					<option value="1SEC">1SEC</option>
+					<option value="2SEC">2SEC</option>
+					<option value="3SEC">3SEC</option>
+					<option value="4SEC">4SEC</option>
+					<option value="5SEC">5SEC</option>
+				</select>
+			</div>
+
+			<div class="col-md-4">
+				<br>
+				<label>Seleccione Sección</label>
+				<select class="form-control" name="Seccion" id="Seccion">	
+					<option value="A">A</option>
+					<option value="B">B</option>
+					<option value="C">C</option>
+					<option value="D">D</option>
+					<option value="E">E</option>
+					<option value="F">F</option>
+					<option value="G">G</option>
+				</select>
+			</div>
+		</div>
+		<div class="row">
+
+			<div class="col-md-4">
+				<br>
+				<a type="button" class="btn btn-danger" id="btnEliminar">Eliminar Avance de Notas</a>
+			</div>	
+		</div>
+
+		<!-- Modal Mensaje de Confirmación-->
+		<div class="row row-cols-auto g-3">
+			<div class="col">
+				<div class="modal fade" id="modalEliminar" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+					<div class="modal-dialog">
+						<div class="modal-content">
+							<div class="modal-header">
+								<h5 class="modal-title" id="exampleModalLabel">Eliminar Avance de Notas</h5>
+								<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+							</div>
+							<div class="modal-body">
+								<h5>Desea Eliminar las notas del año <p id="eti_ano"></p>
+									Periodo Académico: <p id="eti_pacademico"></p>
+									Curso: <p id="eti_curso"></p>
+									Grado: <p id="eti_grado"></p>
+									Seccion: <p id="eti_seccion"></p>
+									Registrado por:<p id="eti_profesores"></p>
+								</h5>
+								
+							</div>
+							<div class="modal-footer">
+								<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No, deseo eliminar</button>
+								<button type="submit" class="btn btn-danger">Sí Eliminar</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- End Modal-->
+
+
+
+	</form>
+</div>
+
+
+{% endblock %}
+
+
+{% block js1 %}
+	<script>
+		$("#btnEliminar").on("click",function (e) { 
+			e.preventDefault();
+			$("#eti_ano").text($("#Ano option:selected").text());
+			$("#eti_pacademico").text($("#PAcademico option:selected").text());
+			$("#eti_curso").text($("#Curso option:selected").text());
+			$("#eti_grado").text($("#Grado option:selected").text());
+			$("#eti_seccion").text($("#Seccion option:selected").text());
+			
+			//Consulta quien es la profesora que ingresó las notas
+
+			ano=$("#Ano").val();
+			pac=$("#PAcademico").val();
+			cur=$("#Curso").val();
+			grad=$("#Grado").val();
+			sec=$("#Seccion").val();
+			
+			$.ajax({
+				type: "GET",
+				url: "/avancenotas/profe_ingreso_notas_avan/"+ ano+"/"+pac+"/"+cur+"/"+grad+"/"+sec,
+				// data: "data",
+				dataType: "json",
+				success: function (response) {
+					if ((response.length)>0) {
+						nombres=""
+						response.forEach(item => {
+							nombres=nombres+" * "+ item.Docente__User__first_name+" "+item.Docente__User__last_name;
+						});
+						$("#eti_profesores").text(nombres);
+						//End consulta...
+						$("#modalEliminar").modal("show");
+					}else{
+						alert("No existen registros para eliminar");
+					}
+					
+				}
+			});
+
+		 })
+	</script>	
+{% endblock %}

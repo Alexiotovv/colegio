@@ -1,0 +1,14 @@
+{% extends 'base/home.html' %}
+{% block title %}RegistrarGrado{% endblock %}
+{% block active_gr %}active{%endblock%}
+{% block form %}
+<div class="col-md-12">
+	<form action="" method="POST">
+		{% csrf_token %}
+		<h3>Registro de Grados</h3>
+		{{form.as_p}}			
+	    <button type="submit" class="btn btn-success" value="Guardar">Guardar Grado</button>
+	</form>
+</div>
+
+{% endblock %}

@@ -1,0 +1,31 @@
+{% extends 'base/home_newtemplate.html' %}
+{% block title %}Listar Asginaciones{% endblock title %}
+{% block form %}
+<h3 align="CENTER">Asignaciones de Curso</h3>
+<form method="POST">{%csrf_token%}
+	<div class="row">
+        <div class="col-12">
+            <div class="table-responsive">
+                <table id="example2" class="table table-striped table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Id</th>
+                            <th>Profesor</th>
+                            <th>Curso</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for l in listar %}
+                            <tr>
+                                <td>{{l.id}}</td>
+                                <td>{{l.Curso}}</td>
+                                <td>{{l.Docente}}</td>    
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>	
+	</div>
+</form>
+{% endblock form%}

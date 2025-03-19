@@ -1,0 +1,62 @@
+{% extends 'base/home.html' %}
+{% block title %}ImprimirLibretas{% endblock title %}
+
+{% block form %}
+<h3 align="CENTER">REPORTE LIBRETA DE NOTAS</h3>
+<form method='POST'>{%csrf_token%}
+	<div class="row">
+
+		<div class="col-md-6">
+			<label>Seleccione Año</label>
+			<select class="single-select" name="Ano">
+				{% for a in aac %}
+					<option value="{{a.id}}">{{ a.Ano}}</option>
+				{% endfor %}
+			</select>
+		</div>
+
+		<div class="col-md-6">
+			<label>Seleccione Bimestre</label>
+			<select class="single-select" name="Pac">
+				{% for p in pac %}
+					<option value="{{p.id}}">{{ p.Nombre}}</option>
+				{% endfor %}
+			</select>
+			<br>	
+		</div>
+
+		<div class="col-md-6">
+	    	<label for="exampleSelect1">Seleccione GradoNivel</label>
+	      	<select class="single-select" name="Grado">
+		        <option value="1PRIM">1PRIM</option>
+			    <option value="2PRIM">2PRIM</option>
+			    <option value="3PRIM">3PRIM</option>
+			    <option value="4PRIM">4PRIM</option>
+			    <option value="5PRIM">5PRIM</option>
+			    <option value="6PRIM">6PRIM</option>
+
+	      	</select>
+	    </div>
+
+	    <div class="col-md-6">
+			<label for="exampleSelect1">Seleccione Sección</label>
+	    	<select class="single-select" name="Seccion">
+		     	<option value="A">A</option>
+		        <option value="B">B</option>
+		        <option value="C">C</option>
+		        <option value="D">D</option>
+		        <option value="E">E</option>
+		        <option value="F">F</option>
+		        <option value="G">G</option>
+	    	</select>
+	    </div>
+	</div>
+	<div class="row">
+			<div class="col-md-6">
+				<br>
+      			<a href="" target="_blank"><button type="submit" class="btn btn-outline-primary">Imprimir Libretas</button></a>
+      		</div>
+      	</div>
+</form>
+{% endblock %}
+

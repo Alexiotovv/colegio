@@ -1,0 +1,112 @@
+{% extends 'base/home.html' %}
+{% block title %}Listar Turnos{%endblock%}
+{% block form %}
+<div class="page-wrapper">
+    <div class="page-content">
+			<button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleSmallModal" onclick="nuevo()">Nuevo Turno</button>
+
+		<div class="text" text align="center">
+			<h5>Lista de Turnos</h5>
+		</div>
+
+	<div class="col-md-12">
+		<table class="table table-hover" id="example" class="display">
+		  <thead>
+		    <tr>
+		      <th scope="col">Id</th>
+		      <th scope="col">Turno</th>     
+		      <th scope="col">Acciones</th>
+		    </tr>
+		  </thead>
+		  <tbody>
+		      {% for turno in lista %}
+			      <tr class= "class-default">
+			      	<td>{{ turno.id }}</td>
+			      	<td>{{ turno.Nombre }}</td>
+			      	<td>
+					<button class="btn btn-outline-warning" data-bs-toggle="modal" data-bs-target="#exampleSmallModal2" onclick="poneridturno('{{turno.id}}');" id="{{turno.id}}" value="{{turno.Nombre}}"><i class="fadeIn animated bx bx-pencil"></i>Editar</button>
+
+			      	</td>
+			      </tr>	
+		      {% endfor %}
+		  </tbody>
+		</table>
+		<div>
+
+		</div>
+	</div>
+</div>
+
+</div>
+
+
+
+<!-- Modal Nuevo Sección-->
+<div class="modal fade" id="exampleSmallModal" tabindex="-1" aria-hidden="true">
+	<div class="modal-dialog modal-sm">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title">Nuevo Turno</h5>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<div class="modal-body">
+				<form method="POST">{%csrf_token%}
+				<input type="text" value="NUEVO" name="accion" id="accion" style="visibility: hidden;">
+
+				<h5>Ingrese un Turno</h5>
+				<input type="text" class="form-control mb-3" name="nombre" style="width: 50%;" maxlength="30">
+				<div class="btn-group" role="role-group">
+					
+				</div>
+
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+				<button type="submit" class="btn btn-primary" value="Guardar">Guardar</button>
+			</div>
+
+		</div>
+	</div>
+</div>
+
+<!-- Modal Editar Sección-->
+<div class="modal fade" id="exampleSmallModal2" tabindex="-1" aria-hidden="true">
+	<div class="modal-dialog modal-sm">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title">Editar Turno</h5>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<div class="modal-body">
+
+				<h5>Ingrese un Turno</h5>
+				<input type="text" class="form-control mb-3" id="idturno" value=0 name="idturno" style="width: 50%;visibility: hidden;">
+				<input type="text" class="form-control mb-3" id="nombre_update" name="nombre_update" style="width: 50%;" maxlength="30">
+				<div class="btn-group" role="role-group">
+					
+				</div>
+
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+				<button type="submit" class="btn btn-primary" value="Guardar">Guardar</button>
+			</div>
+				</form>
+		</div>
+	</div>
+</div>
+
+<script type="text/javascript">
+	function poneridturno(id){
+		var boton = document.getElementById(id);
+		document.getElementById("idturno").value=boton.id;
+		document.getElementById("nombre_update").value=boton.value;
+		document.getElementById("accion").value="EDITAR";
+		
+	}
+	function nuevo(){
+		document.getElementById("accion").value="NUEVO";
+	}
+
+</script>
+{% endblock %}

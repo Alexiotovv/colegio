@@ -1,0 +1,47 @@
+{% extends 'base/home_newtemplate.html' %}
+{% block title %}Avances Por Alumno{% endblock title %}
+
+{% block form %}
+<form method="POST" id="frmAvancesxPersona" action="{% url 'Avances.xPersona' %}">
+    {% csrf_token %}
+    <h5>AVANCES POR ALUMNO</h5>
+    <div class="row">
+        <div class="col-md-4">
+                <label for="AnoAcademico">AnoAcademico</label>
+                <select class="single-select" id="AnoAcademico" name="AnoAcademico">
+                    {% for aa in aa %}
+                        <option value="{{aa.Ano}}">{{aa.Ano}}</option>
+                    {% endfor %}
+                </select>
+                <input type="text" name="Grado" id="Grado" hidden>
+                <input type="text" name="Seccion" id="Seccion" hidden>
+                <input type="text" name="Pacademico" id="Pacademico" hidden>
+                <input type="text" name="idMat" id="idMat" hidden>
+            
+        </div>
+        <div class="col-md-3">
+            <br>
+            <button class="btn btn-info btnFiltrar" id="FitrarMat" name="FiltrarMat">Filtrar</button>
+        </div>
+    </div>
+    
+    <table class="table table-responsive-md" id="DTMatriculados">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>DocumentoIdentidad</th>
+                <th>ApellidosyNombres</th>
+                <th>Grado</th>
+                <th>Seccion</th>
+                <th>Avances</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+
+</form>
+{% endblock%}
+{% block js1%}
+    <script src="/static/apps/avances.js"></script>
+{% endblock %}

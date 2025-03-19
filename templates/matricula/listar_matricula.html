@@ -1,0 +1,155 @@
+{% extends 'base/home_newtemplate.html' %}
+{% block title %}Listar Matriculas{% endblock title %}
+{% block form %}
+<form method="POST">{%csrf_token%}	
+		<div class="row">
+			<div class="col-md-12">
+				<!-- <br>
+				<a type="button" class="btn btn-info" href="{% url 'app_new_matricula_alumno' %}">Matricular Nuevo Alumno</a> -->
+				<h6 style="text-align: center;">MATRÍCULAS</h6>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-4">
+					<label >Seleccione Año Académico</label>
+					<select class="single-select" name="ano">
+						{% for anos in ano_list %}
+							{% ifequal anos.Ano ano_selected %}
+							<option value="{{anos.id}}" selected>{{anos.Ano}}</option>
+							{% else %}
+								<option value="{{anos.id}}">{{anos.Ano}}</option>
+							{% endifequal %}		
+						{% endfor %}
+					</select>
+					
+			</div>
+			<div class="col-8">
+				<br>
+				<button type="submit" class="btn btn-info" href="{% url 'app_matricula_listar' %}">Mostrar</button>
+			</div>
+		</div>
+	
+			<h5 style="text-align: center;">Lista de Matrículas</h5>
+		
+		<div class="table-responsive">
+		<table id="example2" class="table table-striped table-bordered">
+		  <thead>
+		    <tr>
+		      <th scope="col">Id</th>
+			  <th scope="col">DNI</th>
+		      <th scope="col">Apellidos, Nombres</th>
+		      <th scope="col">Año</th>
+		      <th scope="col">Grado</th>
+		      <th scope="col">Sección</th>
+		      <th scope="col">FechaMat</th>
+		      <th scope="col">Acciones</th>
+		    </tr>
+		  </thead>
+		  <tbody>
+		      {% for matriculas in mat_list %}
+			      <tr class= "class-default">
+			      	<td>{{ matriculas.id }}</td>
+					<td>{{ matriculas.Alumno.DNI }}</td>  
+			      	<td>{{ matriculas.Alumno }}</td>
+			      	<td>{{ matriculas.AnoAcademico }}</td>
+			      	<td>{{ matriculas.Grado }}</td>
+			      	<td>{{ matriculas.Seccion }}</td>
+			      	<td>{{ matriculas.FechaMat }}</td>
+			      	<td>
+	                {% for group in user.groups.all %}
+	                	{% if group.name == 'Docentes' %}
+	                		<a href="{% url 'app_matricula_detalle' matriculas.id %}" target="_blank" class="btn btn-success"><span class="eye-solid icon"></span>__</a>
+	                		<!--<a href="{% url 'app_nota_nuevo' matriculas.id %}" target="_blank" class="btn btn-info">Ingresar Notas</a>-->
+	                	{% endif %}
+	                	{% if group.name == 'Administrador' %}
+						<a href="{% url 'app_matricula_detalle' matriculas.id %}" target="_blank" class="btn btn-success"><span class="eye-solid icon"></span>__</a>
+						<a href="{% url 'app_matricula_editar' matriculas.id %}" class="btn btn-warning"><span class="edit-solid icon"></span>__</a>
+						<a href="" class="btn btn-danger btnEliminarMatricula"><span class="trash-solid icon"></span>__</a>
+						{% endif %}
+					{% endfor %}
+			      	</td>
+			      </tr>	
+		      {% endfor %}
+		  </tbody>
+		</table>
+	</div>
+
+
+<div class="col-md-12">
+	{% if matriculados %}
+	{% else %}
+		<h4>Matricular a Todos al Siguiente Año</h4>
+		<a type="submit" class="btn btn-info" href="{% url 'app_pasar_todos_nuevo_ano' %}">Matricular</a>
+	{% endif %}
+</div>
+
+<div class="modal fade" id="modalEliminar" tabindex="-1" aria-hidden="true">
+	<div class="modal-dialog modal-lg">
+		<div class="modal-content">
+			<!-- Modal Header -->
+			<div class="modal-header">
+				<h5 class="modal-title">ELIMINAR MATRÍCULA</h5>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<!-- Modal body -->
+			<div class="modal-body">
+				<input type="text" id="idmatricula" hidden>
+				<label>Confirme por favor para poder eliminar la matrícula de:</label>
+				<h5 id="txtalumno"></h5>
+			</div>
+			<!-- Modal footer -->
+			<div class="modal-footer">
+				<button type="button" class="btn btn-danger" id="modalbtnEliminarMatricula" data-bs-dismiss="modal">Eliminar</button>
+				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+
+
+</form>
+
+{% endblock %}
+
+{% block js1 %}
+	<script>
+
+		$(document).on('click','.btnEliminarMatricula', function(e) {
+			e.preventDefault();
+			fila = $(this).closest("tr");
+			id = (fila).find('td:eq(0)').text();
+			alumno=(fila).find('td:eq(2)').text();
+			$("#idmatricula").val(id);
+			$("#txtalumno").text(alumno);
+			$("#modalEliminar").modal('show');
+		});
+		$("#modalbtnEliminarMatricula").on("click",function(e){
+			e.preventDefault();
+			EliminarMatricula($("#idmatricula").val());
+		});
+
+		function EliminarMatricula(id){
+			$.ajax({
+				type: "GET",
+				url: "/matricula/eliminar/"+ id,
+				dataType: "json",
+				success: function (data) {
+					round_success_noti("Matrícula Eliminada, refresca la pagina para reflejar los cambios.")
+					
+				},
+				error: function (xhr, status, data) {
+					if(xhr.status == 500) {
+						// Manejo específico para error 500
+						round_error_noti("Error del servidor: " + data);
+					}
+				}
+
+			});
+		}
+	</script>
+{% endblock %}
+
+
+

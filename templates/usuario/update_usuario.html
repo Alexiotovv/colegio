@@ -1,0 +1,9 @@
+{% extends 'base/home_newtemplate.html' %}
+{% block title %}Editar Usuario{% endblock title %}
+{% block active_us %} active {% endblock%}
+{% block form %}
+<form method="POST">{%csrf_token%}
+	{{form.as_p}}
+</form>
+	
+{% endblock %}

@@ -1,0 +1,142 @@
+{% extends 'base/home_newtemplate.html' %}
+{% block title %}Matricular{% endblock title %}
+{% block form %}
+
+		<!-- <div class="row">
+            <div class="col-6">
+                
+            </div>
+            <div class="col-6">
+                
+            </div>
+        </div> -->
+        <h6 style="text-align:center;">REGISTRO DE ALUMNO Y MATRÍCULA {{ano.Ano}}</h6>
+		
+        <form method="POST" id="formmat">{%csrf_token%}
+                    {% if guar == 'ok' %}
+                        <div class="alert border-0 border-start border-5 border-success alert-dismissible fade show py-2">
+                            <div class="d-flex align-items-center">
+                                <div class="font-35 text-success"><i class='bx bxs-check-circle'></i>
+                                </div>
+                                <div class="ms-3">
+                                    <h6 class="mb-0 text-success">Matrícula!</h6>
+                                    <div>Regitro Guardado!</div>
+                                </div>
+                            </div>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    {%endif%}
+                    
+                    {% ifnotequal  mensaje_dni '' %}
+                    <div class="alert border-0 border-start border-5 border-warning alert-dismissible fade show py-2">
+                        <div class="d-flex align-items-center">
+                            <div class="font-35 text-warning"><i class='bx bx-info-circle'></i>
+                            </div>
+                            <div class="ms-3">
+                                <h6 class="mb-0 text-warning">DNI</h6>
+                                <div>{{mensaje_dni}}</div>
+                            </div>
+                        </div>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                    {% endifnotequal %}
+
+                    <div class="row">
+                        <div class="content" id="mensajedni" style="display: none;">
+                            <div class="d-flex align-items-center" >
+                                <div class="font-35 text-warning"><i class="bx bx-info-circle"></i>
+                                </div>
+                                <div class="ms-3">
+                                    <h6 class="mb-0 text-warning">Mensaje</h6>
+                                    <div>El Dni Ingresado Ya existe</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <label>DNI</label>
+                            <input type="text" name="dni" id="dni" class="form form-control" onblur="verifica_dni()" required>
+                            
+
+                        </div>
+                        <div class="col-md-4">
+                            <label>Nombres</label>
+                            <input type="text" name="nombres" class="form form-control" required>
+                        </div>
+                        <div class="col-md-3">
+                            <label>Apellido Paterno</label>
+                            <input type="text" name="apellidopaterno" class="form form-control" required>
+                        </div>
+                        <div class="col-md-3">
+                            <label>Apellido Materno</label>
+                            <input type="text" name="apellidomaterno" class="form form-control" required>
+                        </div>
+                    <!-- sexo, fecha nacimieneto, direccion, estado se guarda por defecto en el backend -->
+                    </div>
+                    <div class="row">
+                        <div class="col-md-2">
+                            <label>Grado</label>
+                            <select name="grado" class="single-select" required>
+                                <option value="1PRIM">1PRIM</option>
+                                <option value="2PRIM">2PRIM</option>
+                                <option value="3PRIM">3PRIM</option>
+                                <option value="4PRIM">4PRIM</option>
+                                <option value="5PRIM">5PRIM</option>
+                                <option value="6PRIM">6PRIM</option>
+                                <option value="1SEC">1SEC</option>
+                                <option value="2SEC">2SEC</option>
+                                <option value="3SEC">3SEC</option>
+                                <option value="4SEC">4SEC</option>
+                                <option value="5SEC">5SEC</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <label>Seccion</label>
+                            <select name="seccion" class="single-select" required>
+                                <option value="A">A</option>
+                                <option value="B">B</option>
+                                <option value="C">C</option>
+                                <option value="D">D</option>
+                                <option value="E">E</option>
+                                <option value="F">F</option>
+                                <option value="G">G</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label>Año Académico</label>
+                            <select name="anoacademico" class="single-select" required>
+                                {% for a in lista_anos %}
+                                    <option value="{{a.id}}">{{a.Ano}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+
+        <br>
+		<button type="submit" class="btn btn-success" value="Guardar">Guardar Matrícula</button>
+		</form>
+
+        <script>
+            function verifica_dni() { 
+                
+                var serializedData = $("#formmat").serialize();
+                $.ajax({
+                    type: "POST",
+                    // url: "matricula/newmatriculaalumno/",
+                    url: "{% url 'app_verificar_dni' %}",
+                    datatype: "json",
+                    // data:$("#formMAt").serialize(),
+                    data:serializedData,
+                    success: function (contexto) {
+                        if (contexto.existe){
+                            $("#mensajedni").css("display",'');
+                        }else{
+                            $("#mensajedni").css("display",'none');
+                        }
+                        
+                    }
+                });
+                
+
+             }
+        </script>
+{% endblock %}

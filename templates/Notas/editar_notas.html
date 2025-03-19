@@ -1,0 +1,27 @@
+{% extends 'base/home_newtemplate.html' %}
+{% block title %}EditarNotas{% endblock title %}
+{% block form %}
+<h3 align="CENTER">EDITAR NOTA - {{nota.Matricula.AnoAcademico}}-{{nota.PAcademico}}</h3>
+<form method="POST">{%csrf_token%}
+<h4>Dni: {{ nota.Matricula.Alumno.DNI }}/Nombres: {{nota.Matricula.Alumno.Nombres}} {{nota.Matricula.Alumno.ApellidoPaterno}} {{nota.Matricula.Alumno.ApellidoMaterno}} - {{nota.Matricula.Grado}}° {{nota.Matricula.Nivel}} "{{nota.Matricula.Seccion}}" -{{nota.Curso}} </h4>
+<div class="row">
+	<div class="col-md-6">		
+		<label>Competencia</label>
+		{{form.Competencias}}
+		<label>Nota/Evaluación</label>
+		{{form.Nota}}
+
+	</div>
+	<div class="form-control" style="visibility:hidden">
+		{{form.Curso}}
+		{{form.Matricula}}
+		{{form.PAcademico}}
+		{{form.Docente}}
+	</div>
+
+</div>
+<br></br>
+<button type="submit" class="btn btn-success" value="Guardar">Guardar Nota</button>
+</form>
+{% endblock %}
+

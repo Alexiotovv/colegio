@@ -1,0 +1,59 @@
+{% extends 'base/home_newtemplate.html' %}
+{% block title %}BuscarNotas{% endblock title %}
+{% block form %}
+<h3 align="CENTER">BÚSQUEDA DE NOTAS </h3>
+
+<form method="POST">{%csrf_token%}
+<div class="row">
+	<div class="col-md-4">
+		<label>Seleccione Grado</label>
+		<select class="single-select" name="grado">
+			{% for g in grados_list %}
+				<option value="{{g}}">{{g}}</option>	
+			{% endfor %}
+		</select>
+	</div>	
+	<div class="col-md-4">
+		<label>Seleccione Sección</label>
+		<select class="single-select" name="seccion">
+			{% for s in secciones_list %}
+				<option value="{{s}}">{{s}}</option>	
+			{% endfor %}
+		</select>
+	</div>
+	<div class="col-md-4">
+		<label>Seleccione Año</label>
+		<select class="single-select" name="ano">
+			{% for a in ano %}
+				<option value="{{a.id}}">{{ a.Ano}}</option>
+			{% endfor %}
+		</select>
+	</div>
+	<div class="col-md-4">
+		<label>Seleccione Bimestre</label>
+		<select class="single-select" name="pacademico">
+			{% for p in paca %}
+				<option value="{{p.id}}">{{ p.Nombre}}</option>
+			{% endfor %}
+		</select>
+	</div>
+	<div class="col-md-4">
+		<label>Seleccione Curso</label>
+		<select class="single-select" name="curso">
+			{% for c in curso %}
+				<option value="{{c.Curso.id}}">{{c.Curso}}</option>
+			{% endfor %}
+		</select>
+		<br>	
+	</div>
+
+	<div class="col-md-4">
+		<br>
+		<button type="submit" class="btn btn-outline-primary">Buscar Notas</button>	
+	</div>
+	
+</div>
+<br>
+</form>
+{% endblock %}
+

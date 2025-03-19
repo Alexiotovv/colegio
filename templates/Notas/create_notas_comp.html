@@ -1,0 +1,84 @@
+{% extends 'base/home_newtemplate.html' %}
+{% block title %}Notas{% endblock title %}
+{% block form %}
+<h3 align="CENTER">REGISTRO - NOTAS -{{ano.Ano}} - {{paca.Nombre}}</h3>
+<h5>DNI: {{doce.DNI}} | Profesor: {{doce.User.first_name}}{{doce.User.last_name}}</h5>
+
+<form method="POST" id="form_selecciona">{%csrf_token%}
+	<!-- onsubmit="return valida(); iba en la parte de arriba-->
+	<div class="row">
+		<div class="col-md-4">
+			<label>Seleccione Curso</label>
+			<select class="single-select" name="curso" id="curso">
+				{% for cursos in curso_list %}
+					<option value="{{cursos.Curso.id}}">{{ cursos.Curso}}</option>
+				{% endfor %}
+			</select>
+			
+		</div>	
+		<div class="col-md-4">
+			<label>Seleccione GradoNivel</label>
+			<select class="single-select" name="grados" id="grados">
+				{% for grados in grados_list %}
+					<option value="{{grados}}">{{ grados }}</option>
+				{% endfor %}
+			</select>
+		</div>
+		<div class="col-md-4">
+			<label>Seleccione Sección</label>
+			<select class="single-select" name="secciones" id="secciones">
+				{% for secciones in secciones_list %}
+					<option value="{{secciones}}">{{ secciones }}</option>
+				{% endfor %}
+			</select>
+		</div>
+	</div>
+	<br>
+	<div class="row">
+			<div class="col-md-4">
+				<button type="submit" class="btn btn-outline-primary btnSeleccionar">Seleccionar </button>
+			</div>	
+	</div>
+</form>
+
+
+<div class="modal fade" id="MsjeModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="exampleModalLabel">Mensaje del Sistema</h5>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<div class="modal-body">
+				No es posible continuar, NO coincide los niveles del Grado y el Curso.
+			</div>
+			<div class="modal-footer" style="text-align: center;">
+				<button style="width:100%;" type="button" class="btn btn-danger" data-bs-dismiss="modal">Aceptar</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+{% endblock %}
+
+{% block js1 %}
+	<script>
+		$(document).on("click",".btnSeleccionar",function(e){
+			nivelcurso=($("#curso option:selected").text()).substr(0,3);
+			nivelgrado=($("#grados option:selected").text()).substr(1,3);	
+			if (nivelcurso=='PRI') {
+				nivelcurso='PRIM';
+			}
+			if (nivelgrado=='PRI') {
+				nivelgrado='PRIM';
+			}
+			if (nivelcurso==nivelgrado) {
+			}else{
+				e.preventDefault();
+				$("#MsjeModal").modal('show');
+			}
+		});
+
+	</script>
+{% endblock %}
+

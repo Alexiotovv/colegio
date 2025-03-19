@@ -1,0 +1,147 @@
+{% extends 'base/home_newtemplate.html' %}
+{% block title %}ImprimirAvances{% endblock title %}
+
+{% block form %}
+<h5 align="CENTER">REPORTE AVANCE DE NOTAS PRIMARIA</h5>
+<form method='POST'>{%csrf_token%}
+	<div class="row">
+		<div class="col-md-6">
+			<label>Seleccione Año</label>
+			<select class="single-select" name="Ano">
+				{% for a in aac %}
+					<option value="{{a.Ano}}">{{ a.Ano}}</option>
+				{% endfor %}
+			</select>
+		</div>
+		<div class="col-md-6">
+			<label>Seleccione Bimestre</label>
+			<select class="single-select" name="Pacademico">
+				{% for p in pac %}
+					<option value="{{p.id}}">{{ p.Nombre}}</option>
+				{% endfor %}
+			</select>
+			<br>	
+		</div>
+		<div class="col-md-6">
+			<label for="exampleSelect1">Seleccione GradoNivel</label>
+      		<select class="single-select" name="Grado">
+	        	<option value="1PRIM">1PRIM</option>
+		        <option value="2PRIM">2PRIM</option>
+		        <option value="3PRIM">3PRIM</option>
+		        <option value="4PRIM">4PRIM</option>
+		        <option value="5PRIM">5PRIM</option>
+		        <option value="6PRIM">6PRIM</option>
+      		</select>
+      	</div>
+      	<div class="col-md-6">
+			<label for="exampleSelect1">Seleccione Sección</label>
+      		<select class="single-select" name="Seccion">
+	        	<option value="A">A</option>
+		        <option value="B">B</option>
+		        <option value="C">C</option>
+		        <option value="D">D</option>
+		        <option value="E">E</option>
+		        <option value="F">F</option>
+		        <option value="G">G</option>
+      		</select>
+      	</div>
+		
+		<div class="col-md-3">
+			<label>Habilitar Filtro Pagos</label>
+			<select class="form-select" id="habilitarfiltro" name="habilitarfiltro">
+				<option value="NO">NO</option>
+				<option value="SI">SI</option>
+			</select>
+		</div>
+
+		<div class="col-md-4" style="display: none;" id="mespago">
+			<label for="exampleSelect1">Seleccione Mes Pagos</label>
+			<select class="single-select" name="pago" id="pago">
+				<option value="marzo">Marzo</option>
+				<option value="abril">Abril</option>
+				<option value="mayo">Mayo</option>
+				<option value="junio">Junio</option>
+				<option value="julio">Julio</option>
+				<option value="agosto">Agosto</option>
+				<option value="setiembre">Setiembre</option>
+				<option value="octubre">Octubre</option>
+				<option value="noviembre">Noviembre</option>
+				<option value="diciembre">Diciembre</option>
+			</select>
+		</div>
+    </div>
+
+    <div class="row">
+			<div class="col-md-6">
+			<br>		
+      			<button type="submit" class="btn btn-outline-success">Imprimir Avances</button>
+				  
+      		</div>
+    </div>
+
+</form>
+
+<form id="formPagar" method="POST">{% csrf_token %}
+	<div class="card">
+		<div class="card-body">
+			<div class="row">
+				<div class="col-md-6">
+					<label for="">Seleccione un alumno y registre su pago</label>
+					<select name="Dni" id="Dni" class="single-select">
+						<option value="--">--</option>
+						{% for a in alumnos%}
+							<option value="{{a.Alumno.DNI}}">{{a.Alumno.DNI}}-{{a}}</option>
+						{% endfor %}
+					</select>
+				</div>
+				
+				<div class="col-md-3">
+					<label for="">Seleccione Mes de Pago</label>
+					<select class="single-select" name="pago_mes" id="pago_mes">
+						<option value="--">--</option>
+						<option value="marzo">Marzo</option>
+						<option value="abril">Abril</option>
+						<option value="mayo">Mayo</option>
+						<option value="junio">Junio</option>
+						<option value="julio">Julio</option>
+						<option value="agosto">Agosto</option>
+						<option value="setiembre">Setiembre</option>
+						<option value="octubre">Octubre</option>
+						<option value="noviembre">Noviembre</option>
+						<option value="diciembre">Diciembre</option>
+					</select>
+				</div>
+				<div class="col-md-3">
+					<label>Seleccione Año</label>
+					<select class="single-select" name="pago_ano" id="pago_ano">
+						{% for a in aac %}
+							<option value="{{a.Ano}}">{{ a.Ano}}</option>
+						{% endfor %}
+					</select>
+				</div>
+	
+				<div class="col-md-3">
+					<br>
+					<button class="btn btn-danger" id="btnPagar">Pagar</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	</form>
+
+
+
+{% endblock %}
+
+{% block js1 %}
+	<script>
+		$("#habilitarfiltro").on('change', function() {
+			if ($(this).val()=='SI') {				
+				$("#mespago").css('display','');
+			}else{
+				$("#mespago").css('display','none');
+			}
+		});
+	</script>
+	<script src="../../static/apps/pagos_avances.js"></script>
+{% endblock %}

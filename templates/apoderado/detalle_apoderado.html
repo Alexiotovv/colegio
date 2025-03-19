@@ -1,0 +1,51 @@
+{% extends 'base/home.html' %}
+{% block title %}Detalle Apoderado{% endblock title %}
+{% block active_ap %}active{%endblock%}
+{% block form %}
+<form method="post">
+	{% csrf_token %}
+<div class="container">
+	<div>
+			<h3>Detalle del Apoderado</h3>
+	</div>
+		<table class="table table-hover">
+		  <tbody>
+		  	    <tr>
+			      	<td>Id</td>
+			      	<td>{{object.id}}</td>
+			    </tr>
+		  	    <tr>
+			      	<td>Nombres</td>
+			      	<td>{{object.Nombres}}</td>
+			    </tr>	
+		  	    <tr>
+			      	<td>Apellido Paterno</td>
+			      	<td>{{object.ApellidoPaterno}}</td>
+			    </tr>	
+		      	<tr>
+			      	<td>Apellido Materno</td>
+			      	<td>{{object.ApellidoMaterno}}</td>
+			    </tr>
+			    <tr>
+			      	<td>Dirección</td>
+			      	<td>{{object.Direccion}}</td>
+			    </tr>
+			    <tr>
+			      	<td>Sexo</td>
+			      	<td>{{object.Sexo}}</td>
+			    </tr>
+			    <tr>
+			      	<td>Teléfono</td>
+			      	<td>{{object.Telefono}}</td>
+			    </tr>
+			    <tr>
+			      	<td>Correo Eléctronico</td>
+			      	<td>{{object.Email}}</td>
+			    </tr>
+		  </tbody>
+		</table>
+		<a class="btn btn-warning" href="{% url 'app_apoderado_editar' object.id %}">Editar Apoderado</a>
+</div>	
+</form>
+	
+{% endblock %}

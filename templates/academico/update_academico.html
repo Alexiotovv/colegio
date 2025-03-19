@@ -1,0 +1,15 @@
+{% extends 'base/home_newtemplate.html' %}
+{% block title %}Actualizar Año Academico{% endblock %}
+{%block active_ac%}active{%endblock%}
+{% block form %}
+<div class="col-md-10">
+	<form action="" id="formularioAlumno" method="POST">
+		{% csrf_token %}
+		<h3>Registro de Año Académico</h3>
+		{{form.as_p}}		
+		<br>	
+	    	<button type="submit" class="btn btn-success" value="Guardar">Guardar Año</button>
+	</form>
+</div>
+
+{% endblock %}

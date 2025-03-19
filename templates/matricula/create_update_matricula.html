@@ -1,0 +1,47 @@
+{% extends 'base/home_newtemplate.html' %}
+{% block title %}Matricular{% endblock title %}
+{% block active_ma %} active {% endblock%}
+{% block form %}	
+	<div class="col-sm-9">
+		<div class="text" text align="center">
+			<h3>Actualizar Matrícula</h3>
+		</div>
+			<form action="" method="POST">{% csrf_token %}		
+			<div class="form-group">
+				<label for="text">Alumno</label>
+				<div class="form-group">
+					{{form.Alumno}}	
+				</div>
+			</div>
+
+			<div class="form-group">
+				<label for="text">Año Académico</label>
+				<div class="form-group">
+					{{form.AnoAcademico}}	
+				</div>
+			</div>
+			<div class="form-group">
+				<label for="text">Grado</label>
+				<div class="form-group">
+					{{form.Grado}}	
+				</div>
+			</div>
+			<div class="form-group">
+				<label for="text">Sección</label>
+				<div class="form-group">
+					{{form.Seccion}}
+				</div>
+			</div>
+			<div class="form-group">
+				<label for="Date">Fecha Matrícula</label>
+				<div class="form-group" type="Date">
+					{{form.FechaMat}}
+				</div>
+			</div>
+				<br>
+				<button type="submit" class="btn btn-success" value="Guardar">Guardar Matrícula</button>
+			</form>
+		</div>
+
+
+{% endblock %}

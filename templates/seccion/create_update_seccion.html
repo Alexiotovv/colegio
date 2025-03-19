@@ -1,0 +1,14 @@
+{% extends 'base/home.html' %}
+{% block title %}Registrar Sección{% endblock %}
+{% block active_se %}active{%endblock%}
+{% block form %}
+<div class="col-md-12">
+	<form action="" method="POST">
+		{% csrf_token %}
+		<h3>Registro de Sección</h3>
+		{{form.as_p}}			
+	    <button type="submit" class="btn btn-success" value="Guardar">Guardar Sección</button>
+	</form>
+</div>
+
+{% endblock %}

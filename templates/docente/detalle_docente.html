@@ -1,0 +1,68 @@
+{% extends 'base/home_newtemplate.html' %}
+{% block title %}DetalleDocente{% endblock title %}
+
+{% block form %}
+
+<form method="post">
+	{% csrf_token %}
+<div class="container">
+	<div>
+			<h3>Detalle de Docente</h3>
+	</div>
+
+		<table class="table table-hover">
+		  <tbody>
+		  	    <tr>
+			      	<td>Id</td>
+			      	<td>{{object.id}}</td>
+			    </tr>
+		  	    <tr>
+			      	<td>Dni</td>
+			      	<td>{{object.DNI}}</td>
+			    </tr>	
+		  	    <tr>
+			      	<td>Nombres</td>
+			      	<td>{{object.User.first_name}}</td>
+			    </tr>	
+		      	<tr>
+			      	<td>Apellido Paterno</td>
+			      	<td>{{object.User.last_name}}</td>
+			    </tr>
+			    <tr>
+			      	<td>GradoNivel</td>
+			      	<td>{{object.GradoNivel}}</td>
+			    </tr>
+			    <tr>
+			      	<td>Sección</td>
+			      	<td>{{object.Seccion}}</td>
+			    </tr>
+			    <tr>
+			      	<td>Dirección</td>
+			      	<td>{{object.Direccion}}</td>
+			    </tr>	
+			    <tr>
+			      	<td>Fecha de Nacimiento</td>
+			      	<td>{{object.FechaNacimiento}}</td>
+			    </tr>	
+			    <tr>
+			      	<td>Sexo</td>
+			      	<td>{{object.Sexo}}</td>
+			    </tr>
+			    <tr>
+			      	<td>Telefono</td>
+			      	<td>{{object.Telefono}}</td>
+			    </tr>
+			    
+			    <tr>
+			      	<td>Email</td>
+			      	<td>{{object.Email}}</td>
+			    </tr>
+		  </tbody>
+		</table>
+		<a class="btn btn-warning" href="{% url 'app_docente_editar' object.id %}">Editar Docente</a>
+</div>
+		
+	
+</form>
+	
+{% endblock %}

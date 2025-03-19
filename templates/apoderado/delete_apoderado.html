@@ -1,0 +1,25 @@
+{% extends 'base/home.html' %}
+{% block title %}EliminarApoderado{% endblock %}
+{% block active_ap %}active{%endblock%}
+{% block form %}
+<form method="post">
+	{% csrf_token %}
+	<div class="container">
+		<div class="card border-primary mb-3" style="max-width: 40rem;">
+  			<div class="card-header">Eliminar Apoderado </div>
+	  		<div class="card-body">
+	    		<h4 class="card-title">Eliminar Apoderado !!</h4>
+	    		<p class="card-text">Está a punto de eliminar al apoderado(a) {{object.Nombres}} {{object.ApellidoPaterno}} {{object.ApellidoMaterno}}. Esta Operación es irreversible, por favor si no esta seguro, haga clic en No, Deseo Salir.</p>
+				<div class="btn-group" role="role-group">
+					<button class="btn btn-danger" type="submit">Si, Eliminar</button>
+				</div>	
+				<div class="btn-group" role="role-group">
+					<a class="btn btn-primary" href="{% url 'app_alumno_listar' %}">No, Deseo Salir</a>
+				</div>	
+			</div>	
+		</div>	
+	</div>
+
+</form>
+
+{% endblock %}
