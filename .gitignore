@@ -2,3 +2,4 @@ colegio/settings.py
 *.tmp
 **/__pycache__/
 *.py.swo
+requirements.txt
