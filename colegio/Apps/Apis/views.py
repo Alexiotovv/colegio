@@ -4,6 +4,40 @@ from django.shortcuts import render
 from colegio.Apps.Matricula.models import Matricula
 from colegio.Apps.Docente.models import Docente
 from django.db.models import F,Q
+from datetime import datetime
+
+
+def BuscarAlumno(request,dni):
+    # anho_actual= datetime.today().year
+    anho_actual= '2024'
+    matricula = list(Matricula.objects.filter(
+        AnoAcademico__Ano=anho_actual,
+        Alumno__Estado='A',
+        Alumno__DNI=dni
+    ).values(
+        'Alumno__DNI',
+        'Alumno__ApellidoPaterno',
+        'Alumno__ApellidoMaterno',
+        'Alumno__Nombres',
+        'Grado',
+        'Seccion'
+    ).annotate(
+        Dni=F('Alumno__DNI'),
+        ApellidoPaterno=F('Alumno__ApellidoPaterno'),
+        ApellidoMaterno=F('Alumno__ApellidoMaterno'),
+        Nombres=F('Alumno__Nombres'),
+    ).values(
+        'Dni',
+        'ApellidoPaterno',
+        'ApellidoMaterno',
+        'Nombres',
+        'Grado',
+        'Seccion',
+    )
+    )
+    return JsonResponse(matricula,safe=False)
+
+
 
 def ListarMatriculados(request,anho):
     tutores= Docente.objects.exclude(
