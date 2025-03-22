@@ -1,0 +1,143 @@
+{% extends 'base/home_newtemplate.html' %}
+{% block title %}Inicio{%endblock%}
+
+
+
+{% block form %}
+		<div class="col-md-12">
+      <form id="formBuscarMatriculados">
+        {%csrf_token%}
+        <div class="row">
+            <div class="col-xl-4">
+                <label for="" class="form-label">Grado</label>
+                <select class="single-select" name="gradoFilter" id="gradoFilter">
+                    <option value="">--</option>  
+                    <option value="1PRIM">1PRIM</option>
+                    <option value="2PRIM">2PRIM</option>
+                    <option value="3PRIM">3PRIM</option>
+                    <option value="4PRIM">4PRIM</option>
+                    <option value="5PRIM">5PRIM</option>
+                    <option value="6PRIM">6PRIM</option>
+                    <option value="1SEC">1SEC</option>
+                    <option value="2SEC">2SEC</option>
+                    <option value="3SEC">3SEC</option>
+                    <option value="4SEC">4SEC</option>
+                    <option value="5SEC">5SEC</option>
+                </select>
+            </div>
+            <div class="col-xl-4">
+                <label for="" class="form-label">Sección</label>
+                <select class="single-select" name="seccionFilter" id="seccionFilter">
+                    <option value="">--</option>
+                    <option value="A">A</option>
+                    <option value="B">B</option>
+                    <option value="C">C</option>
+                    <option value="D">D</option>
+                    <option value="E">E</option>
+                    <option value="F">F</option>
+                </select>
+            </div>
+            <div class="col-xl-4">
+                <label for="" class="form-label">Año Académico</label>
+                <!-- <select class="single-select" name="anhoFilter" id="anhoFilter">
+                    {% for a in anoacademico %}
+                        <option value="{{a.id}}">{{a.Ano}}</option>
+                    {% endfor %} -->
+                </select>
+            </div>
+        </div>
+        <br>
+
+        <button class="btn btn-info btn-sm" id="filtrarBtn">Filtrar</button>
+
+      </form>
+
+
+      <br>
+      <table id="justificacionesTabla" class="table table-striped table-bordered" style="width:100%">
+          <thead>
+              <tr>
+                  <th>Id</th>
+                  <th>Dni</th>
+                  <th>Nombre</th>
+                  <th>Grado</th>
+                  <th>Sección</th>
+                  <th>Descripcion</th>
+                  <th>Evidencia</th>
+                  <th>FechaSolicitud</th>
+                  
+              </tr>
+          </thead>
+
+      </table>
+		</div>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <script>
+
+      $(document).ready(function() {
+            function cargarTabla(grado = '', seccion = '') {
+                $('#justificacionesTabla').DataTable({
+                    "destroy": true, // Permite recargar la tabla
+                    "ajax": {
+                    "url": `/whatsapp/justificaciones/?gradoFilter=${grado}&seccionFilter=${seccion}`,
+
+                        "type": "GET",
+                        "dataSrc": "results", // Extrae solo la lista de justificaciones
+                        "data": function (d) {
+                            d.grado = grado;
+                            d.seccion = seccion;
+                        }
+                    },
+                    "columns": [
+                        { "data": "id" },
+                        { "data": "dni" },
+                        { "data": "nombre" },
+                        { "data": "grado" },
+                        { "data": "seccion" },
+                        { "data": "descripcion" },
+                        { 
+                            "data": "foto_url",
+                            "render": function(data) {
+                                return `<a href="${data}" target="_blank">Ver Evidencia</a>`;
+                            }
+                        },
+                        { 
+                            "data": "hora_actual",
+                            "render": function(data) {
+                                return new Date(data).toLocaleString();
+                            }
+                        }
+                    ],
+                     "dom": 'Bfrtip', // Agrega botones de exportación
+                      "buttons": [
+                          {
+                              extend: 'excelHtml5',
+                              text: 'Exportar a Excel',
+                              filename: 'Justificaciones',
+                              title: 'Lista de Justificaciones',
+                              className: 'btn btn-success',
+                              exportOptions: {
+                                  columns: ':visible' // Exporta solo las columnas visibles
+                              }
+                          }
+                      ],
+                    
+                });
+            }
+
+            // Cargar la tabla sin filtros al inicio
+            cargarTabla();
+
+            // Evento de filtro
+            
+            $("#filtrarBtn").click(function(e) {
+                e.preventDefault()
+                let grado = $("#gradoFilter").val();
+                let seccion = $("#seccionFilter").val();
+                cargarTabla(grado, seccion);
+            });
+        });
+    </script>
+{% endblock %}
+
