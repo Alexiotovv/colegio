@@ -8,7 +8,7 @@ from datetime import datetime
 
 
 def BuscarAlumno(request,dni):
-    anho_actual= datetime.today().year - 1
+    anho_actual= datetime.today().year - 1 # despues quitar el 1
     
     matricula = list(Matricula.objects.filter(
         AnoAcademico__Ano=anho_actual,

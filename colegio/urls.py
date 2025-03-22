@@ -41,5 +41,6 @@ urlpatterns = [
     path('', include('colegio.Apps.LibretaAvance.urls')),
     path('', include('colegio.Apps.Pagos.urls')),
     path('', include('colegio.Apps.Apis.urls')),
+    path('', include('colegio.Apps.ServiciosExternos.urls')),
     path('', include('django.contrib.auth.urls')), #new
 ]

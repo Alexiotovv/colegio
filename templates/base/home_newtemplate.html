@@ -242,6 +242,22 @@
         </ul>
       </li>
       {% endif %}
+
+      {% if group.name == 'Administrador' or group.name == 'Asistente'%}
+        <li>
+          <a href="javascript:;" class="has-arrow">
+            <div class="parent-icon"><i class="lni lni-layers"></i>
+            </div>
+            <div class="menu-title">Justificación Asist.</div>
+          </a>
+          <ul>
+              {% comment %} {% url 'whats.asist.justificadas' %} {% endcomment %}
+            <li> <a href="#"><i class="bx bx-right-arrow-alt"></i>Listar Justificaciones</a>
+            </li>
+          </ul>
+        </li>
+      {% endif %}
+
           {% endfor %}
     </ul>
     <!--end navigation-->

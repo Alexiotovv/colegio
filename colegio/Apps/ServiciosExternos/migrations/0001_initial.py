@@ -12,10 +12,12 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='Grado',
+            name='AccesosExternos',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('Nombre', models.CharField(max_length=20)),
+                ('nombre', models.CharField(max_length=255, unique=True)),
+                ('url', models.URLField(max_length=500)),
+                ('token', models.CharField(max_length=500)),
             ],
         ),
     ]
