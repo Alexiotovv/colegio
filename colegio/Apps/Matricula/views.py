@@ -6,7 +6,7 @@ from django.shortcuts import render, redirect
 from colegio.Apps.Matricula.models import Matricula
 from colegio.Apps.Alumno.models import Alumno
 from colegio.Apps.AnoAcademico.models import AnoAcademico
-
+from django.core.files.storage import FileSystemStorage
 # from django.contrib import messages
 # from django.http import HttpResponse
 from django.views.generic import CreateView,  DetailView, DeleteView, UpdateView
@@ -22,7 +22,7 @@ from colegio.Apps.Matricula.functions.functions import handle_uploaded_file
 
 from openpyxl import Workbook, load_workbook
 from django.shortcuts import get_object_or_404
-
+import pandas as pd
 
 def MatriculaPrincipal(request):
 	return render(request,'matricula/matricula_principal.html')
@@ -113,113 +113,64 @@ def NewMatriculaAlumno(request):
 		contexto={'lista_anos':lista_anos,'guar':guar,'mensaje_dni':mensaje_dni}
 		return render(request,'matricula/new_matricula_alumno.html',contexto)
 
-
 def ImportarArchivo(request):
-	num=1
 	if request.method=='POST':
 		file=ImportFile(request.POST,request.FILES)	
 		if file.is_valid():
-			nombre_archivo=str(request.FILES['file'])
-			if nombre_archivo=="Formato_Importacion_Matricula.xlsx":
-				ruta = "/var/www/vhosts/colegio_venv/colegio/static/upload/Formato_Importacion_Matricula.xlsx"
-				# ruta = "static/upload/Formato_Importacion_Matricula.xlsx"
-				handle_uploaded_file(request.FILES['file'],ruta)
-				
-				Libro = load_workbook(ruta)
-				Hoja1 = Libro.active
-				
-				C1=Hoja1["A1"].value
-				C2=Hoja1["B1"].value
-				C3=Hoja1["C1"].value
-				C4=Hoja1["D1"].value
-				C5=Hoja1["E1"].value
-				C6=Hoja1["F1"].value
-				C7=Hoja1["G1"].value
-				C8=Hoja1["H1"].value
-				C9=Hoja1["I1"].value
-				C10=Hoja1["J1"].value
-				C11=Hoja1["K1"].value
-				C12=Hoja1["L1"].value
+			nombre_archivo=request.FILES['file']
+			fs = FileSystemStorage()
+			filename = fs.save(nombre_archivo.name, nombre_archivo)
+			file_path = fs.path(filename)
+			df=pd.read_excel(file_path, engine="openpyxl")
+			dni_list = df['DNI'].astype(str).str.strip().str.zfill(8).tolist()
 
-				reg=Hoja1["E2"].value
-				resultado= ""
-				#1. Primero Prueba la plantilla del excel si es el corecto
-				if CompruebaExcel(C1,C2,C3,C4,C5,C6,C7,C8,C9,C10,C11,C12):
-					#2. Comprueba si hay registros
-					if CompruebaRegistros(reg):
-						sigue=True
-						celdavacia=False
-						while sigue:
-							num=num+1
-							dato=Hoja1["E"+str(num)].value
-							if dato==None:
-								sigue=False
-							else:
-								m1=Hoja1["A"+str(num)].value
-								m2=Hoja1["B"+str(num)].value
-								m3=Hoja1["C"+str(num)].value
-								m4=Hoja1["D"+str(num)].value
-								m5=Hoja1["E"+str(num)].value
-								m6=Hoja1["F"+str(num)].value
-								m7=Hoja1["G"+str(num)].value
-								m8=Hoja1["H"+str(num)].value
-								m9=Hoja1["I"+str(num)].value
-								m10=Hoja1["J"+str(num)].value
-								m11=Hoja1["K"+str(num)].value
-								m12=Hoja1["L"+str(num)].value
-								if CompruebaCeldasVacias(m1,m2,m3,m4,m5,m6,m7,m8,m9,m10,m11,m12):
-									resultado=resultado + ", Existen Celdas Vacías, revise por favor"
-									break
-								if nombre_archivo!='Formato_Importacion_Matricula.xlsx':
-									resultado=resultado + ", El nombre del Archivo, no es el Correcto"
-									break
+			no_registrados=0
+			registrados=0
+			ultimo_ano = AnoAcademico.objects.last()
+
+			if len(dni_list)>0:
+			# 	#Aquí se hara la importación a la base de datos
+				for index, row in df.iterrows():
+					print("entro al for del dataframe")
+					dni = str(row['DNI']).strip()
+					Nombres = row['Nombres']
+					ApellidoPaterno = row['ApellidoPaterno']
+					ApellidoMaterno = row['ApellidoMaterno']
+					Direccion = row['Direccion']
+					FechaNacimiento = row['FechaNacimiento']
+					Sexo = row['Sexo']
+					Grado=row['Grado']
+					Seccion=row['Seccion']
+					FechaMat=row['FechaMat']
+					# Solo guardar si no existe ya en la base de datos
+					if not Alumno.objects.filter(DNI=dni).exists():	
+						registrados+=1
+						alumno = Alumno.objects.create(
+							Nombres=Nombres,
+							ApellidoPaterno=ApellidoPaterno,
+							ApellidoMaterno=ApellidoMaterno,
+							Direccion=Direccion,
+							FechaNacimiento=FechaNacimiento,
+							Sexo=Sexo,
+							DNI=dni,
+							Estado='A'
+						)
+						Matricula.objects.create(
+							Alumno=alumno,
+							AnoAcademico=ultimo_ano,
+							Grado=Grado,
+							Seccion=Seccion,
+							FechaMat=FechaMat
+						)
 					else:
-						resultado="No hay Registro en la primera Fila para Importar"
-				else:
-					resultado="Al parecer no está usando la plantilla o ha sido modificado"
+						no_registrados+=1
+						
+				Alumno.objects.filter(Estado='A').update(Estado='R')
+				Alumno.objects.filter(DNI__in=dni_list).update(Estado='A')
+				cantidad_dnis = len(dni_list)
+				resultado=f"Se importaron {registrados} registros correctamente. No se importaron {no_registrados} registros. Cantidad de Alumnos Estado=Activo: {cantidad_dnis}"
 				
-				#Desde Aquí se Hará la importación
-				no_registrados=0
-				if resultado=='':
-					#Aquí se hara la importación a la base de datos
-					###AQUIIIIIIIIII###
-					
-					for x in range(2,num):
-						alu=Alumno()
-						if (str(alu.DNI)==str(Hoja1["E"+str(x)].value)):
-							no_registrados=no_registrados+1
-						else:
-							alu.ApellidoPaterno=Hoja1["A"+str(x)].value
-							alu.ApellidoMaterno=Hoja1["B"+str(x)].value
-							alu.Nombres=Hoja1["C"+str(x)].value
-							alu.Direccion=Hoja1["D"+str(x)].value
-							alu.DNI=Hoja1["E"+str(x)].value
-							alu.FechaNacimiento=Hoja1["F"+str(x)].value
-							alu.Sexo=Hoja1["G"+str(x)].value
-							alu.Estado=Hoja1["H"+str(x)].value
-							alu.save()
-							ult_reg_alu=Alumno.objects.last()
-							
-							mat=Matricula()
-							
-							alu=Alumno()
-							alu.id=ult_reg_alu.id
-							mat.Alumno=alu#Llave foránea Instanceada de ALumno
-							
-							aaca=AnoAcademico.objects.get(Ano=Hoja1["I"+str(x)].value)
-							aac=AnoAcademico()
-							aac.id=aaca.id
-							mat.AnoAcademico= aaca
-
-							mat.Grado= Hoja1["J"+str(x)].value
-							mat.Seccion= Hoja1["K"+str(x)].value
-							mat.FechaMat= Hoja1["L"+str(x)].value
-							mat.save()
-
-					resultado="Los regitros se importaron Correctamente. Alumnos no registrados: "+ str(no_registrados)+ " (alumnos ya existen.)"
-				Libro.save(ruta)
-			else:
-				resultado="Nombre de Archivo Incorrecto"
+				fs.delete(filename)
 			context={'resultado':resultado}
 			return render(request,'matricula/mensaje_importado.html',context)
 	else:

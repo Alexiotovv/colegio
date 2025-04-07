@@ -2,4 +2,6 @@ colegio/settings.py
 *.tmp
 **/__pycache__/
 *.py.swo
+**/migrations/*
 requirements.txt
+colegio/static/
