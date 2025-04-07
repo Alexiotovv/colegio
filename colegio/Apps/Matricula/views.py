@@ -23,6 +23,7 @@ from colegio.Apps.Matricula.functions.functions import handle_uploaded_file
 from openpyxl import Workbook, load_workbook
 from django.shortcuts import get_object_or_404
 import pandas as pd
+from django.conf import settings
 
 def MatriculaPrincipal(request):
 	return render(request,'matricula/matricula_principal.html')
@@ -118,7 +119,8 @@ def ImportarArchivo(request):
 		file=ImportFile(request.POST,request.FILES)	
 		if file.is_valid():
 			nombre_archivo=request.FILES['file']
-			fs = FileSystemStorage()
+			fs = FileSystemStorage(location=settings.MEDIA_ROOT)
+			
 			filename = fs.save(nombre_archivo.name, nombre_archivo)
 			file_path = fs.path(filename)
 			df=pd.read_excel(file_path, engine="openpyxl")
