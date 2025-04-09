@@ -259,16 +259,16 @@ def ConsolidadoNotas(request):
 		############################################3
 		if str(nivel).find("PRIM")!= -1:
 			if final == '0':
-				return redirect("https://colcoopcv.com/media/files/PLANTILLA_LIBRETA_PRIMARIA.xlsx")
+				return redirect("https://colcoopcv.com/static/files/PLANTILLA_LIBRETA_PRIMARIA.xlsx")
 				# return redirect("/static/files/PLANTILLA_LIBRETA_PRIMARIA.xlsx")
 			else:
-				return redirect("https://colcoopcv.com/media/files/PLANTILLA_LIBRETA_PRIMARIA_R.xlsx")
+				return redirect("https://colcoopcv.com/static/files/PLANTILLA_LIBRETA_PRIMARIA_R.xlsx")
 				# return redirect("/static/files/PLANTILLA_LIBRETA_PRIMARIA_R.xlsx")
 		else:
 			if final=='0' and registrar_orden_merito=='on':
 				return redirect('app_consolidado_libretas')
 			else:
-				return redirect("https://colcoopcv.com/media/files/PLANTILLA_LIBRETA_SECUNDARIA.xlsx")
+				return redirect("https://colcoopcv.com/static/files/PLANTILLA_LIBRETA_SECUNDARIA.xlsx")
 				# return redirect("/static/files/PLANTILLA_LIBRETA_SECUNDARIA.xlsx")
 
 	else:
@@ -707,7 +707,7 @@ def EstadoValor(obj):
 def InsertaNotasEnExcel(consolidado_notas,matriculas,nivel,gradonivel,seccion,periodo,cursos,registrar_orden_merito,idusuario,paca):
 	#LIMPIANDO TODAS LAS CELDAS################
 	if str(nivel)=='SEC':
-		Ruta = "/var/www/vhosts/colegio_venv/colegio/media/files/PLANTILLA_LIBRETA_SECUNDARIA.xlsx"
+		Ruta = "/var/www/vhosts/colegio_venv/colegio/static/files/PLANTILLA_LIBRETA_SECUNDARIA.xlsx"
 		# Ruta = "static/files/PLANTILLA_LIBRETA_SECUNDARIA.xlsx"
 		columnas_excluir=[8,12,16,20,23,27,30,34,37,41,43,60]#columnas a exluir de la limpieza x k contiene la fórmula
 		columnas_notas=[4,5,6,7,9,10,11,13,14,15,17,18,19,21,22,24,25,26,28,29,31,32,33,35,36,38,39,40,42]
@@ -768,7 +768,7 @@ def InsertaNotasEnExcel(consolidado_notas,matriculas,nivel,gradonivel,seccion,pe
 		if registrar_orden_merito=='on':
 			funcion_registrar_orden_merito(Ruta,idusuario,paca)
 	else:
-		Ruta = "/var/www/vhosts/colegio_venv/colegio/media/files/PLANTILLA_LIBRETA_PRIMARIA.xlsx"
+		Ruta = "/var/www/vhosts/colegio_venv/colegio/static/files/PLANTILLA_LIBRETA_PRIMARIA.xlsx"
 		# Ruta = "static/files/PLANTILLA_LIBRETA_PRIMARIA.xlsx"
 
 		Libro =load_workbook(Ruta)			
@@ -816,7 +816,7 @@ def InsertaNotasEnExcel(consolidado_notas,matriculas,nivel,gradonivel,seccion,pe
 def InsertaNotasEnExcelPromedio(consolidado_notas,matriculas,nivel,gradonivel,seccion,periodo,cursos,registrar_orden_merito,idusuario,paca):
 	#LIMPIANDO TODAS LAS CELDAS################
 	if str(nivel)=='SEC':		
-		Ruta = "/var/www/vhosts/colegio_venv/colegio/media/files/PLANTILLA_LIBRETA_SECUNDARIA_R.xlsx"
+		Ruta = "/var/www/vhosts/colegio_venv/colegio/static/files/PLANTILLA_LIBRETA_SECUNDARIA_R.xlsx"
 
 		# Ruta_notas = "static/files/PLANTILLA_LIBRETA_SECUNDARIA.xlsx"
   		# Ruta = "static/files/PLANTILLA_LIBRETA_SECUNDARIA_R.xlsx" 
@@ -944,7 +944,7 @@ def InsertaNotasEnExcelPromedio(consolidado_notas,matriculas,nivel,gradonivel,se
 		# 		NotasComp.objects.bulk_create([NotasComp(**registro) for registro in nuevos_registros])
 		
 	else:
-		Ruta = "/var/www/vhosts/colegio_venv/colegio/media/files/PLANTILLA_LIBRETA_PRIMARIA_R.xlsx"
+		Ruta = "/var/www/vhosts/colegio_venv/colegio/static/files/PLANTILLA_LIBRETA_PRIMARIA_R.xlsx"
 		# Ruta = "static/files/PLANTILLA_LIBRETA_PRIMARIA_R.xlsx"
 		Libro =load_workbook(Ruta)			
 		Hoja1 = Libro.active

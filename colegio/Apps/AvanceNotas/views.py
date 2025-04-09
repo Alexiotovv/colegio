@@ -141,10 +141,10 @@ def ConsolidadoAvances(request):
 		InsertaNotasEnExcel(consolidado_notas,matriculas,nivel,gradonivel,seccion,periodo,cursos)#funcion que coloca las notas en el excel se encuentra mas abajo
 		############################################3
 		if str(nivel).find("PRIM")!= -1:
-			return redirect("https://colcoopcv.com/media/files/PLANTILLA_AVANCE_PRIMARIA.xlsx")
+			return redirect("https://colcoopcv.com/static/files/PLANTILLA_AVANCE_PRIMARIA.xlsx")
 			#return redirect("/static/files/PLANTILLA_AVANCE_PRIMARIA.xlsx")
 		else:
-			return redirect("https://colcoopcv.com/media/files/PLANTILLA_AVANCE_SECUNDARIA.xlsx")
+			return redirect("https://colcoopcv.com/static/files/PLANTILLA_AVANCE_SECUNDARIA.xlsx")
 			#return redirect("/static/files/PLANTILLA_AVANCE_SECUNDARIA.xlsx")
 	else:
 		contexto={'aac':aac,'pac':pac}
@@ -471,7 +471,7 @@ def DeleteAvanceNotasxCurso(request):
 	
 def InsertaNotasEnExcel(consolidado_notas,matriculas,nivel,gradonivel,seccion,periodo,cursos):
 	if str(nivel)=='SEC':		
-		Ruta = "/var/www/vhosts/colegio_venv/colegio/media/files/PLANTILLA_AVANCE_SECUNDARIA.xlsx"
+		Ruta = "/var/www/vhosts/colegio_venv/colegio/static/files/PLANTILLA_AVANCE_SECUNDARIA.xlsx"
 		#Ruta = "static/files/PLANTILLA_AVANCE_SECUNDARIA.xlsx"
 		Libro =load_workbook(Ruta)			
 		Hoja1 = Libro.active
@@ -516,7 +516,7 @@ def InsertaNotasEnExcel(consolidado_notas,matriculas,nivel,gradonivel,seccion,pe
 		Libro.save(Ruta)
 	else:
 		#Ruta de Primaria
-		Ruta = "/var/www/vhosts/colegio_venv/colegio/media/files/PLANTILLA_AVANCE_PRIMARIA.xlsx"
+		Ruta = "/var/www/vhosts/colegio_venv/colegio/static/files/PLANTILLA_AVANCE_PRIMARIA.xlsx"
 		#Ruta = "static/files/PLANTILLA_AVANCE_PRIMARIA.xlsx"
 		Libro =load_workbook(Ruta)			
 		Hoja1 = Libro.active
