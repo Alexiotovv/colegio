@@ -70,18 +70,18 @@ def ImprimirResumenAnual(request):
 		
 		if str(grado).find("PRIM")!= -1:			
 			#Ruta de Primaria
-			Ruta = "/var/www/vhosts/colegio_venv/colegio/static/files/RESUMEN_FINAL_PRIMARIA.xlsx"
-			#Ruta = "static/files/RESUMEN_FINAL_PRIMARIA.xlsx"
+			Ruta = "/var/www/vhosts/colegio_venv/colegio/media/files/RESUMEN_FINAL_PRIMARIA.xlsx"
+			#Ruta = "media/files/RESUMEN_FINAL_PRIMARIA.xlsx"
 		else:
 			#Ruta de Secundaria 1SEC, 2SEC, 3SEC,4SEC
 			if str(grado).find("1SEC")!= -1 or str(grado).find("2SEC")!= -1 or str(grado).find("3SEC")!= -1 or str(grado).find("4SEC")!= -1:
-				Ruta = "/var/www/vhosts/colegio_venv/colegio/static/files/RESUMEN_FINAL_SECUNDARIA_1_2.xlsx"
-				#Ruta = "static/files/RESUMEN_FINAL_SECUNDARIA_1_2.xlsx"
+				Ruta = "/var/www/vhosts/colegio_venv/colegio/media/files/RESUMEN_FINAL_SECUNDARIA_1_2.xlsx"
+				#Ruta = "media/files/RESUMEN_FINAL_SECUNDARIA_1_2.xlsx"
 			else:
 				#Ruta de 5SEC
 				#var/www/vhosts/colegio
-				Ruta = "/var/www/vhosts/colegio_venv/colegio/static/files/RESUMEN_FINAL_SECUNDARIA.xlsx"
-				#Ruta = "static/files/RESUMEN_FINAL_SECUNDARIA.xlsx"
+				Ruta = "/var/www/vhosts/colegio_venv/colegio/media/files/RESUMEN_FINAL_SECUNDARIA.xlsx"
+				#Ruta = "media/files/RESUMEN_FINAL_SECUNDARIA.xlsx"
 		Libro = load_workbook(Ruta)
 		Hoja1 = Libro.active
 		Hoja1["B2"]=""
@@ -692,15 +692,15 @@ def ImprimirResumenAnual(request):
 		Libro.save(Ruta)
 		#Aqui poner si es primaria o secundaria para que redirija a la descarga jeje
 		if str(grado).find("PRIM")!= -1:
-			return redirect("http://colcoopcv.com/static/files/RESUMEN_FINAL_PRIMARIA.xlsx")
-			#return redirect("http://localhost:8000/static/files/RESUMEN_FINAL_PRIMARIA.xlsx")
+			return redirect("http://colcoopcv.com/media/files/RESUMEN_FINAL_PRIMARIA.xlsx")
+			#return redirect("http://localhost:8000/media/files/RESUMEN_FINAL_PRIMARIA.xlsx")
 		else:
 			if str(grado).find("1SEC")!= -1 or str(grado).find("2SEC")!= -1 or str(grado).find("3SEC")!= -1 or str(grado).find("4SEC")!= -1:
-				return redirect("http://colcoopcv.com/static/files/RESUMEN_FINAL_SECUNDARIA_1_2.xlsx")
-				#return redirect("http://localhost:8000/static/files/RESUMEN_FINAL_SECUNDARIA_1_2.xlsx")
+				return redirect("http://colcoopcv.com/media/files/RESUMEN_FINAL_SECUNDARIA_1_2.xlsx")
+				#return redirect("http://localhost:8000/media/files/RESUMEN_FINAL_SECUNDARIA_1_2.xlsx")
 			else:
-				return redirect("http://colcoopcv.com/static/files/RESUMEN_FINAL_SECUNDARIA.xlsx")
-				#return redirect("http://localhost:8000/static/files/RESUMEN_FINAL_SECUNDARIA.xlsx")
+				return redirect("http://colcoopcv.com/media/files/RESUMEN_FINAL_SECUNDARIA.xlsx")
+				#return redirect("http://localhost:8000/media/files/RESUMEN_FINAL_SECUNDARIA.xlsx")
 	else:
 		return render(request,'otras_opciones/imprimir_resumen_anual.html',contexto)
 
@@ -722,9 +722,9 @@ def ImprimirConsolidadoLibretas(request):
 		matri = Matricula.objects.filter(Grado=grado,Seccion=seccion,AnoAcademico=ano,Alumno__Estado='A').order_by('Alumno__ApellidoPaterno','Alumno__ApellidoMaterno','Alumno__Nombres')
 		notas = Notas.objects.filter(Matricula__Grado=grado,Matricula__Seccion=seccion,Matricula__AnoAcademico=ano,PAcademico=paca)
 		if str(grado).find("PRIM")!= -1:			
-			Ruta = "static/files/PLANTILLA_LIBRETA_PRIMARIA.xlsx"
+			Ruta = "media/files/PLANTILLA_LIBRETA_PRIMARIA.xlsx"
 		else:
-			Ruta = "static/files/PLANTILLA_LIBRETA_SECUNDARIA.xlsx"
+			Ruta = "media/files/PLANTILLA_LIBRETA_SECUNDARIA.xlsx"
 		Libro = load_workbook(Ruta)
 		Hoja1 = Libro.active
 		#LIMPIANDO TODAS LAS CELDAS################
@@ -863,9 +863,9 @@ def ImprimirConsolidadoLibretas(request):
 		Libro.save(Ruta)
 		#Aqui poner si es primaria o secundaria para que redirija a la descarga jeje
 		if str(grado).find("PRIM")!= -1:
-			return redirect("http://colcoopcv.com/static/files/PLANTILLA_LIBRETA_PRIMARIA.xlsx")
+			return redirect("http://colcoopcv.com/media/files/PLANTILLA_LIBRETA_PRIMARIA.xlsx")
 		else:
-			return redirect("http://colcoopcv.com/static/files/PLANTILLA_LIBRETA_SECUNDARIA.xlsx")
+			return redirect("http://colcoopcv.com/media/files/PLANTILLA_LIBRETA_SECUNDARIA.xlsx")
 	else:
 		return render(request,'otras_opciones/imprimir_consolidado_libretas.html',contexto)
 
@@ -888,9 +888,9 @@ def ImprimirConsolidadoAvances(request):
 		notas = AvanceNotasComp.objects.filter(Matricula__Grado=grado,Matricula__Seccion=seccion,Matricula__AnoAcademico=ano,PAcademico=paca)
 		compecur=CompetenciaCurso.objects.all()
 		if str(grado).find("PRIM")!= -1:
-			Ruta = "static/files/PLANTILLA_AVANCE_PRIMARIA.xlsx"
+			Ruta = "media/files/PLANTILLA_AVANCE_PRIMARIA.xlsx"
 		else:
-			Ruta = "static/files/PLANTILLA_AVANCE_SECUNDARIA.xlsx"
+			Ruta = "media/files/PLANTILLA_AVANCE_SECUNDARIA.xlsx"
 		Libro = load_workbook(Ruta)
 		Hoja1 = Libro.active
 		##LIMPIANDO TODAS LAS CELDAS################3
@@ -973,9 +973,9 @@ def ImprimirConsolidadoAvances(request):
 		Libro.save(Ruta)
 		#Aqui poner si es primaria o secundaria para que redirija a la descarga jeje
 		if str(grado).find("PRIM")!= -1:
-			return redirect("/static/files/PLANTILLA_AVANCE_PRIMARIA.xlsx")
+			return redirect("/media/files/PLANTILLA_AVANCE_PRIMARIA.xlsx")
 		else:
-			return redirect("/static/files/PLANTILLA_AVANCE_SECUNDARIA.xlsx")
+			return redirect("/media/files/PLANTILLA_AVANCE_SECUNDARIA.xlsx")
 	else:
 		return render(request,'otras_opciones/imprimir_consolidado_avances2.html',contexto)
 ###########################LIBRETAS##############################################
@@ -1010,11 +1010,11 @@ def ImprimirLibretas(request):
 		
 		for m in mat:#Para empezar a dibujar una libreta por cada matricula es una libreta
 			
-			c.drawImage("static/img/logo_cvallejo.png", 95, 715, width=55, height=70)
-			c.drawImage("static/img/logo_goreloreto.png", 105, 790, width=80, height=35)
-			c.drawImage("static/img/logo_minedu.png", 280, 780, width=75, height=45)
-			c.drawImage("static/img/logo_dreloreto.png", 450, 780, width=50, height=50)
-			c.drawImage("static/img/firma_segundo.png", 400, 30, width=130, height=55)#firma director encargado
+			c.drawImage("media/img/logo_cvallejo.png", 95, 715, width=55, height=70)
+			c.drawImage("media/img/logo_goreloreto.png", 105, 790, width=80, height=35)
+			c.drawImage("media/img/logo_minedu.png", 280, 780, width=75, height=45)
+			c.drawImage("media/img/logo_dreloreto.png", 450, 780, width=50, height=50)
+			c.drawImage("media/img/firma_segundo.png", 400, 30, width=130, height=55)#firma director encargado
 			c.setFont('Helvetica-Bold', 12, leading=None)
 			c.setFillColor(HexColor(0x4C9141))
 			c.drawCentredString(300, 765, "COLEGIO COOPERATIVO CESAR VALLEJO")
@@ -1083,7 +1083,7 @@ def ImprimirLibretas(request):
 			#LIBRETA SECUNDARIA LIBRETA SECUNDARIA LIBRETA SECUNDARIA
 			if str(m.Grado)=='1SEC' or str(m.Grado)=='2SEC' or str(m.Grado)=='3SEC' or str(m.Grado)=='4SEC' or str(m.Grado)=='5SEC':
 
-				c.drawImage("static/img/firma_ruth.png", 90, 30, width=130, height=50)#firma ruth
+				c.drawImage("media/img/firma_ruth.png", 90, 30, width=130, height=50)#firma ruth
 				c.drawString(240, 630- bloq_cursos, "ÁREA")#Area
 				c.drawString(436, 650- bloq_cursos, "BIMESTRES")#Bimestres
 				c.drawString(424, 622- bloq_cursos, "I")#Bimestres
@@ -2142,8 +2142,8 @@ def ImprimirLibretas(request):
 				#######################################################################################################
 				bloq_epf=-15
 				lineas_epf=-45
-				c.drawImage("static/img/firma_maria.png", 90, 30, width=130, height=50)#firma ruth
-				c.drawImage("static/img/clave_evaluacion.png", 430, 375, width=130, height=60)#firma ruth
+				c.drawImage("media/img/firma_maria.png", 90, 30, width=130, height=50)#firma ruth
+				c.drawImage("media/img/clave_evaluacion.png", 430, 375, width=130, height=60)#firma ruth
 				c.rect(430,647,115,15)#Cuadro Situación Final
 				c.drawString(450,650,"SITUACIÓN FINAL")#Texto Situacion Final
 				c.rect(430,615,115,32)#Cuadro para PROMOVIDO, REPITE, PASA A RECUPERACION
@@ -2871,10 +2871,10 @@ def ImprimirAvances(request):
 		c = canvas.Canvas(buffer, pagesize=portrait(A4))
 		paca = PAcademico.objects.get(id=paca.id)#Bimestre
 		for m in mat:#Para empezar a dibujar una libreta por cada matricula es una libreta
-			c.drawImage("static/img/logo_cvallejo.png", 95, 715, width=55, height=70)
-			c.drawImage("static/img/logo_goreloreto.png", 105, 790, width=80, height=35)
-			c.drawImage("static/img/logo_minedu.png", 280, 780, width=75, height=45)
-			c.drawImage("static/img/logo_dreloreto.png", 450, 780, width=50, height=50)
+			c.drawImage("media/img/logo_cvallejo.png", 95, 715, width=55, height=70)
+			c.drawImage("media/img/logo_goreloreto.png", 105, 790, width=80, height=35)
+			c.drawImage("media/img/logo_minedu.png", 280, 780, width=75, height=45)
+			c.drawImage("media/img/logo_dreloreto.png", 450, 780, width=50, height=50)
 			
 			c.setFont('Helvetica-Bold', 12, leading=None)
 			c.setFillColor(HexColor(0x4C9141))
@@ -2918,8 +2918,8 @@ def ImprimirAvances(request):
 			#AVANCE SECUNDARIA #AVANCE SECUNDARIA #AVANCE SECUNDARIA #AVANCE SECUNDARIA			
 			#AVANCE SECUNDARIA #AVANCE SECUNDARIA #AVANCE SECUNDARIA #AVANCE SECUNDARIA			
 			if str(m.Grado)=='1SEC' or str(m.Grado)=='2SEC' or str(m.Grado)=='3SEC' or str(m.Grado)=='4SEC' or str(m.Grado)=='5SEC':
-				c.drawImage("static/img/firma_ruth.png", 90, 150-bloq_firma_avance_sec, width=150, height=65)#firma ruth
-				c.drawImage("static/img/firma_segundo.png", 350, 150-bloq_firma_avance_sec, width=150, height=70)#firma director encargado
+				c.drawImage("media/img/firma_ruth.png", 90, 150-bloq_firma_avance_sec, width=150, height=65)#firma ruth
+				c.drawImage("media/img/firma_segundo.png", 350, 150-bloq_firma_avance_sec, width=150, height=70)#firma director encargado
 				c.drawString(240, 630-bloq_cursos_avance, "ÁREA")#Area
 				c.drawString(424, 628-bloq_cursos_avance, "PROMEDIO")#PROMEDIO
 				
@@ -3189,9 +3189,9 @@ def ImprimirAvances(request):
 									c.setFillColor(HexColor(0x0A0A0A))
 			else:#AVANCE PRIMARIA #AVANCE PRIMARIA #AVANCE PRIMARIA
 				#######################################################################################################
-				c.drawImage("static/img/firma_maria.png", 90, 110-bloq_firma_avance_prim, width=125, height=50)#firma ruth
-				c.drawImage("static/img/firma_segundo.png", 350, 110-bloq_firma_avance_prim, width=150, height=70)#firma director encargado
-				c.drawImage("static/img/clave_evaluacion.png", 435, 550-bloq_cursos_avance, width=130, height=60)#Clave Evaluacion
+				c.drawImage("media/img/firma_maria.png", 90, 110-bloq_firma_avance_prim, width=125, height=50)#firma ruth
+				c.drawImage("media/img/firma_segundo.png", 350, 110-bloq_firma_avance_prim, width=150, height=70)#firma director encargado
+				c.drawImage("media/img/clave_evaluacion.png", 435, 550-bloq_cursos_avance, width=130, height=60)#Clave Evaluacion
 				c.setFont('Helvetica-Bold', 9, leading=None)
 				
 				#########comentado 24-nov-2020##################3
