@@ -1,0 +1,65 @@
+{% extends 'base/home_newtemplate.html' %}
+{% block title %}Pagos{% endblock title %}
+{% block form %}
+<h5 align="CENTER">Lista Pagos Realizados</h5>
+<h5>Pagos Registrados</h5>
+    <form method="get">
+        <div class="row">
+            <div class="col-sm-4">
+                <input class="form-control form-control-sm" type="text" name="q" placeholder="Buscar por DNI o nombre" value="{{ query }}">
+            </div>
+            <div class="col-sm-4">
+                <button class="btn btn-primary btn-sm" type="submit">Buscar</button>
+            </div>
+        </div>
+        <br>
+    </form>
+
+    <table border="1" class="table table-striped table-bordered">
+        <thead>
+            <tr>
+                <th>DNI</th>
+                <th>NombreCompleto</th>
+                <th>Nivel</th>
+                <th>Grado</th>
+                <th>Sección</th>
+                <th>Concepto</th>
+                <th>FechaPago</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for venta in page_obj %}
+                <tr>
+                    <td>{{ venta.Dni }}</td>
+                    <td>{{ venta.NombreCompleto }}</td>
+                    <td>{{ venta.Nivel }}</td>
+                    <td>{{ venta.Grado }}</td>
+                    <td>{{ venta.Seccion }}</td>
+                    <td>{{ venta.Concepto }}</td>
+                    <td>{{ venta.FechaPago }}</td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="4">No se encontraron pagos.</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div>
+        {% if page_obj.has_previous %}
+            <a href="?page=1{% if query %}&q={{ query }}{% endif %}">Primero</a>
+            <a href="?page={{ page_obj.previous_page_number }}{% if query %}&q={{ query }}{% endif %}">Anterior</a>
+        {% endif %}
+
+        Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}
+
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}{% if query %}&q={{ query }}{% endif %}">Siguiente</a>
+            <a href="?page={{ page_obj.paginator.num_pages }}{% if query %}&q={{ query }}{% endif %}">Último</a>
+        {% endif %}
+    </div>
+
+
+{% endblock %}
+

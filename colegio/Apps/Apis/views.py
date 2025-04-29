@@ -5,7 +5,15 @@ from colegio.Apps.Matricula.models import Matricula
 from colegio.Apps.Docente.models import Docente
 from django.db.models import F,Q
 from datetime import datetime
+from rest_framework.decorators import api_view, authentication_classes, permission_classes
+from rest_framework.authentication import TokenAuthentication
+from rest_framework.permissions import IsAuthenticated
 
+from .models import Venta
+from datetime import datetime
+from django.conf import settings
+
+from django.views import View
 
 def BuscarAlumno(request,dni):
     anho_actual= datetime.today().year - 1 # despues quitar el 1
@@ -36,8 +44,6 @@ def BuscarAlumno(request,dni):
     )
     )
     return JsonResponse(matricula,safe=False)
-
-
 
 def ListarMatriculados(request,anho):
     tutores= Docente.objects.exclude(
@@ -94,4 +100,45 @@ def ListarMatriculados(request,anho):
         
     
     return JsonResponse(matricula,safe=False)
+
+@api_view(['POST'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def RegistrarVenta(request):
+    try:
+        data = request.data
+        venta = Venta.objects.create(
+            id_operation=data.get('id_operation'),
+            id_persona=data.get('id_persona'),
+            descripcion=data.get('descripcion'),
+            Dni=data.get('Dni'),
+            Nombre=data.get('Nombre'),
+            Apellido=data.get('Apellido'),
+            NombreCompleto=data.get('NombreCompleto'),
+            Nivel=data.get('Nivel'),
+            Grado=data.get('Grado'),
+            Seccion=data.get('Seccion'),
+            Concepto=data.get('Concepto'),
+            Mes=data.get('Mes'),
+            TipoIngreso=data.get('TipoIngreso'),
+            ConceptoNumeroMes=data.get('ConceptoNumeroMes'),
+            FechaVencimiento=data.get('FechaVencimiento'),
+            Monto=data.get('Monto'),
+            FechaPago=data.get('FechaPago'),
+            NumeroMesPago=data.get('NumeroMesPago'),
+            LetraMesPago=data.get('LetraMesPago'),
+            Atrasado=data.get('Atrasado'),
+            DiasAtraso=data.get('DiasAtraso'),
+            MesesAtraso=data.get('MesesAtraso'),
+            Apoderado=data.get('Apoderado'),
+            Padre=data.get('Padre'),
+            Madre=data.get('Madre'),
+            Direccion=data.get('Direccion')
+        )
+
+        return JsonResponse({'mensaje': 'Venta registrada correctamente', 'id': venta.id}, status=201)
+
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=400)
+
 

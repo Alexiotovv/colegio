@@ -1,6 +1,9 @@
 from django.shortcuts import render
 from colegio.Apps.Pagos.models import Pagos
 from django.http import JsonResponse
+from colegio.Apps.Apis.models import Venta
+from django.db.models import Q
+from django.core.paginator import Paginator
 
 def RegistrarPago(request):
     
@@ -17,3 +20,22 @@ def RegistrarPago(request):
         data={'mensaje':existe}
     return JsonResponse(data)
     
+def ListarPagos(request):
+    query = request.GET.get('q', '')
+    ventas = Venta.objects.all()
+
+    if query:
+        ventas = ventas.filter(
+            Q(NombreCompleto__icontains=query) |
+            Q(Dni__icontains=query)
+        )
+
+    paginator = Paginator(ventas.order_by('-FechaPago'), 15)  # 10 resultados por página
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    context = {
+        'page_obj': page_obj,
+        'query': query,
+    }
+    return render(request,"pagos/pagos.html",context)

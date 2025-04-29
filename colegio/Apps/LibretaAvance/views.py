@@ -32,6 +32,10 @@ from datetime import *
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 
+from colegio.Apps.Apis.models import Venta
+from django.db.models import Count
+
+
 def ImprimirAvancesxAlumno(request):
 
     if  request.method=='POST':
@@ -307,6 +311,7 @@ def ImprimirNotasPrimaria(request):
         seccion = request.POST.get("Seccion")
         ano = request.POST.get("Ano")#El año que manda del form
         paca=request.POST.get("Pac")
+        mes_seleccionado = int(request.POST.get("MesSeleccionado"))
         paca=int(paca)
         nombrepaca=PAcademico.objects.get(id=paca)
         nivel=str(gradonivel)[1:len(gradonivel)] #extrae solo PRIM
@@ -321,7 +326,14 @@ def ImprimirNotasPrimaria(request):
 
         result = Curso.objects.raw('SELECT 1 as id,ccur."Curso_id" as IDCURSO,Count(*)-1 as NUM_COMPE FROM "Competencias_competenciacurso" as ccur GROUP BY ccur."Curso_id" ORDER BY ccur."Curso_id"')
         tutor=Docente.objects.filter(TutorGrado=gradonivel,TutorSeccion=seccion).last()
-        matricula = Matricula.objects.filter(Grado=gradonivel,Seccion=seccion,AnoAcademico__Ano=ano,Alumno__Estado='A').order_by('Alumno__ApellidoPaterno','Alumno__ApellidoMaterno','Alumno__Nombres')
+        dnis_filtrados = obtener_dnis_con_pagos_completos(mes_seleccionado)
+
+        matricula = Matricula.objects.filter(
+            Grado=gradonivel,
+            Seccion=seccion,
+            AnoAcademico__Ano=ano,
+            Alumno__Estado='A',
+            Alumno__DNI__in=dnis_filtrados).order_by('Alumno__ApellidoPaterno','Alumno__ApellidoMaterno','Alumno__Nombres')
         alumnos_idmat= Matricula.objects.filter(Grado=gradonivel,Seccion=seccion,AnoAcademico__Ano=ano).values('id','Grado').order_by('Alumno__ApellidoPaterno','Alumno__ApellidoMaterno','Alumno__Nombres')
 
         #Envia solamente para la apreciación del tutor
@@ -392,8 +404,10 @@ def ImprimirNotasPrimaria(request):
         return render(request,'otras_opciones/imprimir_libreta_primaria.html',contexto)
 
 def ImprimirNotasSecundaria(request):
+    
     aac = AnoAcademico.objects.all().order_by('-Ano')
     pac = PAcademico.objects.all().order_by('Nombre')
+    
     contexto = {'aac':aac,'pac':pac}#para filtro
     cursor = connection.cursor()
     if  request.method=='POST':
@@ -402,6 +416,8 @@ def ImprimirNotasSecundaria(request):
         seccion = request.POST.get("Seccion")
         ano = request.POST.get("Ano")#El año que manda del form
         paca=request.POST.get("Pac")
+        mes_seleccionado = int(request.POST.get("MesSeleccionado"))
+
         paca=int(paca)
         nombrepaca=PAcademico.objects.get(id=paca)
         nivel=str(gradonivel)[1:len(gradonivel)] #extrae solo PRIM
@@ -417,7 +433,17 @@ def ImprimirNotasSecundaria(request):
         result = Curso.objects.raw('SELECT 1 as id,ccur."Curso_id" as IDCURSO,Count(*)-1 as NUM_COMPE FROM "Competencias_competenciacurso" as ccur GROUP BY ccur."Curso_id" ORDER BY ccur."Curso_id"')
         
         tutor=Docente.objects.filter(TutorGrado=gradonivel,TutorSeccion=seccion).last()
-        matricula = Matricula.objects.filter(Grado=gradonivel,Seccion=seccion,AnoAcademico__Ano=ano,Alumno__Estado='A').order_by('Alumno__ApellidoPaterno','Alumno__ApellidoMaterno','Alumno__Nombres')
+
+
+        dnis_filtrados = obtener_dnis_con_pagos_completos(mes_seleccionado)
+
+        matricula = Matricula.objects.filter(
+            Grado=gradonivel,
+            Seccion=seccion,
+            AnoAcademico__Ano=ano,
+            Alumno__Estado='A',
+            Alumno__DNI__in=dnis_filtrados).order_by('Alumno__ApellidoPaterno','Alumno__ApellidoMaterno','Alumno__Nombres')
+        
         alumnos_idmat= Matricula.objects.filter(Grado=gradonivel,Seccion=seccion,AnoAcademico__Ano=ano).values('id','Grado').order_by('Alumno__ApellidoPaterno','Alumno__ApellidoMaterno','Alumno__Nombres')
         #Envia solamente para la apreciación del tutor
         apreciaciones=NotasComp.objects.filter(Matricula__AnoAcademico__Ano=ano,Matricula__Grado=gradonivel,Matricula__Seccion=seccion).order_by('PAcademico__id')
@@ -475,18 +501,25 @@ def ImprimirNotasSecundaria(request):
         cursor.execute(SitFinalbim4_2023,[ano,gradonivel,seccion,nivelcorto,'CURSO','CALIFICATIVO DE ÁREA'])
         SitFinalnotas4_2023 = dictfetchall(cursor)
         #######end para situacion final
-        
-        ##Para promedio Final de 5Sec
-        #if gradonivel=='1SEC' or gradonivel=='2SEC' or gradonivel=='3SEC' or gradonivel=='4SEC' or gradonivel=='5SEC' and paca==5:
-        #     prom_quinto= CaliFinalSec(paca,notas)#se agrego la columna promedio en notas
-        #     notas=prom_quinto
-        #     SitFinal=SituacionFinalSecundaria(alumnos_idmat,paca,notas,gradonivel)
-        #     SituacionFinalSecundaria_2023(alumnos_idmat,paca,SitFinalnotas4_2023,gradonivel)
-        # else:
-            # SitFinal=SituacionFinalSecundaria(alumnos_idmat,paca,SitFinalnotas4,gradonivel)
-        SitFinal=SituacionFinalSecundaria_2023(alumnos_idmat,paca,SitFinalnotas4_2023,gradonivel)
 
-        contexto2={'SitFinal':SitFinal,'nombrepaca':nombrepaca,'apreciaciones':apreciaciones,'notas':notas,'result':result,'tutor':tutor,'matricula':matricula,'nivel':nivel,'paca':paca,'ano':ano,'gradonivel':gradonivel,'seccion':seccion,'grado':grado,'nivelcorto':nivelcorto}#para libreta
+        SitFinal=SituacionFinalSecundaria_2023(alumnos_idmat,paca,SitFinalnotas4_2023,gradonivel)        
+       
+        contexto2={'SitFinal':SitFinal,
+                   'nombrepaca':nombrepaca,
+                   'apreciaciones':apreciaciones,
+                   'notas':notas,
+                   'result':result,
+                   'tutor':tutor,
+                   'matricula':matricula,
+                   'nivel':nivel,
+                   'paca':paca,
+                   'ano':ano,
+                   'gradonivel':gradonivel,
+                   'seccion':seccion,
+                   'grado':grado,
+                   'nivelcorto':nivelcorto}#para libreta
+ 
+        
         return render(request,'libretas/LibretaSecundaria.html',contexto2)
     else:
         return render(request,'otras_opciones/imprimir_libreta_secundaria.html',contexto)
@@ -865,3 +898,17 @@ def CaliFinalSec(paca,notas):
                 n['promedio']=''
             # lista_promedios.append({'promedio':prom})
         return notas
+
+def obtener_dnis_con_pagos_completos(hasta_mes: int):
+    """
+    Devuelve una lista de DNIs que tienen pagos completos desde marzo (3) hasta el mes dado.
+    """
+    meses_requeridos = list(range(3, hasta_mes + 1))
+
+    dnis = Venta.objects.filter(
+        NumeroMesPago__in=meses_requeridos
+    ).values('Dni').annotate(
+        total=Count('ConceptoNumeroMes', distinct=True)
+    ).filter(total=len(meses_requeridos)).values_list('Dni', flat=True)
+
+    return dnis

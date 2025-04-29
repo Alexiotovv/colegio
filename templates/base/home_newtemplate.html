@@ -244,7 +244,19 @@
       {% endif %}
 
       {% if group.name == 'Administrador' or group.name == 'Asistente'%}
-        <li>
+      <li>    
+        <a href="javascript:;" class="has-arrow">
+            <div class="parent-icon"><i class="lni lni-layers"></i>
+            </div>
+            <div class="menu-title">Pagos</div>
+          </a>
+          <ul>
+              
+            <li> <a href="{% url 'applistar_pagos' %}"><i class="bx bx-right-arrow-alt"></i>Listar Pagos</a>
+            </li>
+          </ul>
+        </li>
+        {% comment %} <li>
           <a href="javascript:;" class="has-arrow">
             <div class="parent-icon"><i class="lni lni-layers"></i>
             </div>
@@ -255,7 +267,7 @@
             <li> <a href="{% url 'appIndexJustificaciones' %}"><i class="bx bx-right-arrow-alt"></i>Listar Justificaciones</a>
             </li>
           </ul>
-        </li>
+        </li> {% endcomment %}
       {% endif %}
 
           {% endfor %}
