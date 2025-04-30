@@ -1,5 +1,6 @@
 {% extends 'base/home_newtemplate.html' %}
 {% block title %}Pagos{% endblock title %}
+
 {% block form %}
 <h5 align="CENTER">Lista Pagos Realizados</h5>
 <h5>Pagos Registrados</h5>
@@ -15,7 +16,7 @@
         <br>
     </form>
 
-    <table border="1" class="table table-striped table-bordered">
+    <table id="tabla-pagos" border="1" class="table table-striped table-bordered">
         <thead>
             <tr>
                 <th>DNI</th>
@@ -48,18 +49,47 @@
 
     <div>
         {% if page_obj.has_previous %}
-            <a href="?page=1{% if query %}&q={{ query }}{% endif %}">Primero</a>
-            <a href="?page={{ page_obj.previous_page_number }}{% if query %}&q={{ query }}{% endif %}">Anterior</a>
+            <a class="btn btn-info btn-sm" href="?page=1{% if query %}&q={{ query }}{% endif %}">Primero</a>
+            <a class="btn btn-info btn-sm" href="?page={{ page_obj.previous_page_number }}{% if query %}&q={{ query }}{% endif %}"> < </a>
         {% endif %}
 
         Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}
 
         {% if page_obj.has_next %}
-            <a href="?page={{ page_obj.next_page_number }}{% if query %}&q={{ query }}{% endif %}">Siguiente</a>
-            <a href="?page={{ page_obj.paginator.num_pages }}{% if query %}&q={{ query }}{% endif %}">Último</a>
+            <a class="btn btn-info btn-sm" href="?page={{ page_obj.next_page_number }}{% if query %}&q={{ query }}{% endif %}"> > </a>
+            <a class="btn btn-info btn-sm" href="?page={{ page_obj.paginator.num_pages }}{% if query %}&q={{ query }}{% endif %}">Último</a>
         {% endif %}
     </div>
 
-
 {% endblock %}
 
+{% block js1 %}
+    
+    <script>
+$(document).ready(function() {
+    $('#tabla-pagos').DataTable({
+        dom: 'Bfrtip',
+        paging: false,         // ❌ Quita el paginado de DataTables
+        searching: false,      // ❌ Quita el cuadro de búsqueda
+        info: false,           // ❌ Quita el texto tipo "Mostrando 1 a 10 de 57"
+        buttons: [
+            {
+                extend: 'excelHtml5',
+                title: 'PagosRegistrados',
+                text: '📥 Descargar Excel',
+                className: 'btn btn-success btn-sm'
+            }
+        ],
+        language: {
+            url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/es-ES.json'
+        }
+    });
+});
+</script>
+
+
+
+
+
+
+{% endblock js1 %}
