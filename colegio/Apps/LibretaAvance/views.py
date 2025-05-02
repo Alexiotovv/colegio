@@ -225,14 +225,14 @@ def ImprimirAvanceNotasPrimaria(request):
     contexto = {'alumnos':alumnos,'aac':aac,'pac':pac}#para filtro
 
     if  request.method=='POST':
-        
         #aactual= date.today().year#AÑO
         gradonivel = request.POST.get("Grado")
         seccion = request.POST.get("Seccion")
         ano = request.POST.get("Ano")#El año que manda del form
         paca=request.POST.get("Pacademico")
-        filtrado=request.POST.get("habilitarfiltro")
-        mespago=request.POST.get("pago")
+        mes_seleccionado = int(request.POST.get("MesSeleccionado"))
+
+        dnis_filtrados = obtener_dnis_con_pagos_completos(mes_seleccionado)
         nombrepaca=PAcademico.objects.get(id=paca)
         nivel=str(gradonivel)[1:len(gradonivel)] #extrae solo PRIM
         grado=str(gradonivel)[0:1]
@@ -242,16 +242,16 @@ def ImprimirAvanceNotasPrimaria(request):
             nivel='SECUNDARIO'
         #########################################################SE LE PUSO -1 PARA QUE NO SUME EL CALIFICATIVO DE ÁREA
         result = Curso.objects.raw('SELECT 1 as id,ccur."Curso_id" as IDCURSO,Count(*)-1 as NUM_COMPE FROM "Competencias_competenciacurso" as ccur GROUP BY ccur."Curso_id" ORDER BY ccur."Curso_id"')
-        dnis=Pagos.objects.filter(PagoMes=mespago,PagoAno=ano).values('Dni')
-        data = []
-        for d in dnis:
-            data.append(d["Dni"]) 
+
         notas=AvanceNotasComp.objects.filter(PAcademico=paca,Matricula__AnoAcademico__Ano=ano,Matricula__Grado=gradonivel,Matricula__Seccion=seccion).order_by('Curso__Orden','Competencias__Orden')
         tutor=Docente.objects.filter(TutorGrado=gradonivel,TutorSeccion=seccion).last()
-        if filtrado=="SI":
-            matricula = Matricula.objects.filter(Grado=gradonivel,Seccion=seccion,AnoAcademico__Ano=ano,Alumno__Estado='A',Alumno__DNI__in=data).order_by('Alumno__ApellidoPaterno','Alumno__ApellidoMaterno','Alumno__Nombres')
-        else:
-            matricula = Matricula.objects.filter(Grado=gradonivel,Seccion=seccion,AnoAcademico__Ano=ano,Alumno__Estado='A').order_by('Alumno__ApellidoPaterno','Alumno__ApellidoMaterno','Alumno__Nombres')
+        matricula = Matricula.objects.filter(
+            Grado=gradonivel,
+            Seccion=seccion,
+            AnoAcademico__Ano=ano,
+            Alumno__Estado='A',
+            Alumno__DNI__in=dnis_filtrados).order_by('Alumno__ApellidoPaterno','Alumno__ApellidoMaterno','Alumno__Nombres')
+       
         contexto2={'nombrepaca':nombrepaca,'grado':grado,'result':result,'tutor':tutor,'matricula':matricula,'nivel':nivel,'nombrepaca':nombrepaca,'ano':ano,'gradonivel':gradonivel,'seccion':seccion,'notas':notas}#para libreta de avance
         return render(request,'libretas/LibretaAvancePrimaria.html',contexto2)
     else:
@@ -270,11 +270,12 @@ def ImprimirAvanceNotasSecundaria(request):
         seccion = request.POST.get("Seccion")
         ano = request.POST.get("Ano")#El año que manda del form
         paca=request.POST.get("Pacademico")
-        filtrado=request.POST.get("habilitarfiltro")
+        mes_seleccionado = int(request.POST.get("MesSeleccionado"))
+        #filtrado=request.POST.get("habilitarfiltro")
         nombrepaca=PAcademico.objects.get(id=paca)
         nivel=str(gradonivel)[1:len(gradonivel)] #extrae solo PRIM
         grado=str(gradonivel)[0:1]
-        mespago=request.POST.get("pago")
+        # mespago=request.POST.get("pago")
         #cursos=Curso.objects.filter(Nivel=nivel)
         if nivel=='PRIM':
             nivel='PRIMARIO'
@@ -282,16 +283,24 @@ def ImprimirAvanceNotasSecundaria(request):
             nivel='SECUNDARIO'
         
         result = Curso.objects.raw('SELECT 1 as id,ccur."Curso_id" as IDCURSO,Count(*)-1 as NUM_COMPE FROM "Competencias_competenciacurso" as ccur GROUP BY ccur."Curso_id" ORDER BY ccur."Curso_id"')
-        dnis=Pagos.objects.filter(PagoMes=mespago,PagoAno=ano).values('Dni')
-        data = []
-        for d in dnis:
-            data.append(d["Dni"]) 
+        dnis_filtrados = obtener_dnis_con_pagos_completos(mes_seleccionado)
+
+        #dnis=Pagos.objects.filter(PagoMes=mespago,PagoAno=ano).values('Dni')
+        # data = []
+        # for d in dnis:
+        #     data.append(d["Dni"]) 
         notas=AvanceNotasComp.objects.filter(PAcademico=paca,Matricula__AnoAcademico__Ano=ano,Matricula__Grado=gradonivel,Matricula__Seccion=seccion).order_by('Curso__Orden','Competencias__Orden')
         tutor=Docente.objects.filter(TutorGrado=gradonivel,TutorSeccion=seccion).last()
-        if filtrado=="SI":
-            matricula = Matricula.objects.filter(Grado=gradonivel,Seccion=seccion,AnoAcademico__Ano=ano,Alumno__Estado='A',Alumno__DNI__in=data).order_by('Alumno__ApellidoPaterno','Alumno__ApellidoMaterno','Alumno__Nombres')
-        else:
-            matricula = Matricula.objects.filter(Grado=gradonivel,Seccion=seccion,AnoAcademico__Ano=ano,Alumno__Estado='A').order_by('Alumno__ApellidoPaterno','Alumno__ApellidoMaterno','Alumno__Nombres')
+        matricula = Matricula.objects.filter(
+            Grado=gradonivel,
+            Seccion=seccion,
+            AnoAcademico__Ano=ano,
+            Alumno__Estado='A',
+            Alumno__DNI__in=dnis_filtrados).order_by('Alumno__ApellidoPaterno','Alumno__ApellidoMaterno','Alumno__Nombres')
+        # if filtrado=="SI":
+        #     matricula = Matricula.objects.filter(Grado=gradonivel,Seccion=seccion,AnoAcademico__Ano=ano,Alumno__Estado='A',Alumno__DNI__in=data).order_by('Alumno__ApellidoPaterno','Alumno__ApellidoMaterno','Alumno__Nombres')
+        # else:
+        #     matricula = Matricula.objects.filter(Grado=gradonivel,Seccion=seccion,AnoAcademico__Ano=ano,Alumno__Estado='A').order_by('Alumno__ApellidoPaterno','Alumno__ApellidoMaterno','Alumno__Nombres')
 
         
         contexto2={'nombrepaca':nombrepaca,'grado':grado,'result':result,'tutor':tutor,'matricula':matricula,'nivel':nivel,'ano':ano,'gradonivel':gradonivel,'seccion':seccion,'notas':notas}#para libreta de avance
@@ -362,7 +371,6 @@ def ImprimirNotasPrimaria(request):
         SitFinalnotas4_2023 = dictfetchall(cursor)
         #######end para situacion final    
         
-
        #recorre cada vista consultada en cada bimestre y coloca en el objectlist la nota que le corresponde
         if paca==2:
             for n in notas:

@@ -43,7 +43,22 @@
 		        <option value="G">G</option>
       		</select>
       	</div>
-		<div class="col-md-3">
+		<div class="col-md-6">
+			<label for="exampleSelect1">Seleccione Mes Pagados Hasta:</label>
+			<select class="single-select" name="MesSeleccionado">
+				<option value="3">Marzo</option>
+				<option value="4">Abril</option>
+				<option value="5">Mayo</option>
+				<option value="6">Junio</option>
+				<option value="7">Julio</option>
+				<option value="8">Agosto</option>
+				<option value="9">Setiembre</option>
+				<option value="10">Octubre</option>
+				<option value="11">Noviembre</option>
+				<option value="12">Diciembre</option>
+			</select>
+		</div>
+		{% comment %} <div class="col-md-3">
 			<label>Habilitar Filtro Pagos</label>
 			<select class="form-select" id="habilitarfiltro" name="habilitarfiltro">
 				<option value="NO">NO</option>
@@ -64,7 +79,7 @@
 				<option value="noviembre">Noviembre</option>
 				<option value="diciembre">Diciembre</option>
 			</select>
-		</div>
+		</div> {% endcomment %}
     </div>
     <div class="row">
 		<div class="col-md-6">
@@ -74,7 +89,7 @@
     </div>
 </form>
 
-<form id="formPagar" method="POST">{% csrf_token %}
+{% comment %} <form id="formPagar" method="POST">{% csrf_token %}
 <div class="card">
 	<div class="card-body">
 		<div class="row">
@@ -120,7 +135,7 @@
 		</div>
 	</div>
 </div>
-</form>
+</form> {% endcomment %}
 {% endblock %}
 {% block js1 %}
 	<script>
