@@ -914,7 +914,7 @@ def obtener_dnis_con_pagos_completos(hasta_mes: int):
     meses_requeridos = list(range(3, hasta_mes + 1))
 
     dnis = Venta.objects.filter(
-        NumeroMesPago__in=meses_requeridos
+        ConceptoNumeroMes__in=meses_requeridos
     ).values('Dni').annotate(
         total=Count('ConceptoNumeroMes', distinct=True)
     ).filter(total=len(meses_requeridos)).values_list('Dni', flat=True)
