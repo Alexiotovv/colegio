@@ -2,7 +2,7 @@ from django.db import models
 from colegio.Apps.Docente.models import Docente
 from colegio.Apps.Curso.models import Curso
 class DocenteCurso(models.Model):
-	Docente = models.ForeignKey(Docente,null=False,blank=False,on_delete=models.CASCADE)
+	Docente = models.ForeignKey(Docente,null=False,blank=False,on_delete=models.PROTECT)
 	Curso = models.ForeignKey(Curso,null=False,blank=False,on_delete=models.CASCADE)
 	
 	def DocenteyCurso(self):

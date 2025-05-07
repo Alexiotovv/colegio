@@ -11,7 +11,7 @@ class Notas(models.Model):
 	Curso = models.ForeignKey(Curso,null=False,blank=False,on_delete=models.CASCADE)
 	Matricula = models.ForeignKey(Matricula,blank=False,null=True,on_delete=models.CASCADE)
 	PAcademico = models.ForeignKey(PAcademico,null=False,blank=False,on_delete=models.CASCADE)
-	Docente = models.ForeignKey(Docente,null=False,blank=False,on_delete=models.CASCADE)#user name
+	Docente = models.ForeignKey(Docente,null=False,blank=False,on_delete=models.PROTECT)#user name
 	Nota = models.CharField(max_length=100,default='-')
 
 class NotasComp(models.Model):
@@ -19,7 +19,7 @@ class NotasComp(models.Model):
 	Competencias = models.ForeignKey(Competencias,null=False,blank=False,on_delete=models.CASCADE)
 	Matricula = models.ForeignKey(Matricula,null=False,blank=False,on_delete=models.CASCADE)
 	PAcademico = models.ForeignKey(PAcademico,null=False,blank=False,on_delete=models.CASCADE)
-	Docente = models.ForeignKey(Docente,null=False,blank=False,on_delete=models.CASCADE)#user name
+	Docente = models.ForeignKey(Docente,null=False,blank=False,on_delete=models.PROTECT)#user name
 	Nota = models.CharField(max_length=250,default='-')	
 
 class SettingNotas(models.Model):

@@ -5,7 +5,7 @@ from colegio.Apps.AnoAcademico.models import AnoAcademico
 from django.utils import timezone
 
 class Matricula (models.Model):    
-    Alumno = models.ForeignKey(Alumno,null=False,blank=False,on_delete=models.CASCADE)
+    Alumno = models.ForeignKey(Alumno,null=False,blank=False,on_delete=models.PROTECT)
     AnoAcademico = models.ForeignKey(AnoAcademico,null=False,blank=False,on_delete=models.CASCADE)    
     GRADOS = (('1PRIM','1PRIM'),('2PRIM','2PRIM'),('3PRIM','3PRIM'),('4PRIM','4PRIM'),('5PRIM','5PRIM'),('6PRIM','6PRIM'),('1SEC','1SEC'),('2SEC','2SEC'),('3SEC','3SEC'),('4SEC','4SEC'),('5SEC','5SEC'))
     Grado = models.CharField(max_length=60, choices= GRADOS, default='--')

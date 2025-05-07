@@ -1,7 +1,24 @@
 {% extends 'base/home_newtemplate.html' %}
 {% block title %}Listar Alumnos{% endblock title %}
-{% block active_a %} active {% endblock%}
+
 {% block form %}
+	{% if messages %}
+		<div class="alert alert-warning border-0 bg-warning alert-dismissible fade show py-2">
+			<div class="d-flex align-items-center">
+				<div class="font-35 text-dark"><i class='bx bx-info-circle'></i>
+				</div>
+				<div class="ms-3">
+					<h6 class="mb-0 text-dark">{{ message.tags }}</h6>
+					{% for message in messages %}
+						<div class="text-dark">{{ message }}</div>
+					{% endfor %}
+				</div>
+			</div>
+			<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+		</div>
+	{% endif %}
+
+
 	<div class="col-md-12">
 		<br></br>
 		<a href="{% url 'app_alumno_nuevo' %}"><button type="submit" class="btn btn-info">Nuevo Alumno</button></a>
@@ -11,7 +28,7 @@
 			<h3>Lista de Alumnos Egresados/Retirados</h3>
 		</div>
 		<div class="table-responsive">
-		<table id="example" class="table table-hover">
+		<table id="example2" class="table table-striped table-bordered">
 		  <thead>
 		    <tr>
 		      <th scope="col">Id</th>
@@ -20,6 +37,8 @@
 		      <th scope="col">Nombres</th>
 		      <th scope="col">Sexo</th>
 		      <th scope="col">FechNacimiento</th>
+			  <th scope="col">Dirección</th>
+			  <th scope="col">Estado</th>
 		      <th scope="col">Acciones</th>
 		    </tr>
 		  </thead>
@@ -32,15 +51,19 @@
 			      	<td>{{ alumnos.Nombres }}</td>
 			      	<td>{{ alumnos.Sexo }}</td>
 			      	<td>{{ alumnos.FechaNacimiento }}</td>
+					<td>{{ alumnos.Direccion }}</td>
+					<td>{{ alumnos.Estado }}</td>
 			      	<td>
  					{% for group in user.groups.all %}
 	                	{% if group.name == 'Docentes' %}
 	                		--
 	                	{% endif %}
 	                	{% if group.name == 'Administrador' %}
-						<a href="{% url 'app_alumno_detalle' alumnos.id %}" target="_blank" class="btn btn-success"><span class="eye-solid icon"></span>__</a>
-						<a href="{% url 'app_alumno_editar' alumnos.id %}" target="_blank" class="btn btn-warning"><span class="edit-solid icon"></span>__</a>
-						<a href="{% url 'app_alumno_delete' alumnos.id %}" target="_blank" class="btn btn-danger"><span class="trash-solid icon"></span>__</a>
+						<a href="{% url 'app_alumno_detalle' alumnos.id %}" target="_blank" class="btn btn-success btn-sm"><span class="eye-solid icon"></span>Ver</a>
+						<button class="btn btn-warning btn-sm editar-alumno-btn" data-id="{{ alumnos.id }}" data-bs-toggle="modal" data-bs-target="#editarAlumnoModal">
+							<span class="edit-solid icon">Editar
+						</button>
+						<a href="{% url 'app_alumno_delete' alumnos.id %}" target="_blank" class="btn btn-danger btn-sm"><span class="trash-solid icon"></span>Eliminar</a>
 						{% endif %}
 					{% endfor %}
 			      	</td>
@@ -54,4 +77,124 @@
 	</div>
 
 
+	
+	<!-- Modal -->
+	<div class="modal fade" id="editarAlumnoModal" tabindex="-1" aria-labelledby="editarAlumnoLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+			<form id="editarAlumnoForm">
+				<div class="modal-header">
+				<h5 class="modal-title" id="editarAlumnoLabel">Editar Alumno</h5>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+				</div>
+				<div class="modal-body">
+					{% csrf_token %}
+					<input type="hidden" id="alumnoId">
+					<div class="mb-3">
+						<label for="dni" class="form-label">DNI</label>
+						<input type="text" class="form-control" id="dni" name="DNI">
+					</div>
+					<div class="mb-3">
+						<label for="apellidoPaterno" class="form-label">Apellido Paterno</label>
+						<input type="text" class="form-control" id="apellidoPaterno" name="ApellidoPaterno">
+					</div>
+					<div class="mb-3">
+						<label for="apellidoMaterno" class="form-label">Apellido Materno</label>
+						<input type="text" class="form-control" id="apellidoMaterno" name="ApellidoMaterno">
+					</div>
+					<div class="mb-3">
+						<label for="nombres" class="form-label">Nombres</label>
+						<input type="text" class="form-control" id="nombres" name="Nombres">
+					</div>
+					<div class="mb-3">
+						<label for="sexo" class="form-label">Sexo</label>
+						<select class="form-control" id="sexo" name="Sexo">
+							<option value="M">Masculino</option>
+							<option value="F">Femenino</option>
+						</select>
+					</div>
+					<div class="mb-3">
+						<label for="fechaNacimiento" class="form-label">Fecha de Nacimiento</label>
+						<input type="date" class="form-control" id="fechaNacimiento" name="FechaNacimiento">
+					</div>
+					<div class="mb-3">
+						<label for="nombres" class="form-label">Dirección</label>
+						<input type="text" class="form-control" id="direccion" name="Direccion">
+					</div>
+					<div class="mb-3">
+						<label for="sexo" class="form-label">Estado</label>
+						<select class="form-control" id="estado" name="Estado">
+							<option value="A">Activo</option>
+							<option value="E">Egresado</option>
+							<option value="R">Retirado</option>
+						</select>
+					</div>
+				</div>
+				<div class="modal-footer">
+				<button type="submit" class="btn btn-primary">Guardar Cambios</button>
+				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+				</div>
+			</form>
+			</div>
+		</div>
+	</div>
+
+
 {% endblock %}
+
+{% block js1 %}
+	<script>
+		
+		let alumnoId = null;
+		// Abrir el modal y cargar los datos del alumno
+		$('.editar-alumno-btn').on('click', function () {
+			alumnoId = $(this).data('id');
+			console.log(alumnoId)
+			$.ajax({
+				url: "/alumnos/editar/"+alumnoId,
+				method: 'GET',
+				success: function (data) {
+					$('#alumnoId').val(alumnoId);
+					$('#dni').val(data.DNI);
+					$('#apellidoPaterno').val(data.ApellidoPaterno);
+					$('#apellidoMaterno').val(data.ApellidoMaterno);
+					$('#nombres').val(data.Nombres);
+					$('#sexo').val(data.Sexo).change();
+					$('#direccion').val(data.Direccion).change();
+					$('#estado').val(data.Estado).change();
+					$('#fechaNacimiento').val(data.FechaNacimiento);
+				},
+				error: function () {
+					alert("No se pudo cargar la información del alumno.");
+				}
+			});
+		});
+
+		// Enviar el formulario de edición
+		$('#editarAlumnoForm').on('submit', function (e) {
+			e.preventDefault();
+			alumnoId = $('#alumnoId').val();
+
+			$.ajax({
+				url: "/alumnos/editar/"+alumnoId,
+				method: 'POST',
+				data: $(this).serialize(),
+				headers: {
+					'X-CSRFToken': $('input[name=csrfmiddlewaretoken]').val()
+				},
+				success: function () {
+					$('#editarAlumnoModal').modal('hide');
+					location.reload(); // recargar para mostrar cambios
+				},
+				error: function (xhr) {
+					let errores = xhr.responseJSON.errors;
+					let mensaje = "Corrige los siguientes errores:\n";
+					for (let campo in errores) {
+						mensaje += `${campo}: ${errores[campo].join(", ")}\n`;
+					}
+					alert(mensaje);
+				}
+			});
+		});
+	</script>
+{% endblock js1 %}
