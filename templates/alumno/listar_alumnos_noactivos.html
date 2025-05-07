@@ -149,7 +149,6 @@
 		// Abrir el modal y cargar los datos del alumno
 		$('.editar-alumno-btn').on('click', function () {
 			alumnoId = $(this).data('id');
-			console.log(alumnoId)
 			$.ajax({
 				url: "/alumnos/editar/"+alumnoId,
 				method: 'GET',
