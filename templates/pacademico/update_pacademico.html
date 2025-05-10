@@ -6,7 +6,18 @@
 		{% csrf_token %}
 		<h3>Registro de Periodo Académico</h3>
 		<div class="col-md-6">
-			{{form.as_p}}
+			<label for="Nombre">Nombre</label>
+			{{form.Nombre}}
+			
+			<label for="Nombre">FechaInicio</label>
+			{{form.FechaInicio}}
+			
+			<label for="Nombre">FechaFinal</label>
+			{{form.FechaFinal}}
+
+			<label for="Nombre">Status</label>
+			{{form.Status}}
+			<br>
 			<button type="submit" class="btn btn-success" value="Guardar">Guardar Periodo Académico</button>
     	</div>	
 	</form>
