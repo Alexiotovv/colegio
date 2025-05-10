@@ -13,7 +13,7 @@ class PAcademicoForm (forms.ModelForm):
 		]
 		widgets = {
 		'Nombre': forms.TextInput(attrs={'class':'form-control'}),
-		'FechaInicio': forms.DateInput(attrs={'class':'form-control','type':'Date'}),
-		'FechaFinal': forms.DateInput(attrs={'class':'form-control','type':'Date'}),
+		'FechaInicio': forms.DateInput(attrs={'class':'form-control','type':'date'}),
+		'FechaFinal': forms.DateInput(attrs={'class':'form-control','type':'date'}),
 		'Status':forms.Select(attrs = {'class':'single-select'}),
 		}
