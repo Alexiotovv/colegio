@@ -5,3 +5,4 @@ colegio/settings.py
 **/migrations/*
 requirements.txt
 colegio/static/
+colegio/media/files

@@ -10,6 +10,10 @@ from colegio.Apps.Notas.views import NotasNuevoComp, ListaNotas, NotasDelete,Not
     profesor_ingreso_notas_bimestre,GuardarPromedioEditado,progreso_registro_notas_bimestre
 from django.contrib.auth.decorators import login_required
 
+from django.conf import settings
+from django.conf.urls.static import static
+
+
 urlpatterns = [
 path('notas/profe_ingreso_notas_bim/<ano>/<pac>/<cur>/<grad>/<sec>',login_required(profesor_ingreso_notas_bimestre),name='app_nota_prof_ingreso_bim'),
 path('notas/notas_nuevo_save_uno/',login_required(NotasNuevoSaveUno),name='app_nota_nuevo_save_uno'),
@@ -44,3 +48,6 @@ path('notas/ObtenerCursosBimPorAula/<nivel>', login_required(ObtenerCursosBimPor
 path('notas/ObtenerCompetenciasBimPorAula/<id>', login_required(ObtenerCompetenciasBimPorAula), name='Obtener.CompetenciasBimPorAula'),
 
 ]
+
+# if settings.DEBUG:
+#     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

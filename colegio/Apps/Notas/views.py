@@ -35,6 +35,8 @@ from django.http import JsonResponse
 import pandas as pd
 from django.shortcuts import redirect
 
+import os
+from django.conf import settings
 
 def progreso_registro_notas_bimestre(request,ano,bim,gradonivel,seccion):
 	nivel=gradonivel[1:]
@@ -259,17 +261,20 @@ def ConsolidadoNotas(request):
 		############################################3
 		if str(nivel).find("PRIM")!= -1:
 			if final == '0':
-				return redirect("https://colcoopcv.com/media/files/PLANTILLA_LIBRETA_PRIMARIA.xlsx")
+				return redirect(settings.MEDIA_URL + 'files/PLANTILLA_LIBRETA_PRIMARIA.xlsx')
+				#return redirect("https://colcoopcv.com/media/files/PLANTILLA_LIBRETA_PRIMARIA.xlsx")
 				# return redirect("/media/files/PLANTILLA_LIBRETA_PRIMARIA.xlsx")
 			else:
-				return redirect("https://colcoopcv.com/media/files/PLANTILLA_LIBRETA_PRIMARIA_R.xlsx")
+				return redirect(settings.MEDIA_URL + 'files/PLANTILLA_LIBRETA_PRIMARIA_R.xlsx')
+				#return redirect("https://colcoopcv.com/media/files/PLANTILLA_LIBRETA_PRIMARIA_R.xlsx")
 				# return redirect("/media/files/PLANTILLA_LIBRETA_PRIMARIA_R.xlsx")
 		else:
 			if final=='0' and registrar_orden_merito=='on':
 				return redirect('app_consolidado_libretas')
 			else:
-				return redirect("https://colcoopcv.com/media/files/PLANTILLA_LIBRETA_SECUNDARIA.xlsx")
-				# return redirect("/media/files/PLANTILLA_LIBRETA_SECUNDARIA.xlsx")
+				return redirect(settings.MEDIA_URL + 'files/PLANTILLA_LIBRETA_SECUNDARIA.xlsx')
+				#return redirect("https://colcoopcv.com/media/files/PLANTILLA_LIBRETA_SECUNDARIA.xlsx")
+				#return redirect("/media/files/PLANTILLA_LIBRETA_SECUNDARIA.xlsx")
 
 	else:
 		contexto={'aac':aac,'pac':pac}
@@ -707,7 +712,8 @@ def EstadoValor(obj):
 def InsertaNotasEnExcel(consolidado_notas,matriculas,nivel,gradonivel,seccion,periodo,cursos,registrar_orden_merito,idusuario,paca):
 	#LIMPIANDO TODAS LAS CELDAS################
 	if str(nivel)=='SEC':
-		Ruta = "/var/www/vhosts/colegio_venv/colegio/media/files/PLANTILLA_LIBRETA_SECUNDARIA.xlsx"
+		Ruta = os.path.join(settings.MEDIA_ROOT, 'files', 'PLANTILLA_LIBRETA_SECUNDARIA.xlsx')
+		#Ruta = "/var/www/vhosts/colegio_venv/colegio/media/files/PLANTILLA_LIBRETA_SECUNDARIA.xlsx"
 		# Ruta = "media/files/PLANTILLA_LIBRETA_SECUNDARIA.xlsx"
 		columnas_excluir=[8,12,16,20,23,27,30,34,37,41,43,60]#columnas a exluir de la limpieza x k contiene la fórmula
 		columnas_notas=[4,5,6,7,9,10,11,13,14,15,17,18,19,21,22,24,25,26,28,29,31,32,33,35,36,38,39,40,42]
@@ -759,16 +765,17 @@ def InsertaNotasEnExcel(consolidado_notas,matriculas,nivel,gradonivel,seccion,pe
 								
 						if obj.Curso.Nombre==Hoja1.cell(row=4,column=colcur).value and obj.Competencias.nombre_competencia==Hoja1.cell(row=5,column=colcur).value:##para saber si cambia curso
 							# if colcur in columnas_notas:#pregunta si las notas que va calcular corresponden a las columnas
-							print(obj.Nota)
+							
 							letras_competencias.append(obj.Nota)
 							
 							Hoja1.cell(row=fila,column=colcur,value=obj.Nota)
-		#print()
+		
 		Libro.save(Ruta)
 		if registrar_orden_merito=='on':
 			funcion_registrar_orden_merito(Ruta,idusuario,paca)
 	else:
-		Ruta = "/var/www/vhosts/colegio_venv/colegio/media/files/PLANTILLA_LIBRETA_PRIMARIA.xlsx"
+		Ruta = os.path.join(settings.MEDIA_ROOT, 'files', "PLANTILLA_LIBRETA_PRIMARIA.xlsx")
+		#Ruta = "/var/www/vhosts/colegio_venv/colegio/media/files/PLANTILLA_LIBRETA_PRIMARIA.xlsx"
 		# Ruta = "media/files/PLANTILLA_LIBRETA_PRIMARIA.xlsx"
 
 		Libro =load_workbook(Ruta)			
@@ -816,7 +823,8 @@ def InsertaNotasEnExcel(consolidado_notas,matriculas,nivel,gradonivel,seccion,pe
 def InsertaNotasEnExcelPromedio(consolidado_notas,matriculas,nivel,gradonivel,seccion,periodo,cursos,registrar_orden_merito,idusuario,paca):
 	#LIMPIANDO TODAS LAS CELDAS################
 	if str(nivel)=='SEC':		
-		Ruta = "/var/www/vhosts/colegio_venv/colegio/media/files/PLANTILLA_LIBRETA_SECUNDARIA_R.xlsx"
+		Ruta = os.path.join(settings.MEDIA_ROOT, 'files', "PLANTILLA_LIBRETA_SECUNDARIA_R.xlsx")
+		#Ruta = "/var/www/vhosts/colegio_venv/colegio/media/files/PLANTILLA_LIBRETA_SECUNDARIA_R.xlsx"
 
 		# Ruta_notas = "media/files/PLANTILLA_LIBRETA_SECUNDARIA.xlsx"
   		# Ruta = "media/files/PLANTILLA_LIBRETA_SECUNDARIA_R.xlsx" 
@@ -944,7 +952,8 @@ def InsertaNotasEnExcelPromedio(consolidado_notas,matriculas,nivel,gradonivel,se
 		# 		NotasComp.objects.bulk_create([NotasComp(**registro) for registro in nuevos_registros])
 		
 	else:
-		Ruta = "/var/www/vhosts/colegio_venv/colegio/media/files/PLANTILLA_LIBRETA_PRIMARIA_R.xlsx"
+		Ruta = os.path.join(settings.MEDIA_ROOT, 'files', "PLANTILLA_LIBRETA_PRIMARIA_R.xlsx")
+		#Ruta = "/var/www/vhosts/colegio_venv/colegio/media/files/PLANTILLA_LIBRETA_PRIMARIA_R.xlsx"
 		# Ruta = "media/files/PLANTILLA_LIBRETA_PRIMARIA_R.xlsx"
 		Libro =load_workbook(Ruta)			
 		Hoja1 = Libro.active
@@ -1052,7 +1061,7 @@ def calc_competencias_letras(lista):
         
         
 def funcion_registrar_orden_merito(ruta_notas,idusuario,paca):
-	
+	ano = AnoAcademico.objects.get(Ano=datetime.now().year)#Año
 	#Desde aquí empieza el orde de mérito.			
 	df_notas= pd.read_excel(ruta_notas, engine='openpyxl')	
 	
@@ -1075,8 +1084,14 @@ def funcion_registrar_orden_merito(ruta_notas,idusuario,paca):
 
 	# Obtén una lista de DNIs del DataFrame
 	lista_dnies = df_notas['dni'].tolist()
+	
 	# Realiza una consulta para obtener los IDs de los alumnos cuyos DNIs coinciden
-	alumnos = Matricula.objects.filter(Alumno__DNI__in=lista_dnies).values('id', 'Alumno__DNI')
+	alumnos = Matricula.objects.filter(
+		Alumno__DNI__in=lista_dnies,
+		AnoAcademico=ano
+		).values('id', 'Alumno__DNI')
+	
+	
 	# # Crea un diccionario que mapee DNIs a IDs de alumnos
 	dni_to_matricula_id = {alumno['Alumno__DNI']: alumno['id'] for alumno in alumnos}
 	
@@ -1092,7 +1107,10 @@ def funcion_registrar_orden_merito(ruta_notas,idusuario,paca):
 	df_notas['Docente_id']=docente.id
 	df_notas['PAcademico_id']=paca
 
+	
+	
 	df_nuevo=df_notas[['Matricula_id','Curso_id','Competencias_id','Docente_id','PAcademico_id','Nota']]
+	
 	
 	#Verificar si existen registros antes de registrar
 	idmatricula=df_nuevo['Matricula_id'].iloc[0]
@@ -1103,5 +1121,6 @@ def funcion_registrar_orden_merito(ruta_notas,idusuario,paca):
 	else:
 		# Convertir el DataFrame a un diccionario de registros
 		nuevos_registros = df_nuevo.to_dict(orient='records')
+		
 		#Utilizar bulk_create() para insertar los registros en el modelo Notascomp
 		NotasComp.objects.bulk_create([NotasComp(**registro) for registro in nuevos_registros])
