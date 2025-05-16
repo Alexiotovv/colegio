@@ -22,7 +22,8 @@ def RegistrarPago(request):
     
 def ListarPagos(request):
     query = request.GET.get('q', '')
-    ventas = Venta.objects.all()
+    # ventas = Venta.objects.all()
+    ventas = Venta.objects.order_by('descripcion', 'Concepto', 'Mes').distinct('descripcion', 'Concepto', 'Mes')
 
     if query:
         ventas = ventas.filter(
