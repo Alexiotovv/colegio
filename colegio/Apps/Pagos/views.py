@@ -23,7 +23,18 @@ def RegistrarPago(request):
 def ListarPagos(request):
     query = request.GET.get('q', '')
     
-    ventas = Venta.objects.order_by('descripcion', 'Concepto', 'Mes', '-FechaPago').distinct('descripcion', 'Concepto', 'Mes')
+    ventas = Venta.objects.order_by(
+    'id_operation', 'id_persona', 'descripcion', 'Dni', 'Nombre', 'Apellido', 'NombreCompleto',
+    'Nivel', 'Grado', 'Seccion', 'Concepto', 'Mes', 'TipoIngreso', 'ConceptoNumeroMes',
+    'FechaVencimiento', 'Monto', 'FechaPago', 'NumeroMesPago', 'LetraMesPago', 'Atrasado',
+    'DiasAtraso', 'MesesAtraso', 'Apoderado', 'Padre', 'Madre', 'Direccion'
+    ).distinct(
+        'id_operation', 'id_persona', 'descripcion', 'Dni', 'Nombre', 'Apellido', 'NombreCompleto',
+        'Nivel', 'Grado', 'Seccion', 'Concepto', 'Mes', 'TipoIngreso', 'ConceptoNumeroMes',
+        'FechaVencimiento', 'Monto', 'FechaPago', 'NumeroMesPago', 'LetraMesPago', 'Atrasado',
+        'DiasAtraso', 'MesesAtraso', 'Apoderado', 'Padre', 'Madre', 'Direccion'
+    )
+
 
     if query:
         ventas = ventas.filter(
