@@ -27,7 +27,7 @@ def ListarPagos(request):
     'id_operation', 'id_persona', 'descripcion', 'Dni', 'Nombre', 'Apellido', 'NombreCompleto',
     'Nivel', 'Grado', 'Seccion', 'Concepto', 'Mes', 'TipoIngreso', 'ConceptoNumeroMes',
     'FechaVencimiento', 'Monto', 'FechaPago', 'NumeroMesPago', 'LetraMesPago', 'Atrasado',
-    'DiasAtraso', 'MesesAtraso', 'Apoderado', 'Padre', 'Madre', 'Direccion'
+    'DiasAtraso', 'MesesAtraso', 'Apoderado', 'Padre', 'Madre', 'Direccion','id'
     ).distinct(
         'id_operation', 'id_persona', 'descripcion', 'Dni', 'Nombre', 'Apellido', 'NombreCompleto',
         'Nivel', 'Grado', 'Seccion', 'Concepto', 'Mes', 'TipoIngreso', 'ConceptoNumeroMes',
