@@ -22,8 +22,8 @@ def RegistrarPago(request):
     
 def ListarPagos(request):
     query = request.GET.get('q', '')
-    # ventas = Venta.objects.all()
-    ventas = Venta.objects.order_by('descripcion', 'Concepto', 'Mes').distinct('descripcion', 'Concepto', 'Mes')
+    
+    ventas = Venta.objects.order_by('descripcion', 'Concepto', 'Mes', '-FechaPago').distinct('descripcion', 'Concepto', 'Mes')
 
     if query:
         ventas = ventas.filter(
@@ -31,7 +31,7 @@ def ListarPagos(request):
             Q(Dni__icontains=query)
         )
 
-    paginator = Paginator(ventas.order_by('-FechaPago'), 15)  # 10 resultados por página
+    paginator = Paginator(ventas, 15)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
@@ -39,4 +39,4 @@ def ListarPagos(request):
         'page_obj': page_obj,
         'query': query,
     }
-    return render(request,"pagos/pagos.html",context)
+    return render(request, "pagos/pagos.html", context)
