@@ -231,8 +231,7 @@ def ImprimirAvanceNotasPrimaria(request):
         ano = request.POST.get("Ano")#El año que manda del form
         paca=request.POST.get("Pacademico")
         mes_seleccionado = int(request.POST.get("MesSeleccionado"))
-
-        dnis_filtrados = obtener_dnis_con_pagos_completos(mes_seleccionado)
+        
         nombrepaca=PAcademico.objects.get(id=paca)
         nivel=str(gradonivel)[1:len(gradonivel)] #extrae solo PRIM
         grado=str(gradonivel)[0:1]
@@ -245,12 +244,20 @@ def ImprimirAvanceNotasPrimaria(request):
 
         notas=AvanceNotasComp.objects.filter(PAcademico=paca,Matricula__AnoAcademico__Ano=ano,Matricula__Grado=gradonivel,Matricula__Seccion=seccion).order_by('Curso__Orden','Competencias__Orden')
         tutor=Docente.objects.filter(TutorGrado=gradonivel,TutorSeccion=seccion).last()
+
+        filtro = {
+            'Grado': gradonivel,
+            'Seccion': seccion,
+            'AnoAcademico__Ano': ano,
+            'Alumno__Estado': 'A'
+        }
+
+        if mes_seleccionado != 0:
+            dnis_filtrados = obtener_dnis_con_pagos_completos(mes_seleccionado)
+            filtro['Alumno__DNI__in'] = dnis_filtrados
+
         matricula = Matricula.objects.filter(
-            Grado=gradonivel,
-            Seccion=seccion,
-            AnoAcademico__Ano=ano,
-            Alumno__Estado='A',
-            Alumno__DNI__in=dnis_filtrados).order_by('Alumno__ApellidoPaterno','Alumno__ApellidoMaterno','Alumno__Nombres')
+            **filtro).order_by('Alumno__ApellidoPaterno','Alumno__ApellidoMaterno','Alumno__Nombres')
        
         contexto2={'nombrepaca':nombrepaca,'grado':grado,'result':result,'tutor':tutor,'matricula':matricula,'nivel':nivel,'nombrepaca':nombrepaca,'ano':ano,'gradonivel':gradonivel,'seccion':seccion,'notas':notas}#para libreta de avance
         return render(request,'libretas/LibretaAvancePrimaria.html',contexto2)
@@ -283,25 +290,25 @@ def ImprimirAvanceNotasSecundaria(request):
             nivel='SECUNDARIO'
         
         result = Curso.objects.raw('SELECT 1 as id,ccur."Curso_id" as IDCURSO,Count(*)-1 as NUM_COMPE FROM "Competencias_competenciacurso" as ccur GROUP BY ccur."Curso_id" ORDER BY ccur."Curso_id"')
-        dnis_filtrados = obtener_dnis_con_pagos_completos(mes_seleccionado)
+        #dnis_filtrados = obtener_dnis_con_pagos_completos(mes_seleccionado)
 
-        #dnis=Pagos.objects.filter(PagoMes=mespago,PagoAno=ano).values('Dni')
-        # data = []
-        # for d in dnis:
-        #     data.append(d["Dni"]) 
         notas=AvanceNotasComp.objects.filter(PAcademico=paca,Matricula__AnoAcademico__Ano=ano,Matricula__Grado=gradonivel,Matricula__Seccion=seccion).order_by('Curso__Orden','Competencias__Orden')
         tutor=Docente.objects.filter(TutorGrado=gradonivel,TutorSeccion=seccion).last()
-        matricula = Matricula.objects.filter(
-            Grado=gradonivel,
-            Seccion=seccion,
-            AnoAcademico__Ano=ano,
-            Alumno__Estado='A',
-            Alumno__DNI__in=dnis_filtrados).order_by('Alumno__ApellidoPaterno','Alumno__ApellidoMaterno','Alumno__Nombres')
-        # if filtrado=="SI":
-        #     matricula = Matricula.objects.filter(Grado=gradonivel,Seccion=seccion,AnoAcademico__Ano=ano,Alumno__Estado='A',Alumno__DNI__in=data).order_by('Alumno__ApellidoPaterno','Alumno__ApellidoMaterno','Alumno__Nombres')
-        # else:
-        #     matricula = Matricula.objects.filter(Grado=gradonivel,Seccion=seccion,AnoAcademico__Ano=ano,Alumno__Estado='A').order_by('Alumno__ApellidoPaterno','Alumno__ApellidoMaterno','Alumno__Nombres')
+        
+        filtro = {
+            'Grado': gradonivel,
+            'Seccion': seccion,
+            'AnoAcademico__Ano': ano,
+            'Alumno__Estado': 'A'
+        }
 
+        if mes_seleccionado != 0:
+            dnis_filtrados = obtener_dnis_con_pagos_completos(mes_seleccionado)
+            filtro['Alumno__DNI__in'] = dnis_filtrados
+
+        matricula = Matricula.objects.filter(
+            **filtro).order_by('Alumno__ApellidoPaterno','Alumno__ApellidoMaterno','Alumno__Nombres')
+       
         
         contexto2={'nombrepaca':nombrepaca,'grado':grado,'result':result,'tutor':tutor,'matricula':matricula,'nivel':nivel,'ano':ano,'gradonivel':gradonivel,'seccion':seccion,'notas':notas}#para libreta de avance
         return render(request,'libretas/LibretaAvanceSecundaria.html',contexto2)
@@ -335,14 +342,20 @@ def ImprimirNotasPrimaria(request):
 
         result = Curso.objects.raw('SELECT 1 as id,ccur."Curso_id" as IDCURSO,Count(*)-1 as NUM_COMPE FROM "Competencias_competenciacurso" as ccur GROUP BY ccur."Curso_id" ORDER BY ccur."Curso_id"')
         tutor=Docente.objects.filter(TutorGrado=gradonivel,TutorSeccion=seccion).last()
-        dnis_filtrados = obtener_dnis_con_pagos_completos(mes_seleccionado)
+        #dnis_filtrados = obtener_dnis_con_pagos_completos(mes_seleccionado)
+        filtro = {
+            'Grado': gradonivel,
+            'Seccion': seccion,
+            'AnoAcademico__Ano': ano,
+            'Alumno__Estado': 'A'
+        }
+
+        if mes_seleccionado != 0:
+            dnis_filtrados = obtener_dnis_con_pagos_completos(mes_seleccionado)
+            filtro['Alumno__DNI__in'] = dnis_filtrados
 
         matricula = Matricula.objects.filter(
-            Grado=gradonivel,
-            Seccion=seccion,
-            AnoAcademico__Ano=ano,
-            Alumno__Estado='A',
-            Alumno__DNI__in=dnis_filtrados).order_by('Alumno__ApellidoPaterno','Alumno__ApellidoMaterno','Alumno__Nombres')
+            **filtro).order_by('Alumno__ApellidoPaterno','Alumno__ApellidoMaterno','Alumno__Nombres')
         alumnos_idmat= Matricula.objects.filter(Grado=gradonivel,Seccion=seccion,AnoAcademico__Ano=ano).values('id','Grado').order_by('Alumno__ApellidoPaterno','Alumno__ApellidoMaterno','Alumno__Nombres')
 
         #Envia solamente para la apreciación del tutor
@@ -443,14 +456,19 @@ def ImprimirNotasSecundaria(request):
         tutor=Docente.objects.filter(TutorGrado=gradonivel,TutorSeccion=seccion).last()
 
 
-        dnis_filtrados = obtener_dnis_con_pagos_completos(mes_seleccionado)
+        filtro = {
+            'Grado': gradonivel,
+            'Seccion': seccion,
+            'AnoAcademico__Ano': ano,
+            'Alumno__Estado': 'A'
+        }
+
+        if mes_seleccionado != 0:
+            dnis_filtrados = obtener_dnis_con_pagos_completos(mes_seleccionado)
+            filtro['Alumno__DNI__in'] = dnis_filtrados
 
         matricula = Matricula.objects.filter(
-            Grado=gradonivel,
-            Seccion=seccion,
-            AnoAcademico__Ano=ano,
-            Alumno__Estado='A',
-            Alumno__DNI__in=dnis_filtrados).order_by('Alumno__ApellidoPaterno','Alumno__ApellidoMaterno','Alumno__Nombres')
+            **filtro).order_by('Alumno__ApellidoPaterno','Alumno__ApellidoMaterno','Alumno__Nombres')
         
         alumnos_idmat= Matricula.objects.filter(Grado=gradonivel,Seccion=seccion,AnoAcademico__Ano=ano).values('id','Grado').order_by('Alumno__ApellidoPaterno','Alumno__ApellidoMaterno','Alumno__Nombres')
         #Envia solamente para la apreciación del tutor
@@ -909,7 +927,8 @@ def CaliFinalSec(paca,notas):
 
 def obtener_dnis_con_pagos_completos(hasta_mes: int):
     """
-    Devuelve una lista de DNIs que tienen pagos completos desde marzo (3) hasta el mes dado.
+    Devuelve una lista de DNIs que tienen pagos completos desde marzo (3) 
+    hasta el mes dado.
     """
     meses_requeridos = list(range(3, hasta_mes + 1))
 
