@@ -245,7 +245,7 @@ def AvanceNotasNuevoSaveComp(request):
 				
 				nota_eva = request.POST.get(str(evalu)+str(evcomp))
 				if nota_eva=='':
-					nota_eva='COMPETENCIA NO DESARROLLADA'
+					nota_eva='CND'
 				notacomp.Nota = str(nota_eva).upper()
 				notacomp.save()
 		grabo='registrado'

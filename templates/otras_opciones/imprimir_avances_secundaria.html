@@ -45,7 +45,7 @@
       	</div>
 		<div class="col-md-6">
 			<label for="exampleSelect1">Seleccione Mes Pagados Hasta:</label>
-			<select class="single-select" name="MesSeleccionado">
+			<select class="single-select" id="MesSeleccionado">
 				<option value="0">Todos</option>
 				<option value="3">Marzo</option>
 				<option value="4">Abril</option>
@@ -58,29 +58,23 @@
 				<option value="11">Noviembre</option>
 				<option value="12">Diciembre</option>
 			</select>
+			<input type="hidden" name="MesSeleccionado" id="mesSelect">
 		</div>
-		{% comment %} <div class="col-md-3">
-			<label>Habilitar Filtro Pagos</label>
-			<select class="form-select" id="habilitarfiltro" name="habilitarfiltro">
-				<option value="NO">NO</option>
-				<option value="SI">SI</option>
-			</select>
+		<div class="col-md-6">
+			<div class="group" >
+				<br>
+				<label>
+					<input type="checkbox" id="habilitarFechas" name="HabilitarFechas"> Filtrar por rango de fechas de Pagos
+				</label>
+				<!-- Fechas deshabilitadas por defecto -->
+				<div id="rangoFechas">
+					<label>Desde: <input class="form-control" type="date" name="FechaInicio" id="FechaInicio" disabled></label>
+					<label>Hasta: <input class="form-control" type="date" name="FechaFin" id="FechaFin" disabled></label>
+				</div>
+
+			</div>
 		</div>
-		<div class="col-md-4"  style="display: none;" id="mespago">
-			<label for="exampleSelect1">Seleccione Mes Pagos</label>
-			<select class="single-select" name="pago" id="pago">
-				<option value="marzo">Marzo</option>
-				<option value="abril">Abril</option>
-				<option value="mayo">Mayo</option>
-				<option value="junio">Junio</option>
-				<option value="julio">Julio</option>
-				<option value="agosto">Agosto</option>
-				<option value="setiembre">Setiembre</option>
-				<option value="octubre">Octubre</option>
-				<option value="noviembre">Noviembre</option>
-				<option value="diciembre">Diciembre</option>
-			</select>
-		</div> {% endcomment %}
+		
     </div>
     <div class="row">
 		<div class="col-md-6">
@@ -90,63 +84,50 @@
     </div>
 </form>
 
-{% comment %} <form id="formPagar" method="POST">{% csrf_token %}
-<div class="card">
-	<div class="card-body">
-		<div class="row">
-			<div class="col-md-6">
-				<label for="">Seleccione un alumno y registre su pago</label>
-				<select name="Dni" id="Dni" class="single-select">
-					<option value="--">--</option>
-					{% for a in alumnos%}
-						<option value="{{a.Alumno.DNI}}">{{a.Alumno.DNI}}-{{a}}</option>
-					{% endfor %}
-				</select>
-			</div>
-			
-			<div class="col-md-3">
-				<label for="">Seleccione Mes de Pago</label>
-				<select class="single-select" name="pago_mes" id="pago_mes">
-					<option value="--">--</option>
-					<option value="marzo">Marzo</option>
-					<option value="abril">Abril</option>
-					<option value="mayo">Mayo</option>
-					<option value="junio">Junio</option>
-					<option value="julio">Julio</option>
-					<option value="agosto">Agosto</option>
-					<option value="setiembre">Setiembre</option>
-					<option value="octubre">Octubre</option>
-					<option value="noviembre">Noviembre</option>
-					<option value="diciembre">Diciembre</option>
-				</select>
-			</div>
-			<div class="col-md-3">
-				<label>Seleccione Año</label>
-				<select class="single-select" name="pago_ano" id="pago_ano">
-					{% for a in aac %}
-						<option value="{{a.Ano}}">{{ a.Ano}}</option>
-					{% endfor %}
-				</select>
-			</div>
 
-			<div class="col-md-3">
-				<br>
-				<button class="btn btn-danger" id="btnPagar">Pagar</button>
-			</div>
-		</div>
-	</div>
-</div>
-</form> {% endcomment %}
 {% endblock %}
 {% block js1 %}
 	<script>
-		$("#habilitarfiltro").on('change', function() {
-			if ($(this).val()=='SI') {				
-				$("#mespago").css('display','');
-			}else{
-				$("#mespago").css('display','none');
-			}
+		function syncMes() {
+			let valor = $('#MesSeleccionado').val();
+			$('#mesSelect').val(valor);
+		}
+
+		// Actualizar el campo oculto cuando cambie el select visible
+		$('#MesSeleccionado').on('change', syncMes);
+
+		// Controlar el checkbox
+		$('#habilitarFechas').on('change', function () {
+			const usarFechas = $(this).is(':checked');
+
+			// Habilita/deshabilita fechas
+			$('#FechaInicio, #FechaFin').prop('disabled', !usarFechas);
+
+			// Siempre sincroniza el valor al campo oculto
+			syncMes();
+		});
+
+		// Inicializa el valor al cargar
+		syncMes();
+			
+		$(document).ready(function() {
+		const hoy_fin = new Date();
+		const anio_fin = hoy_fin.getFullYear();
+		const mes_fin = String(hoy_fin.getMonth() + 1).padStart(2, '0'); // Mes (0-indexado)
+		const dia_fin = String(hoy_fin.getDate()).padStart(2, '0'); // Día
+
+		const fecha_fin = `${anio_fin}-${mes_fin}-${dia_fin}`;
+
+		$('#FechaFin').val(fecha_fin); // Asignar a input
+		
+		const hoy_inicio = new Date();
+		const anio_inicio = hoy_inicio.getFullYear();
+		const fecha_inicio = `${anio_inicio}-01-01`;
+		
+		$('#FechaInicio').val(fecha_inicio); // Asignar a input
+		
+
+
 		});
 	</script>
-	<script src="../../static/apps/pagos_avances.js"></script>
-{% endblock %}
+{% endblock js1 %}
