@@ -61,7 +61,8 @@ def ListarMatriculados(request,anho):
         'Alumno__ApellidoMaterno',
         'Alumno__Nombres',
         'Grado',
-        'Seccion'
+        'Seccion',
+        'FechaMat',
     ).annotate(
         Id=F('Alumno__id'),
         Dni=F('Alumno__DNI'),
@@ -76,6 +77,7 @@ def ListarMatriculados(request,anho):
         'Nombres',
         'Grado',
         'Seccion',
+        'FechaMat',
     )
     )
 
