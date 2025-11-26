@@ -26,7 +26,7 @@
   <link href="/static/assets/plugins/select2/css/select2.min.css" rel="stylesheet" />
   <link href="/static/assets/plugins/select2/css/select2-bootstrap4.css" rel="stylesheet" />
   <link rel="stylesheet" href="/static/assets/plugins/notifications/css/lobibox.min.css" />
-  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  {% comment %} <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script> {% endcomment %}
   
   
 
@@ -255,22 +255,14 @@
           </a>
           <ul>
               
-            <li> <a href="{% url 'applistar_pagos' %}"><i class="bx bx-right-arrow-alt"></i>Listar Pagos</a>
+            <li> <a href="{% url 'applistar_pagos' %}"><i class="bx bx-right-arrow-alt"></i>Listar Pagos</a></li>
+            <li> 
+              <a href="{% url 'app_gestionar_cronograma' %}"><i class="bx bx-right-arrow-alt"></i>Gestionar Cronograma</a>
             </li>
+            <li> <a href="{% url 'app_montopension_list' %}"><i class="bx bx-right-arrow-alt"></i>Configuraciones</a></li>
           </ul>
         </li>
-        {% comment %} <li>
-          <a href="javascript:;" class="has-arrow">
-            <div class="parent-icon"><i class="lni lni-layers"></i>
-            </div>
-            <div class="menu-title">Justificación Asist.</div>
-          </a>
-          <ul>
-              
-            <li> <a href="{% url 'appIndexJustificaciones' %}"><i class="bx bx-right-arrow-alt"></i>Listar Justificaciones</a>
-            </li>
-          </ul>
-        </li> {% endcomment %}
+        
       {% endif %}
 
           {% endfor %}
@@ -780,14 +772,14 @@
 	<script src="/static/assets/plugins/highcharts/js/export-data.js"></script>
 	<script src="/static/assets/plugins/highcharts/js/accessibility.js"></script>
 	<!--<script src="/static/assets/plugins/apexcharts-bundle/js/apexcharts.min.js"></script>-->
-	<script src="/static/assets/js/index2.js"></script>
+	{% comment %} <script src="/static/assets/js/index2.js"></script> {% endcomment %}
 	<!--app JS-->
 	<script src="/static/assets/js/app.js"></script>
-	<script>
+	{% comment %} <script>
 		new PerfectScrollbar('.customers-list');
 		new PerfectScrollbar('.store-metrics');
 		new PerfectScrollbar('.product-list');
-	</script>
+	</script> {% endcomment %}
   
   <script src="/static/assets/plugins/datatable/js/jquery.dataTables.min.js"></script>
 	<script src="/static/assets/plugins/datatable/js/dataTables.bootstrap5.min.js"></script>

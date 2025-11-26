@@ -3,6 +3,7 @@ from django.http import JsonResponse
 from django.shortcuts import render
 from colegio.Apps.Matricula.models import Matricula
 from colegio.Apps.Docente.models import Docente
+from colegio.Apps.Pagos.models import CronogramaPagos
 from django.db.models import F,Q
 from datetime import datetime
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
@@ -50,7 +51,7 @@ def ListarMatriculados(request,anho):
         Q(TutorGrado='-') | Q(TutorGrado='')|Q(TutorSeccion='-') | Q(TutorSeccion='')
         ).filter(User__is_active=True
         ).values('TutorGrado', 'TutorSeccion', 'Telefono','User__first_name','User__last_name')
-    print(tutores)
+    
     matricula = list(Matricula.objects.filter(
         AnoAcademico__Ano=anho,
         Alumno__Estado='A'
@@ -103,6 +104,47 @@ def ListarMatriculados(request,anho):
     
     return JsonResponse(matricula,safe=False)
 
+def ListarAlumnosMesesNoPago(request, anho):
+    """
+    Devuelve los alumnos con los meses que NO deben pagar según su cronograma
+    Solo devuelve ID del alumno y lista de meses no pago
+    """
+    try:
+        # Obtener matrículas del año activo con alumnos activos
+        matriculas = Matricula.objects.filter(
+            AnoAcademico__Ano=anho,
+            Alumno__Estado='A'
+        ).select_related('Alumno')
+        
+        resultados = []
+        
+        for matricula in matriculas:
+            # Obtener los meses que NO debe pagar (cobrar_pension=False)
+            meses_no_pago = CronogramaPagos.objects.filter(
+                Matricula=matricula,
+                cobrar_pension=False  # Solo los meses que NO debe pagar
+            )
+            
+            if meses_no_pago.exists():  # Solo incluir alumnos que tienen meses sin pagar
+                # Mapear números de mes a nombres
+                meses_nombres = {
+                    3: 'MARZO', 4: 'ABRIL', 5: 'MAYO', 6: 'JUNIO',
+                    7: 'JULIO', 8: 'AGOSTO', 9: 'SETIEMBRE', 10: 'OCTUBRE',
+                    11: 'NOVIEMBRE', 12: 'DICIEMBRE'
+                }
+                
+                meses_no_pago_lista = [meses_nombres[c.NumeroMes] for c in meses_no_pago if c.NumeroMes in meses_nombres]
+                
+                resultados.append({
+                    'Id': matricula.Alumno.id,  # Solo el ID del alumno
+                    'MesesNoPago': meses_no_pago_lista  # Lista de meses que NO debe pagar
+                })
+        
+        return JsonResponse(resultados, safe=False)
+        
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+    
 @api_view(['POST'])
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])

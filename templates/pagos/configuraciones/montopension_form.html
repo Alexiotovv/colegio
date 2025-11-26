@@ -1,0 +1,123 @@
+{% extends 'base/home_newtemplate.html' %}
+{% block title %}{{ title }}{% endblock title %}
+
+{% block form %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="bx bx-{% if form.instance.id %}edit{% else %}plus{% endif %}"></i> 
+                        {{ title }}
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form method="post" id="monto-form">
+                        {% csrf_token %}
+                        
+                        {% if form.non_field_errors %}
+                        <div class="alert alert-danger">
+                            {% for error in form.non_field_errors %}
+                            {{ error }}
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                        
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="{{ form.AnoAcademico.id_for_label }}" class="form-label">
+                                    Año Académico *
+                                </label>
+                                {{ form.AnoAcademico }}
+                                {% if form.AnoAcademico.errors %}
+                                <div class="text-danger small">
+                                    {{ form.AnoAcademico.errors }}
+                                </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label for="{{ form.Monto.id_for_label }}" class="form-label">
+                                    Monto (S/) *
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-text">S/</span>
+                                    {{ form.Monto }}
+                                </div>
+                                {% if form.Monto.errors %}
+                                <div class="text-danger small">
+                                    {{ form.Monto.errors }}
+                                </div>
+                                {% endif %}
+                                <div class="form-text">{{ form.Monto.help_text }}</div>
+                            </div>
+                            
+                            <div class="col-12">
+                                <label for="{{ form.descripcion.id_for_label }}" class="form-label">
+                                    Descripción
+                                </label>
+                                {{ form.descripcion }}
+                                {% if form.descripcion.errors %}
+                                <div class="text-danger small">
+                                    {{ form.descripcion.errors }}
+                                </div>
+                                {% endif %}
+                                <div class="form-text">{{ form.descripcion.help_text }}</div>
+                            </div>
+                            
+                            <div class="col-12">
+                                <div class="form-check form-switch">
+                                    {{ form.activo }}
+                                    <label class="form-check-label" for="{{ form.activo.id_for_label }}">
+                                        <strong>Activar este monto</strong>
+                                    </label>
+                                </div>
+                                <div class="form-text">{{ form.activo.help_text }}</div>
+                            </div>
+                        </div>
+                        
+                        <div class="row mt-4">
+                            <div class="col-12 d-flex justify-content-between">
+                                <a href="{% url 'app_montopension_list' %}" class="btn btn-secondary">
+                                    <i class="bx bx-arrow-back"></i> Cancelar
+                                </a>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bx bx-save"></i> 
+                                    {% if form.instance.id %}Actualizar{% else %}Guardar{% endif %}
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block js1 %}
+<script>
+$(document).ready(function() {
+    // Inicializar select2
+    $('select').select2({
+        theme: 'bootstrap4'
+    });
+    
+    // Validación del formulario
+    $('#monto-form').on('submit', function(e) {
+        let isValid = true;
+        const monto = parseFloat($('#id_Monto').val());
+        
+        if (monto <= 0) {
+            alert('El monto debe ser mayor a 0');
+            isValid = false;
+        }
+        
+        if (!isValid) {
+            e.preventDefault();
+        }
+    });
+});
+</script>
+{% endblock js1 %}

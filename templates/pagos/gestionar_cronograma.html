@@ -1,0 +1,584 @@
+{% extends 'base/home_newtemplate.html' %}
+{% block title %}Gestionar Cronograma de Pagos{% endblock title %}
+{% load static %}
+
+{% block form %}
+    <style>
+    /* Estilos adicionales */
+    #btn-generar-todos {
+        font-weight: 600;
+    }
+
+    .alert ul {
+        margin-bottom: 0;
+    }
+
+    .alert h6 {
+        margin-bottom: 0.5rem;
+    }
+
+    .bx-spin {
+        animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+    }
+    </style>
+<div class="container">
+    <!-- Agregar esto después del título principal -->
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <h4 class="mb-0">Gestionar Cronograma de Pagos</h4>
+                <button type="button" id="btn-generar-todos" class="btn btn-warning">
+                    <i class="bx bx-bulb"></i> Generar Cronogramas para Todos los Alumnos
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Mensajes -->
+    <div id="mensaje-resultado" style="display: none;"></div>
+    
+    
+
+    <!-- Selección de Alumno -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="card-title">1. Seleccionar Alumno</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-12">
+                    <label for="select-alumno" class="form-label">Buscar Alumno:</label>
+                    <select id="select-alumno" class="form-control single-select">
+                        <option value="">-- Seleccione un alumno --</option>
+                        {% for alumno in alumnos %}
+                        <option value="{{ alumno.id }}" data-dni="{{ alumno.DNI }}">
+                            {{ alumno.NombreCompleto }} - DNI: {{ alumno.DNI }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            
+            <!-- Información del Alumno Seleccionado -->
+            <div id="info-alumno" class="mt-3" style="display: none;">
+                <div class="alert alert-info">
+                    <h6>Información del Alumno:</h6>
+                    <p id="alumno-info-text"></p>
+                    <p id="matricula-info-text"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cronograma de Pagos -->
+    <div class="card">
+        <div class="card-header">
+            <h5 class="card-title">2. Configurar Cronograma de Pagos</h5>
+        </div>
+        <div class="card-body">
+            <form id="form-cronograma">
+                {% csrf_token %}
+                <input type="hidden" name="alumno_id" id="alumno-id">
+                <input type="hidden" name="matricula_id" id="matricula-id">
+                
+                <!-- Contenedor para cuando NO existe cronograma -->
+                <div id="sin-cronograma" style="display: none;">
+                    <div class="text-center py-4">
+                        <i class="bx bx-calendar-plus bx-lg text-muted mb-3"></i>
+                        <h5 class="text-muted">No existe cronograma generado</h5>
+                        <p class="text-muted">Para este alumno no se ha generado un cronograma de pagos.</p>
+                        <button type="button" id="btn-generar-cronograma" class="btn btn-success">
+                            <i class="bx bx-plus"></i> Generar Cronograma
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Contenedor para cuando SÍ existe cronograma -->
+                <div id="con-cronograma" style="display: none;">
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th width="5%">#</th>
+                                    <th width="25%">Mes</th>
+                                    <th width="20%">Monto (S/)</th>
+                                    <th width="20%">¿Debe Pagar?</th>
+                                    <th width="30%">Observaciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tbody-meses">
+                                <!-- Los meses se cargarán dinámicamente -->
+                                <tr>
+                                    <td colspan="5" class="text-center text-muted">
+                                        Cargando cronograma...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <!-- Resumen -->
+                    <div class="row mt-3">
+                        <div class="col-md-6">
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <h6>Resumen:</h6>
+                                    <p>Total meses a pagar: <strong id="total-meses">0</strong></p>
+                                    <p>Monto total: <strong id="monto-total">S/ 0.00</strong></p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 d-flex align-items-end justify-content-end">
+                            <div class="form-check form-switch me-3">
+                                <input class="form-check-input" type="checkbox" id="toggle-todos" checked>
+                                <label class="form-check-label" for="toggle-todos">
+                                    <strong>Marcar/Desmarcar Todos</strong>
+                                </label>
+                            </div>
+                            <button type="button" id="btn-actualizar" class="btn btn-primary">
+                                <i class="bx bx-save"></i> Actualizar Cronograma
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<!-- Modal para resultados -->
+<div class="modal fade" id="modalResultados" tabindex="-1" aria-labelledby="modalResultadosLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalResultadosLabel">Resultado de Generación Masiva</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="resultado-contenido">
+                    <!-- Aquí se mostrarán los resultados -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block js1 %}
+<script>
+$(document).ready(function() {
+    // Inicializar Select2
+     $('#select-alumno').select2({
+        theme: 'bootstrap4',
+        placeholder: "Busque por nombre o DNI...",
+        allowClear: true
+    });
+
+    // Definir meses del año con el monto desde Django
+    const MONTO_PENSION_DEFAULT = {{ monto_pension_default }};
+    const MESES = [
+        {id: 3, nombre: 'Marzo', monto: MONTO_PENSION_DEFAULT},
+        {id: 4, nombre: 'Abril', monto: MONTO_PENSION_DEFAULT},
+        {id: 5, nombre: 'Mayo', monto: MONTO_PENSION_DEFAULT},
+        {id: 6, nombre: 'Junio', monto: MONTO_PENSION_DEFAULT},
+        {id: 7, nombre: 'Julio', monto: MONTO_PENSION_DEFAULT},
+        {id: 8, nombre: 'Agosto', monto: MONTO_PENSION_DEFAULT},
+        {id: 9, nombre: 'Setiembre', monto: MONTO_PENSION_DEFAULT},
+        {id: 10, nombre: 'Octubre', monto: MONTO_PENSION_DEFAULT},
+        {id: 11, nombre: 'Noviembre', monto: MONTO_PENSION_DEFAULT},
+        {id: 12, nombre: 'Diciembre', monto: MONTO_PENSION_DEFAULT}
+    ];
+
+    // Cuando se selecciona un alumno
+    $('#select-alumno').on('change', function() {
+        const alumnoId = $(this).val();
+        
+        if (alumnoId) {
+            // Buscar matrículas activas del alumno
+            buscarMatriculasAlumno(alumnoId);
+        } else {
+            resetearFormulario();
+        }
+    });
+
+    // Buscar matrículas del alumno
+    function buscarMatriculasAlumno(alumnoId) {
+        $.ajax({
+            url: `/pagos/buscar-matriculas/${alumnoId}/`,
+            type: 'GET',
+            success: function(response) {
+                if (response.success && response.matriculas.length > 0) {
+                    // Usar la primera matrícula activa
+                    const matricula = response.matriculas[0];
+                    cargarDatosAlumno(alumnoId, matricula);
+                    cargarCronogramaExistente(matricula.id);
+                } else {
+                    mostrarMensaje('error', 'El alumno no tiene matrículas activas');
+                    resetearFormulario();
+                }
+            },
+            error: function() {
+                mostrarMensaje('error', 'Error al buscar matrículas del alumno');
+                resetearFormulario();
+            }
+        });
+    }
+
+    // Cargar datos del alumno
+    function cargarDatosAlumno(alumnoId, matricula) {
+        const selectedOption = $('#select-alumno option:selected');
+        const dni = selectedOption.data('dni');
+        const nombre = selectedOption.text();
+        
+        $('#alumno-info-text').html(`<strong>Alumno:</strong> ${nombre} | <strong>DNI:</strong> ${dni}`);
+        $('#matricula-info-text').html(`<strong>Grado/Sección:</strong> ${matricula.grado} - ${matricula.seccion} | <strong>Año:</strong> ${matricula.ano_academico}`);
+        
+        $('#alumno-id').val(alumnoId);
+        $('#matricula-id').val(matricula.id);
+        
+        $('#info-alumno').show();
+    }
+
+    // Cargar cronograma existente del alumno
+    function cargarCronogramaExistente(matriculaId) {
+        $.ajax({
+            url: `/pagos/get-cronograma/${matriculaId
+                }/`,
+            type: 'GET',
+            success: function(response) {
+                if (response.success) {
+                    if (response.existe_cronograma) {
+                            // Mostrar formulario de edición
+                        $('#sin-cronograma').hide();
+                        $('#con-cronograma').show();
+                        generarTablaMeses(response.cronograma);
+                        $('#btn-actualizar').prop('disabled', false);
+                        $('#btn-actualizar').html('<i class="bx bx-save"></i> Actualizar Cronograma');
+                        } else {
+                            // Mostrar botón para generar
+                        $('#con-cronograma').hide();
+                        $('#sin-cronograma').show();
+                        $('#btn-actualizar').prop('disabled', true);
+                        }
+                    } else {
+                        // En caso de error, mostrar opción para generar
+                    $('#con-cronograma').hide();
+                    $('#sin-cronograma').show();
+                    $('#btn-actualizar').prop('disabled', true);
+                    }
+                },
+            error: function() {
+                    // En caso de error, mostrar opción para generar
+                $('#con-cronograma').hide();
+                $('#sin-cronograma').show();
+                $('#btn-actualizar').prop('disabled', true);
+                }
+            });
+        }
+
+        // Evento para el botón "Generar Cronograma"
+        $('#btn-generar-cronograma').on('click', function() {
+            if (!$('#alumno-id').val()) {
+                mostrarMensaje('error', 'Por favor, seleccione un alumno primero.');
+                return;
+                    }
+            
+            if (confirm('¿Está seguro de generar el cronograma de pagos con los valores por defecto?')) {
+                generarCronogramaInicial();
+                    }
+                });
+
+        // Función para generar cronograma inicial
+        function generarCronogramaInicial() {
+            const matriculaId = $('#matricula-id').val();
+            
+            // Crear un objeto con los datos por defecto usando MONTO_PENSION_DEFAULT
+            const cronogramaDefault = {};
+            MESES.forEach(mes => {
+                cronogramaDefault[mes.id] = {
+                    cobrar_pension: true,
+                    monto: mes.monto,  // Usa el monto definido en MESES
+                    observaciones: '',
+                    pagado: false
+                };
+            });
+            
+            // Mostrar la tabla con los valores por defecto
+            $('#sin-cronograma').hide();
+            $('#con-cronograma').show();
+            generarTablaMeses(cronogramaDefault);
+            $('#btn-actualizar').prop('disabled', false);
+            $('#btn-actualizar').html('<i class="bx bx-save"></i> Guardar Cronograma');
+            
+            mostrarMensaje('info', `Cronograma generado con monto de pensión: S/ ${MONTO_PENSION_DEFAULT}. Revise y guarde los cambios.`);
+        }
+
+
+
+    // Generar tabla de meses
+    function generarTablaMeses(cronogramaExistente) {
+        let html = '';
+        
+        MESES.forEach(mes => {
+            const mesExistente = cronogramaExistente[mes.id];
+            const debePagar = mesExistente ? mesExistente.cobrar_pension : true;
+            const monto = mesExistente ? mesExistente.monto : mes.monto;
+            const observaciones = mesExistente ? mesExistente.observaciones : '';
+            const pagado = mesExistente ? mesExistente.pagado : false;
+            
+            html += `
+            <tr>
+                <td>${mes.id}</td>
+                <td>
+                    <strong>${mes.nombre}</strong>
+                    ${pagado ? '<span class="badge bg-success ms-2">Pagado</span>' : ''}
+                    <input type="hidden" name="mes_${mes.id}" value="${mes.id}">
+                </td>
+                <td>
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-text">S/</span>
+                        <input type="number" class="form-control form-control-sm monto-mes" 
+                               name="monto_${mes.id}" value="${monto}" step="0.01" min="0" 
+                               ${pagado ? 'readonly' : ''}>
+                    </div>
+                </td>
+                <td class="text-center">
+                    <div class="form-check form-switch d-inline-block">
+                        <input class="form-check-input checkbox-pagar" type="checkbox" 
+                               name="debe_pagar_${mes.id}" id="pagar_${mes.id}" 
+                               ${debePagar ? 'checked' : ''} 
+                               ${pagado ? 'disabled' : ''}>
+                        <label class="form-check-label" for="pagar_${mes.id}">
+                            <span class="badge ${debePagar ? 'bg-success' : 'bg-danger'}">${debePagar ? 'SÍ' : 'NO'}</span>
+                        </label>
+                    </div>
+                </td>
+                <td>
+                    <input type="text" class="form-control form-control-sm" 
+                           name="observacion_${mes.id}" value="${observaciones}" 
+                           placeholder="Observaciones opcionales"
+                           ${pagado ? 'readonly' : ''}>
+                </td>
+            </tr>
+            `;
+        });
+        
+        $('#tbody-meses').html(html);
+        
+        // Event listeners
+        $('.monto-mes').on('change', calcularResumen);
+        $('.checkbox-pagar').on('change', function() {
+            actualizarBadgeCheckbox(this);
+            calcularResumen();
+        });
+        
+        calcularResumen();
+    }
+
+    // Actualizar badge del checkbox
+    function actualizarBadgeCheckbox(checkbox) {
+        const label = $(checkbox).siblings('label');
+        if ($(checkbox).is(':checked')) {
+            label.find('.badge').removeClass('bg-danger').addClass('bg-success').text('SÍ');
+        } else {
+            label.find('.badge').removeClass('bg-success').addClass('bg-danger').text('NO');
+        }
+    }
+
+    // Calcular resumen
+    function calcularResumen() {
+        let totalMeses = 0;
+        let montoTotal = 0;
+        
+        $('.checkbox-pagar:checked').each(function() {
+            if (!$(this).is(':disabled')) {
+                totalMeses++;
+                const mesId = $(this).attr('name').split('_')[2];
+                const monto = parseFloat($(`input[name="monto_${mesId}"]`).val()) || 0;
+                montoTotal += monto;
+            }
+        });
+        
+        $('#total-meses').text(totalMeses);
+        $('#monto-total').text(`S/ ${montoTotal.toFixed(2)}`);
+    }
+
+    // Toggle para marcar/desmarcar todos
+    $('#toggle-todos').on('change', function() {
+        const isChecked = $(this).is(':checked');
+        $('.checkbox-pagar:not(:disabled)').prop('checked', isChecked).trigger('change');
+    });
+
+    // Enviar formulario
+    $('#btn-actualizar').on('click', function() {
+        if (!$('#alumno-id').val()) {
+            mostrarMensaje('error', 'Por favor, seleccione un alumno primero.');
+            return;
+        }
+        
+        if (confirm('¿Está seguro de guardar el cronograma de pagos?')) {
+            guardarCronograma();
+        }
+    });
+
+    function guardarCronograma() {
+        const formData = new FormData($('#form-cronograma')[
+                0
+            ]);
+        
+        $.ajax({
+            url: '/pagos/registrar_cronograma/',
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function(response) {
+                if (response.success) {
+                    mostrarMensaje('success', response.message);
+                    // Cambiar a modo edición después del primer guardado
+                    $('#btn-actualizar').html('<i class="bx bx-save"></i> Actualizar Cronograma');
+                    // Recargar el cronograma para actualizar estados
+                    cargarCronogramaExistente($('#matricula-id').val());
+                    } else {
+                    mostrarMensaje('error', response.error || 'Error al guardar el cronograma');
+                    }
+                },
+            error: function() {
+                mostrarMensaje('error', 'Error de conexión al guardar el cronograma');
+                }
+            });
+    }
+       
+    // En la función resetearFormulario, agregar:
+    
+    function resetearFormulario() {
+        $('#info-alumno').hide();
+        $('#sin-cronograma').hide();
+        $('#con-cronograma').hide();
+        $('#tbody-meses').html('<tr><td colspan="5" class="text-center text-muted">Seleccione un alumno para configurar los meses</td></tr>');
+        $('#btn-actualizar').prop('disabled', true);
+        $('#alumno-id').val('');
+        $('#matricula-id').val('');
+        $('#total-meses').text('0');
+        $('#monto-total').text('S/ 0.00');
+    }
+
+    // Mostrar mensajes
+    function mostrarMensaje(tipo, mensaje) {
+        const alertClass = tipo === 'success' ? 'alert-success' : 'alert-danger';
+        const html = `<div class="alert ${alertClass} alert-dismissible fade show">
+            ${mensaje}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>`;
+        
+        $('#mensaje-resultado').html(html).show();
+        
+        // Auto-ocultar después de 5 segundos
+        setTimeout(() => {
+            $('#mensaje-resultado').fadeOut();
+        }, 5000);
+    }
+
+    // Resetear formulario
+    function resetearFormulario() {
+        $('#info-alumno').hide();
+        $('#tbody-meses').html('<tr><td colspan="5" class="text-center text-muted">Seleccione un alumno para configurar los meses</td></tr>');
+        $('#btn-actualizar').prop('disabled', true);
+        $('#alumno-id').val('');
+        $('#matricula-id').val('');
+        $('#total-meses').text('0');
+        $('#monto-total').text('S/ 0.00');
+    }
+
+    // Evento para el botón "Generar Cronogramas para Todos los Alumnos"
+    $('#btn-generar-todos').on('click', function() {
+        const $btn = $(this);
+        const btnOriginalText = $btn.html();
+        
+        if (!confirm('¿Está seguro de generar cronogramas para TODOS los alumnos que no tengan cronograma en el año activo?\n\nEsta acción puede tomar varios minutos.')) {
+            return;
+        }
+        
+        // Mostrar loading
+        $btn.prop('disabled', true).html('<i class="bx bx-loader bx-spin"></i> Generando...');
+        
+        $.ajax({
+            url: '/pagos/generar-cronogramas-masivos/',
+            type: 'POST',
+            data: {
+                'csrfmiddlewaretoken': $('input[name="csrfmiddlewaretoken"]').val()
+            },
+            success: function(response) {
+                if (response.success) {
+                    // Mostrar resultados en el modal
+                    $('#resultado-contenido').html(response.message);
+                    $('#modalResultados').modal('show');
+                    
+                    // Mostrar también mensaje toast
+                    mostrarMensaje('success', `Generados ${response.estadisticas.generados} cronogramas nuevos`);
+                } else {
+                    mostrarMensaje('error', response.error || 'Error al generar cronogramas masivos');
+                }
+            },
+            error: function(xhr, status, error) {
+                let errorMsg = 'Error de conexión al generar cronogramas';
+                if (xhr.responseJSON && xhr.responseJSON.error) {
+                    errorMsg = xhr.responseJSON.error;
+                }
+                mostrarMensaje('error', errorMsg);
+            },
+            complete: function() {
+                // Restaurar botón
+                $btn.prop('disabled', false).html(btnOriginalText);
+            }
+        });
+    });
+
+    // Mejorar la función mostrarMensaje para que también muestre toasts
+    function mostrarMensaje(tipo, mensaje) {
+        const alertClass = tipo === 'success' ? 'alert-success' : 'alert-danger';
+        const icon = tipo === 'success' ? 'bx-check-circle' : 'bx-error';
+        
+        const html = `<div class="alert ${alertClass} alert-dismissible fade show">
+            <i class="bx ${icon}"></i> ${mensaje}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>`;
+        
+        $('#mensaje-resultado').html(html).show();
+        
+        // Auto-ocultar después de 5 segundos
+        setTimeout(() => {
+            $('#mensaje-resultado').fadeOut();
+        }, 5000);
+    }
+
+
+});
+</script>
+
+<style>
+.table th {
+    font-size: 0.9rem;
+}
+.form-check-input:checked {
+    background-color: #198754;
+    border-color: #198754;
+}
+.badge {
+    font-size: 0.75rem;
+}
+.input-group-sm {
+    max-width: 150px;
+}
+.alert {
+    margin-bottom: 1rem;
+}
+</style>
+{% endblock js1 %}

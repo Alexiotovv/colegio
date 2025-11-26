@@ -1,0 +1,165 @@
+{% extends 'base/home_newtemplate.html' %}
+{% block title %}Gestionar Montos de Pensión{% endblock title %}
+
+{% block form %}
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h4>Gestionar Montos de Pensión</h4>
+        <div>
+            <a href="{% url 'app_configuraciones_pagos' %}" class="btn btn-outline-secondary me-2">
+                <i class="bx bx-arrow-back"></i> Volver
+            </a>
+            <a href="{% url 'app_montopension_create' %}" class="btn btn-primary">
+                <i class="bx bx-plus"></i> Nuevo Monto
+            </a>
+        </div>
+    </div>
+
+    <!-- Filtros -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <div class="col-md-6">
+                    <label for="ano_academico" class="form-label">Filtrar por Año Académico:</label>
+                    <select name="ano_academico" id="ano_academico" class="form-select">
+                        <option value="">Todos los años</option>
+                        {% for ano in anos_academicos %}
+                        <option value="{{ ano.id }}" {% if request.GET.ano_academico == ano.id|stringformat:"s" %}selected{% endif %}>
+                            {{ ano.Ano }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-6 d-flex align-items-end">
+                    <button type="submit" class="btn btn-outline-primary me-2">Filtrar</button>
+                    <a href="{% url 'app_montopension_list' %}" class="btn btn-outline-secondary">Limpiar</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Mensajes -->
+    {% if messages %}
+    <div class="mb-4">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Tabla de Montos -->
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-striped table-hover" id="tabla-montos">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Año Académico</th>
+                            <th>Monto (S/)</th>
+                            <th>Descripción</th>
+                            <th>Estado</th>
+                            <th>Fecha Creación</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for monto in montos %}
+                        <tr>
+                            <td>{{ monto.AnoAcademico.Ano }}</td>
+                            <td class="fw-bold text-success">S/ {{ monto.Monto }}</td>
+                            <td>{{ monto.descripcion|default:"-" }}</td>
+                            <td>
+                                {% if monto.activo %}
+                                <span class="badge bg-success">Activo</span>
+                                {% else %}
+                                <span class="badge bg-secondary">Inactivo</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ monto.created_at|date:"d/m/Y" }}</td>
+                            <td>
+                                <div class="btn-group btn-group-sm">
+                                    <a href="{% url 'app_montopension_edit' monto.id %}" class="btn btn-outline-warning" title="Editar">
+                                        <i class="bx bx-edit"></i>
+                                    </a>
+                                    <a href="{% url 'app_montopension_delete' monto.id %}" class="btn btn-outline-danger" title="Eliminar" onclick="return confirm('¿Está seguro de eliminar este monto de pensión?')">
+                                        <i class="bx bx-trash"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" class="text-center text-muted py-4">
+                                <i class="bx bx-info-circle display-4 d-block mb-2"></i>
+                                No se encontraron montos de pensión registrados.
+                                <br>
+                                <a href="{% url 'app_montopension_create' %}" class="btn btn-primary btn-sm mt-2">
+                                    <i class="bx bx-plus"></i> Crear primer monto
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Paginación -->
+            {% if is_paginated %}
+            <nav aria-label="Page navigation" class="mt-4">
+                <ul class="pagination justify-content-center">
+                    {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page=1{% if request.GET.ano_academico %}&ano_academico={{ request.GET.ano_academico }}{% endif %}">Primero</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if request.GET.ano_academico %}&ano_academico={{ request.GET.ano_academico }}{% endif %}">Anterior</a>
+                    </li>
+                    {% endif %}
+                    
+                    <li class="page-item active">
+                        <span class="page-link">Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
+                    </li>
+                    
+                    {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if request.GET.ano_academico %}&ano_academico={{ request.GET.ano_academico }}{% endif %}">Siguiente</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if request.GET.ano_academico %}&ano_academico={{ request.GET.ano_academico }}{% endif %}">Último</a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block js1 %}
+<script>
+$(document).ready(function() {
+    $('#tabla-montos').DataTable({
+        dom: 'Bfrtip',
+        paging: false,
+        searching: false,
+        info: false,
+        ordering: false,
+        buttons: [
+            {
+                extend: 'excelHtml5',
+                title: 'MontosPension',
+                text: '📥 Descargar Excel',
+                className: 'btn btn-success btn-sm'
+            }
+        ],
+        language: {
+            url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/es-ES.json'
+        }
+    });
+});
+</script>
+{% endblock js1 %}

@@ -1,0 +1,111 @@
+{% extends 'base/home_newtemplate.html' %}
+{% block title %}Configuraciones de Pagos{% endblock title %}
+
+{% block form %}
+<div class="container">
+    <div class="row">
+        <div class="col-12">
+            <h4 class="mb-4">Configuraciones de Pagos</h4>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Tarjeta de Montos de Pensión -->
+        <div class="col-md-6 col-lg-4">
+            <div class="card border-primary">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1">
+                            <h5 class="card-title">Montos de Pensión</h5>
+                            <p class="card-text">Configurar los montos de pensión por año académico</p>
+                        </div>
+                        <div class="flex-shrink-0">
+                            <i class="bx bx-money display-4 text-primary"></i>
+                        </div>
+                    </div>
+                    <div class="mt-3">
+                        <a href="{% url 'app_montopension_list' %}" class="btn btn-primary">
+                            <i class="bx bx-cog"></i> Gestionar Montos
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Espacio para futuras configuraciones -->
+        <div class="col-md-6 col-lg-4">
+            <div class="card border-secondary">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1">
+                            <h5 class="card-title">Conceptos de Pago</h5>
+                            <p class="card-text">Próximamente...</p>
+                        </div>
+                        <div class="flex-shrink-0">
+                            <i class="bx bx-list-ul display-4 text-secondary"></i>
+                        </div>
+                    </div>
+                    <div class="mt-3">
+                        <button class="btn btn-secondary" disabled>
+                            <i class="bx bx-time"></i> Próximamente
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Más espacio para configuraciones -->
+        <div class="col-md-6 col-lg-4">
+            <div class="card border-info">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1">
+                            <h5 class="card-title">Descuentos</h5>
+                            <p class="card-text">Próximamente...</p>
+                        </div>
+                        <div class="flex-shrink-0">
+                            <i class="bx bx-discount display-4 text-info"></i>
+                        </div>
+                    </div>
+                    <div class="mt-3">
+                        <button class="btn btn-info" disabled>
+                            <i class="bx bx-time"></i> Próximamente
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Información rápida -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h6 class="card-title mb-0">Información de Configuraciones</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6>Montos de Pensión</h6>
+                            <ul class="list-unstyled">
+                                <li><i class="bx bx-check text-success"></i> Establecer montos por año académico</li>
+                                <li><i class="bx bx-check text-success"></i> Activar/desactivar montos</li>
+                                <li><i class="bx bx-check text-success"></i> Historial de cambios</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <h6>Próximas Funcionalidades</h6>
+                            <ul class="list-unstyled">
+                                <li><i class="bx bx-time text-warning"></i> Conceptos de pago adicionales</li>
+                                <li><i class="bx bx-time text-warning"></i> Descuentos automáticos</li>
+                                <li><i class="bx bx-time text-warning"></i> Configuración de moras</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
