@@ -9,7 +9,8 @@ import PyPDF2
 import re
 from django.core.files.storage import FileSystemStorage
 import traceback
-
+from datetime import datetime
+from django.conf import settings
 
 def validate_file_extension(value):
     ext = os.path.splitext(value.name)[1]
