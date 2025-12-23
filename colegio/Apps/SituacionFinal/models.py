@@ -74,79 +74,214 @@ class ArchivoSituacionFinal(models.Model):
         # except Exception as e:
         #     print(f"Error al extraer archivo: {e}")
         #     return []
+
+
+# En tu models.py, modifica el método buscar_dni_en_pdf
+
+
+
+def buscar_dni_en_pdf(self, pdf_path):
+    import logging
+    logger = logging.getLogger(__name__)
     
-    def buscar_dni_en_pdf(self, pdf_path):
-        import logging
-        logger = logging.getLogger(__name__)
+    # Crear archivo de log específico para este procesamiento
+    log_dir = os.path.join(settings.BASE_DIR, 'logs')
+    os.makedirs(log_dir, exist_ok=True)
+    
+    log_file = os.path.join(log_dir, 'pdf_processing.log')
+    
+    def log_to_file(message):
+        timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        with open(log_file, 'a', encoding='utf-8') as f:
+            f.write(f"{timestamp} - {message}\n")
+    
+    try:
+        log_to_file(f"Iniciando búsqueda en: {pdf_path}")
+        logger.info(f"Buscando DNI y situación en: {pdf_path}")
         
-        try:
-            logger.info(f"Buscando DNI y situación en: {pdf_path}")
+        with open(pdf_path, 'rb') as file:
+            pdf_reader = PyPDF2.PdfReader(file)
+            num_paginas = len(pdf_reader.pages)
+            log_to_file(f"PDF tiene {num_paginas} páginas")
+            logger.info(f"PDF tiene {num_paginas} páginas")
             
-            with open(pdf_path, 'rb') as file:
-                pdf_reader = PyPDF2.PdfReader(file)
-                logger.info(f"PDF tiene {len(pdf_reader.pages)} páginas")
-                
-                if len(pdf_reader.pages) == 0:
-                    logger.warning("PDF sin páginas")
-                    return None, None
-                
-                # 1. BUSCAR DNI
-                primera_pagina = pdf_reader.pages[0]
-                texto_primera = primera_pagina.extract_text()
-                
-                if not texto_primera:
-                    logger.warning("Primera página sin texto extraíble")
-                    return None, None
-                
-                import re
-                dni_match = re.search(r'DNI[:\s]*(\d{8})', texto_primera, re.IGNORECASE)
-                
-                if dni_match:
-                    dni = dni_match.group(1)
-                    logger.info(f"DNI encontrado: {dni}")
-                else:
-                    logger.warning("DNI no encontrado en primera página")
-                    dni = None
-                
-                # 2. BUSCAR SITUACIÓN FINAL
-                situacion = None
-                situaciones_exactas = [
-                    'Promovido de Grado',
-                    'Requiere Recuperación', 
-                    'Permanece en el Grado'
+            if num_paginas == 0:
+                log_to_file("PDF sin páginas")
+                logger.warning("PDF sin páginas")
+                return None, None
+            
+            # 1. BUSCAR DNI
+            primera_pagina = pdf_reader.pages[0]
+            texto_primera = primera_pagina.extract_text()
+            
+            log_to_file(f"Texto extraído (primeros 500 chars): {texto_primera[:500] if texto_primera else 'VACIO'}")
+            
+            if not texto_primera:
+                log_to_file("Primera página sin texto extraíble")
+                logger.warning("Primera página sin texto extraíble")
+                return None, None
+            
+            import re
+            dni_match = re.search(r'DNI[:\s]*(\d{8})', texto_primera, re.IGNORECASE)
+            
+            if dni_match:
+                dni = dni_match.group(1)
+                log_to_file(f"DNI encontrado: {dni}")
+                logger.info(f"DNI encontrado: {dni}")
+            else:
+                # Intentar otros patrones
+                log_to_file("Buscando DNI con otros patrones...")
+                patrones = [
+                    r'DNI\s*[\.:]?\s*(\d{8})',
+                    r'DOCUMENTO\s*[\.:]?\s*(\d{8})',
+                    r'(\d{8})(?=\D|$)'
                 ]
                 
-                for page_num, page in enumerate(pdf_reader.pages):
-                    texto_pagina = page.extract_text()
+                for patron in patrones:
+                    match = re.search(patron, texto_primera, re.IGNORECASE)
+                    if match:
+                        dni = match.group(1)
+                        log_to_file(f"DNI encontrado con patrón alternativo {patron}: {dni}")
+                        logger.info(f"DNI encontrado con patrón alternativo: {dni}")
+                        break
+                else:
+                    dni = None
+                    log_to_file("DNI no encontrado en primera página")
+                    logger.warning("DNI no encontrado en primera página")
+            
+            # 2. BUSCAR SITUACIÓN FINAL
+            situacion = None
+            situaciones_exactas = [
+                'Promovido de Grado',
+                'Requiere Recuperación', 
+                'Permanece en el Grado'
+            ]
+            
+            log_to_file(f"Buscando situación final...")
+            
+            for page_num, page in enumerate(pdf_reader.pages):
+                texto_pagina = page.extract_text()
+                log_to_file(f"Página {page_num + 1} - Tamaño texto: {len(texto_pagina) if texto_pagina else 0}")
+                
+                if not texto_pagina:
+                    continue
+                
+                # Buscar "Situación al finalizar" en el texto
+                if 'Situación al finalizar' in texto_pagina:
+                    log_to_file(f"Encontrado 'Situación al finalizar' en página {page_num + 1}")
+                    logger.info(f"Encontrado 'Situación al finalizar' en página {page_num + 1}")
                     
-                    if not texto_pagina:
-                        continue
+                    # Buscar línea completa
+                    lineas = texto_pagina.split('\n')
                     
-                    # Buscar "Situación al finalizar" en el texto
-                    if 'Situación al finalizar' in texto_pagina:
-                        logger.info(f"Encontrado 'Situación al finalizar' en página {page_num + 1}")
+                    for linea_num, linea in enumerate(lineas):
+                        if 'Situación al finalizar' in linea:
+                            log_to_file(f"Línea {linea_num}: {linea[:200]}")
+                            logger.info(f"Línea encontrada: {linea[:100]}...")
+                            
+                            # Buscar las 3 opciones exactas
+                            for situacion_exacta in situaciones_exactas:
+                                if situacion_exacta in linea:
+                                    situacion = situacion_exacta
+                                    log_to_file(f"Situación encontrada: {situacion}")
+                                    logger.info(f"Situación encontrada: {situacion}")
+                                    return dni, situacion
+                    
+                    # Si llegamos aquí, no encontró situación exacta
+                    log_to_file("'Situación al finalizar' encontrada pero no la situación exacta")
+                    logger.warning("'Situación al finalizar' encontrada pero no la situación exacta")
+            
+            log_to_file(f"Situación no encontrada. DNI: {dni}")
+            logger.warning(f"Situación no encontrada. DNI: {dni}")
+            return dni, situacion
+            
+    except Exception as e:
+        error_msg = f"Error en buscar_dni_en_pdf para {pdf_path}: {type(e).__name__}: {str(e)}"
+        log_to_file(error_msg)
+        log_to_file(traceback.format_exc())
+        logger.error(error_msg)
+        logger.error(traceback.format_exc())
+        return None, None
+
+
+
+
+    # def buscar_dni_en_pdf(self, pdf_path):
+    #     import logging
+    #     logger = logging.getLogger(__name__)
+        
+    #     try:
+    #         logger.info(f"Buscando DNI y situación en: {pdf_path}")
+            
+    #         with open(pdf_path, 'rb') as file:
+    #             pdf_reader = PyPDF2.PdfReader(file)
+    #             logger.info(f"PDF tiene {len(pdf_reader.pages)} páginas")
+                
+    #             if len(pdf_reader.pages) == 0:
+    #                 logger.warning("PDF sin páginas")
+    #                 return None, None
+                
+    #             # 1. BUSCAR DNI
+    #             primera_pagina = pdf_reader.pages[0]
+    #             texto_primera = primera_pagina.extract_text()
+                
+    #             if not texto_primera:
+    #                 logger.warning("Primera página sin texto extraíble")
+    #                 return None, None
+                
+    #             import re
+    #             dni_match = re.search(r'DNI[:\s]*(\d{8})', texto_primera, re.IGNORECASE)
+                
+    #             if dni_match:
+    #                 dni = dni_match.group(1)
+    #                 logger.info(f"DNI encontrado: {dni}")
+    #             else:
+    #                 logger.warning("DNI no encontrado en primera página")
+    #                 dni = None
+                
+    #             # 2. BUSCAR SITUACIÓN FINAL
+    #             situacion = None
+    #             situaciones_exactas = [
+    #                 'Promovido de Grado',
+    #                 'Requiere Recuperación', 
+    #                 'Permanece en el Grado'
+    #             ]
+                
+    #             for page_num, page in enumerate(pdf_reader.pages):
+    #                 texto_pagina = page.extract_text()
+                    
+    #                 if not texto_pagina:
+    #                     continue
+                    
+    #                 # Buscar "Situación al finalizar" en el texto
+    #                 if 'Situación al finalizar' in texto_pagina:
+    #                     logger.info(f"Encontrado 'Situación al finalizar' en página {page_num + 1}")
                         
-                        # Buscar línea completa
-                        lineas = texto_pagina.split('\n')
+    #                     # Buscar línea completa
+    #                     lineas = texto_pagina.split('\n')
                         
-                        for linea in lineas:
-                            if 'Situación al finalizar' in linea:
-                                logger.info(f"Línea encontrada: {linea[:100]}...")
+    #                     for linea in lineas:
+    #                         if 'Situación al finalizar' in linea:
+    #                             logger.info(f"Línea encontrada: {linea[:100]}...")
                                 
-                                # Buscar las 3 opciones exactas
-                                for situacion_exacta in situaciones_exactas:
-                                    if situacion_exacta in linea:
-                                        situacion = situacion_exacta
-                                        logger.info(f"Situación encontrada: {situacion}")
-                                        return dni, situacion
+    #                             # Buscar las 3 opciones exactas
+    #                             for situacion_exacta in situaciones_exactas:
+    #                                 if situacion_exacta in linea:
+    #                                     situacion = situacion_exacta
+    #                                     logger.info(f"Situación encontrada: {situacion}")
+    #                                     return dni, situacion
                         
-                        # Si llegamos aquí, no encontró situación exacta
-                        logger.warning("'Situación al finalizar' encontrada pero no la situación exacta")
+    #                     # Si llegamos aquí, no encontró situación exacta
+    #                     logger.warning("'Situación al finalizar' encontrada pero no la situación exacta")
                 
-                logger.warning(f"Situación no encontrada. DNI: {dni}")
-                return dni, situacion
+    #             logger.warning(f"Situación no encontrada. DNI: {dni}")
+    #             return dni, situacion
                 
-        except Exception as e:
-            logger.error(f"Error en buscar_dni_en_pdf para {pdf_path}: {type(e).__name__}: {str(e)}")
-            logger.error(traceback.format_exc())
-            return None, None
+    #     except Exception as e:
+    #         logger.error(f"Error en buscar_dni_en_pdf para {pdf_path}: {type(e).__name__}: {str(e)}")
+    #         logger.error(traceback.format_exc())
+    #         return None, None
+        
+
+
+
