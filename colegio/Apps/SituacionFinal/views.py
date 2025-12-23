@@ -14,6 +14,9 @@ import json
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
+import logging
+import traceback
+
 
 class SubirArchivoView(CreateView):
     model = ArchivoSituacionFinal
@@ -43,20 +46,29 @@ def lista_archivos(request):
     # Renderizar la plantilla con el contexto
     return render(request, 'situacionfinal/lista_archivos.html', context)
 
+
+logger = logging.getLogger(__name__)
+
 @csrf_exempt
 def procesar_archivo(request, pk):
     if request.method == 'POST':
         try:
+            logger.info(f"Iniciando procesamiento de archivo ID: {pk}")
+            
             archivo = ArchivoSituacionFinal.objects.get(pk=pk)
+            logger.info(f"Archivo encontrado: {archivo.archivo.name}")
             
             if archivo.procesado:
+                logger.warning(f"Archivo {pk} ya procesado")
                 return JsonResponse({
                     'success': False,
                     'message': 'Este archivo ya ha sido procesado'
                 })
             
             # Extraer PDFs
+            logger.info("Extrayendo PDFs del archivo comprimido...")
             pdfs = archivo.extraer_y_procesar_pdfs()
+            logger.info(f"Total PDFs encontrados: {len(pdfs)}")
             
             resultados = []
             procesados = 0
@@ -64,14 +76,49 @@ def procesar_archivo(request, pk):
             nuevos = 0
             errores = 0
             
-            for pdf_path in pdfs:
+            for i, pdf_path in enumerate(pdfs):
                 try:
+                    logger.info(f"Procesando PDF {i+1}/{len(pdfs)}: {os.path.basename(pdf_path)}")
+                    
+                    # Verificar que el archivo existe
+                    if not os.path.exists(pdf_path):
+                        logger.error(f"PDF no existe: {pdf_path}")
+                        resultados.append({
+                            'pdf': os.path.basename(pdf_path),
+                            'dni': 'Error',
+                            'alumno': 'Archivo no encontrado',
+                            'situacion': 'PDF no existe en disco',
+                            'estado': 'ERROR',
+                            'matricula_id': None
+                        })
+                        errores += 1
+                        continue
+                    
+                    # Verificar permisos del archivo
+                    try:
+                        with open(pdf_path, 'rb') as f:
+                            f.read(10)  # Intentar leer
+                    except PermissionError as pe:
+                        logger.error(f"Sin permisos para leer PDF: {pdf_path} - {pe}")
+                        resultados.append({
+                            'pdf': os.path.basename(pdf_path),
+                            'dni': 'Error',
+                            'alumno': 'Permiso denegado',
+                            'situacion': 'No se puede leer el PDF',
+                            'estado': 'ERROR',
+                            'matricula_id': None
+                        })
+                        errores += 1
+                        continue
+                    
                     dni, situacion = archivo.buscar_dni_en_pdf(pdf_path)
+                    logger.info(f"Resultado búsqueda - DNI: {dni}, Situación: {situacion}")
                     
                     if dni:
                         # Buscar alumno por DNI
                         try:
                             alumno = Alumno.objects.get(DNI=dni)
+                            logger.info(f"Alumno encontrado: {alumno.NombreCompleto()}")
                             
                             # Buscar matrícula del alumno en año activo
                             matricula = Matricula.objects.filter(
@@ -80,40 +127,53 @@ def procesar_archivo(request, pk):
                             ).first()
                             
                             if matricula:
-                                # AQUÍ ESTÁ EL CAMBIO IMPORTANTE:
-                                # Usar update_or_create con matricula como criterio
-                                situacion_final_obj, created = SituacionFinal.objects.update_or_create(
-                                    matricula=matricula,  # CRITERIO DE BÚSQUEDA ÚNICA
-                                    defaults={
-                                        'archivo_pdf': os.path.basename(pdf_path),
-                                        'dni_encontrado': dni,
-                                        'situacion_final': situacion or 'No encontrada',
-                                        'fecha_procesamiento': timezone.now()  # Actualizar fecha
-                                    }
-                                )
+                                logger.info(f"Matrícula encontrada: ID {matricula.id}")
                                 
-                                if created:
-                                    estado = 'NUEVO'
-                                    nuevos += 1
-                                else:
-                                    estado = 'ACTUALIZADO'
-                                    actualizados += 1
-                                
-                                resultados.append({
-                                    'pdf': os.path.basename(pdf_path),
-                                    'dni': dni,
-                                    'alumno': alumno.NombreCompleto(),
-                                    'situacion': situacion or 'No encontrada',
-                                    'estado': estado,
-                                    'matricula_id': matricula.id
-                                })
-                                procesados += 1
-                                
-                                print(f"DEBUG - {'Creado' if created else 'Actualizado'}: "
-                                      f"Matrícula ID {matricula.id}, "
-                                      f"Alumno: {alumno.NombreCompleto()}, "
-                                      f"Situación: {situacion}")
+                                try:
+                                    # Usar update_or_create con matricula como criterio
+                                    situacion_final_obj, created = SituacionFinal.objects.update_or_create(
+                                        matricula=matricula,
+                                        defaults={
+                                            'archivo_pdf': os.path.basename(pdf_path),
+                                            'dni_encontrado': dni,
+                                            'situacion_final': situacion or 'No encontrada',
+                                            'fecha_procesamiento': timezone.now()
+                                        }
+                                    )
+                                    
+                                    if created:
+                                        estado = 'NUEVO'
+                                        nuevos += 1
+                                        logger.info(f"NUEVO - Matrícula ID {matricula.id}, Alumno: {alumno.NombreCompleto()}")
+                                    else:
+                                        estado = 'ACTUALIZADO'
+                                        actualizados += 1
+                                        logger.info(f"ACTUALIZADO - Matrícula ID {matricula.id}, Alumno: {alumno.NombreCompleto()}")
+                                    
+                                    resultados.append({
+                                        'pdf': os.path.basename(pdf_path),
+                                        'dni': dni,
+                                        'alumno': alumno.NombreCompleto(),
+                                        'situacion': situacion or 'No encontrada',
+                                        'estado': estado,
+                                        'matricula_id': matricula.id
+                                    })
+                                    procesados += 1
+                                    
+                                except Exception as db_error:
+                                    logger.error(f"Error en base de datos para matrícula {matricula.id}: {db_error}")
+                                    logger.error(traceback.format_exc())
+                                    resultados.append({
+                                        'pdf': os.path.basename(pdf_path),
+                                        'dni': dni,
+                                        'alumno': alumno.NombreCompleto(),
+                                        'situacion': f'Error BD: {str(db_error)[:50]}',
+                                        'estado': 'ERROR',
+                                        'matricula_id': matricula.id
+                                    })
+                                    errores += 1
                             else:
+                                logger.warning(f"No hay matrícula activa para alumno: {alumno.NombreCompleto()}")
                                 resultados.append({
                                     'pdf': os.path.basename(pdf_path),
                                     'dni': dni,
@@ -124,6 +184,7 @@ def procesar_archivo(request, pk):
                                 })
                                 errores += 1
                         except Alumno.DoesNotExist:
+                            logger.warning(f"Alumno no encontrado con DNI: {dni}")
                             resultados.append({
                                 'pdf': os.path.basename(pdf_path),
                                 'dni': dni,
@@ -134,6 +195,7 @@ def procesar_archivo(request, pk):
                             })
                             errores += 1
                     else:
+                        logger.warning(f"DNI no encontrado en PDF: {os.path.basename(pdf_path)}")
                         resultados.append({
                             'pdf': os.path.basename(pdf_path),
                             'dni': 'No encontrado',
@@ -145,10 +207,9 @@ def procesar_archivo(request, pk):
                         errores += 1
                         
                 except Exception as e:
-                    # Para debugging más detallado
-                    import traceback
-                    error_trace = traceback.format_exc()
-                    print(f"Error procesando PDF {pdf_path}: {error_trace}")
+                    error_msg = f"Error procesando PDF {os.path.basename(pdf_path)}: {type(e).__name__}: {str(e)}"
+                    logger.error(error_msg)
+                    logger.error(traceback.format_exc())
                     
                     resultados.append({
                         'pdf': os.path.basename(pdf_path),
@@ -166,6 +227,8 @@ def procesar_archivo(request, pk):
             archivo.total_errores = errores
             archivo.save()
             
+            logger.info(f"Procesamiento completado. Nuevos: {nuevos}, Actualizados: {actualizados}, Errores: {errores}")
+            
             return JsonResponse({
                 'success': True,
                 'message': f'Procesados: {procesados} (Nuevos: {nuevos}, Actualizados: {actualizados}), Errores: {errores}',
@@ -179,17 +242,20 @@ def procesar_archivo(request, pk):
             })
             
         except ArchivoSituacionFinal.DoesNotExist:
+            logger.error(f"Archivo con ID {pk} no encontrado")
             return JsonResponse({
                 'success': False,
                 'message': 'Archivo no encontrado'
             })
         except Exception as e:
-            import traceback
+            logger.error(f"Error general en procesar_archivo: {type(e).__name__}: {str(e)}")
+            logger.error(traceback.format_exc())
             return JsonResponse({
                 'success': False,
                 'message': f'Error general: {str(e)}'
             })
     
+    logger.warning("Método no permitido en procesar_archivo")
     return JsonResponse({
         'success': False,
         'message': 'Método no permitido'
