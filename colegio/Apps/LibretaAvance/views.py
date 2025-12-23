@@ -163,25 +163,30 @@ def ImprimirLibretasxAlumno(request):
                     if n['competencia']==n4['competencia'] and  n['curso']==n4['curso'] and n['matricula']==n4['matricula']:
                         n['nota4']=n4['nota']
 
-        ########solo se usa para la situación final
-        # SitFinalbim4="select n4.matricula,n4.nombrecurso,n4.nota,n4.tipocurso from notas_primaria_ivbimestre n4 WHERE n4.Ano=%s and n4.grado=%s and n4.seccion=%s and n4.nivelcurso=%s and n4.nombrecompetencia=%s"
-        # cursor.execute(SitFinalbim4,[ano,gradonivel,seccion,nivelcorto,'CALIFICATIVO DE ÁREA'])
-        # SitFinalnotas4 = dictfetchall(cursor)
-        #######end para situacion final
-
         ########solo se usa para situacion final 2023 Modificado 19/dic/2023
         SitFinalbim4_2023="select n4.matricula,n4.nombrecurso,n4.nota,n4.tipocurso from notas_primaria_ivbimestre n4 WHERE n4.Ano=%s and n4.grado=%s and n4.seccion=%s and n4.nivelcurso=%s and n4.nombrecompetencia<>%s"
         cursor.execute(SitFinalbim4_2023,[ano,gradonivel,seccion,nivelcorto,'CALIFICATIVO DE ÁREA'])
         SitFinalnotas4_2023 = dictfetchall(cursor)
         #######end para situacion final
 
-
-
-        if nivelcorto=='PRIM':
-            SitFinal=SituacionFinalPrimaria_2023(alumnos_idmat,paca,SitFinalnotas4_2023,gradonivel)
-        else:
-            SitFinal=SituacionFinalSecundaria_2023(alumnos_idmat,paca,SitFinalnotas4_2023,gradonivel)
+        # if nivelcorto=='PRIM':
+        #     SitFinal=SituacionFinalPrimaria_2023(alumnos_idmat,paca,SitFinalnotas4_2023,gradonivel)
+        # else:
+        #     SitFinal=SituacionFinalSecundaria_2023(alumnos_idmat,paca,SitFinalnotas4_2023,gradonivel)
                 
+        situaciones_finales = SituacionFinal.objects.filter(
+            matricula__in=matricula
+        ).select_related('matricula')
+
+        # Convertir a formato similar al de la función antigua
+        SitFinal = []
+        for situacion in situaciones_finales:
+            SitFinal.append({
+                'idMat': situacion.matricula.id,
+                'sitfinal': (situacion.situacion_final or 'NO REGISTRADA').upper(),
+                # 'titulo_curso': 'SITUACIÓN FINAL'  # Puedes ajustar esto si lo necesitas
+            })
+
 
         contexto2={'SitFinal':SitFinal,'nombrepaca':nombrepaca,'apreciaciones':apreciaciones,'notas':notas,'result':result,'tutor':tutor,'matricula':matricula,'nivel':nivel,'paca':paca,'ano':ano,'gradonivel':gradonivel,'seccion':seccion,'grado':grado,'nivelcorto':nivelcorto}#para libreta
         if nivelcorto=='SEC':
