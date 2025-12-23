@@ -8,6 +8,8 @@ import tempfile
 import PyPDF2
 import re
 from django.core.files.storage import FileSystemStorage
+import traceback
+
 
 def validate_file_extension(value):
     ext = os.path.splitext(value.name)[1]
@@ -74,156 +76,77 @@ class ArchivoSituacionFinal(models.Model):
             return []
     
     def buscar_dni_en_pdf(self, pdf_path):
+        import logging
+        logger = logging.getLogger(__name__)
+        
         try:
+            logger.info(f"Buscando DNI y situación en: {pdf_path}")
+            
             with open(pdf_path, 'rb') as file:
                 pdf_reader = PyPDF2.PdfReader(file)
+                logger.info(f"PDF tiene {len(pdf_reader.pages)} páginas")
                 
                 if len(pdf_reader.pages) == 0:
+                    logger.warning("PDF sin páginas")
                     return None, None
-                
-                dni = None
-                situacion = None
                 
                 # 1. BUSCAR DNI
                 primera_pagina = pdf_reader.pages[0]
                 texto_primera = primera_pagina.extract_text()
                 
-                if texto_primera:
-                    import re
-                    dni_match = re.search(r'DNI[:\s]*(\d{8})', texto_primera, re.IGNORECASE)
-                    if dni_match:
-                        dni = dni_match.group(1)
+                if not texto_primera:
+                    logger.warning("Primera página sin texto extraíble")
+                    return None, None
                 
-                # 2. BUSCAR SITUACIÓN FINAL - BUSCAR LAS 3 OPCIONES EXACTAS
-                for page in pdf_reader.pages:
+                import re
+                dni_match = re.search(r'DNI[:\s]*(\d{8})', texto_primera, re.IGNORECASE)
+                
+                if dni_match:
+                    dni = dni_match.group(1)
+                    logger.info(f"DNI encontrado: {dni}")
+                else:
+                    logger.warning("DNI no encontrado en primera página")
+                    dni = None
+                
+                # 2. BUSCAR SITUACIÓN FINAL
+                situacion = None
+                situaciones_exactas = [
+                    'Promovido de Grado',
+                    'Requiere Recuperación', 
+                    'Permanece en el Grado'
+                ]
+                
+                for page_num, page in enumerate(pdf_reader.pages):
                     texto_pagina = page.extract_text()
                     
                     if not texto_pagina:
                         continue
                     
-                    # Buscar la línea completa que contiene "Situación al finalizar"
-                    lineas = texto_pagina.split('\n')
-                    
-                    for linea in lineas:
-                        if 'Situación al finalizar' in linea:
-                            # DEBUG: Mostrar la línea completa
-                            print(f"DEBUG - Línea completa: {linea}")
-                            
-                            # Buscar las 3 opciones exactas después de "Situación al finalizar el período lectivo"
-                            # Definir las 3 situaciones exactas que buscamos
-                            situaciones_exactas = [
-                                'Promovido de Grado',
-                                'Requiere Recuperación', 
-                                'Permanece en el Grado'
-                            ]
-                            
-                            # Intentar extraer la parte después de "Situación al finalizar el período lectivo"
-                            if 'Situación al finalizar el período lectivo' in linea:
-                                # Dividir la línea
-                                partes = linea.split('Situación al finalizar el período lectivo')
-                                texto_despues = partes[1].strip() if len(partes) > 1 else ""
-                            else:
-                                texto_despues = linea
-                            
-                            # Limpiar texto: eliminar "Página X de Y" y similares
-                            texto_despues = re.sub(r'\s*Página\s*\d+\s*de\s*\d+.*', '', texto_despues, flags=re.IGNORECASE)
-                            texto_despues = re.sub(r'\s*Pág\.\s*\d+.*', '', texto_despues, flags=re.IGNORECASE)
-                            texto_despues = re.sub(r'\s*\d+\s*/\s*\d+.*', '', texto_despues)
-                            
-                            # Eliminar caracteres especiales al inicio
-                            texto_despues = re.sub(r'^[|\-:\s]+', '', texto_despues)
-                            
-                            print(f"DEBUG - Texto después de limpiar: '{texto_despues}'")
-                            
-                            # Buscar coincidencia exacta con las 3 opciones
-                            for situacion_exacta in situaciones_exactas:
-                                # Verificar si la situación exacta está en el texto
-                                if situacion_exacta in texto_despues:
-                                    situacion = situacion_exacta
-                                    print(f"DEBUG - Encontrado exacto: {situacion}")
-                                    break
-                            
-                            # Si no encontró exacto, buscar por palabras clave completas
-                            if not situacion:
-                                # Buscar por inicio de cada opción
+                    # Buscar "Situación al finalizar" en el texto
+                    if 'Situación al finalizar' in texto_pagina:
+                        logger.info(f"Encontrado 'Situación al finalizar' en página {page_num + 1}")
+                        
+                        # Buscar línea completa
+                        lineas = texto_pagina.split('\n')
+                        
+                        for linea in lineas:
+                            if 'Situación al finalizar' in linea:
+                                logger.info(f"Línea encontrada: {linea[:100]}...")
+                                
+                                # Buscar las 3 opciones exactas
                                 for situacion_exacta in situaciones_exactas:
-                                    # Tomar las primeras 1-2 palabras de cada opción
-                                    palabras_clave = situacion_exacta.split()[:2]
-                                    clave_busqueda = ' '.join(palabras_clave)
-                                    
-                                    # Verificar si el texto comienza con estas palabras clave
-                                    if texto_despues.startswith(clave_busqueda):
-                                        # Contar cuántas palabras completas podemos tomar
-                                        palabras_texto = texto_despues.split()
-                                        palabras_situacion = situacion_exacta.split()
-                                        
-                                        # Tomar el número correcto de palabras
-                                        if len(palabras_texto) >= len(palabras_situacion):
-                                            situacion = situacion_exacta
-                                        else:
-                                            # Tomar todas las palabras disponibles
-                                            situacion = ' '.join(palabras_texto[:len(palabras_situacion)])
-                                        print(f"DEBUG - Encontrado por palabras clave: {situacion}")
-                                        break
-                            
-                            # Si aún no tenemos situación, buscar coincidencias parciales
-                            if not situacion:
-                                palabras_despues = texto_despues.split()
-                                
-                                # Reconstruir la situación palabra por palabra
-                                palabras_encontradas = []
-                                
-                                # Diccionario de mapeo completo
-                                mapeo_completo = {
-                                    'Promovido de Grado': ['Promovido', 'de', 'Grado'],
-                                    'Requiere Recuperación': ['Requiere', 'Recuperación'],
-                                    'Permanece en el Grado': ['Permanece', 'en', 'el', 'Grado']
-                                }
-                                
-                                # Verificar cada situación
-                                for situacion_exacta, palabras_esperadas in mapeo_completo.items():
-                                    todas_encontradas = True
-                                    palabras_candidato = []
-                                    
-                                    # Verificar si todas las palabras esperadas están en orden
-                                    for palabra in palabras_esperadas:
-                                        if palabra in palabras_despues:
-                                            # Encontrar el índice de la palabra
-                                            try:
-                                                idx = palabras_despues.index(palabra)
-                                                palabras_candidato.append(palabra)
-                                            except:
-                                                todas_encontradas = False
-                                                break
-                                        else:
-                                            # Verificar si hay variaciones (plural, género, etc.)
-                                            encontrada = False
-                                            for p in palabras_despues:
-                                                if palabra.lower() in p.lower():
-                                                    palabras_candidato.append(palabra)  # Usar la palabra original
-                                                    encontrada = True
-                                                    break
-                                            if not encontrada:
-                                                todas_encontradas = False
-                                                break
-                                    
-                                    if todas_encontradas and len(palabras_candidato) >= 2:
-                                        # Reconstruir con las palabras originales esperadas
+                                    if situacion_exacta in linea:
                                         situacion = situacion_exacta
-                                        print(f"DEBUG - Reconstruido: {situacion}")
-                                        break
-                            
-                            # Si encontramos situación, terminar
-                            if situacion:
-                                break
-                    
-                    if situacion:
-                        break
+                                        logger.info(f"Situación encontrada: {situacion}")
+                                        return dni, situacion
+                        
+                        # Si llegamos aquí, no encontró situación exacta
+                        logger.warning("'Situación al finalizar' encontrada pero no la situación exacta")
                 
+                logger.warning(f"Situación no encontrada. DNI: {dni}")
                 return dni, situacion
                 
         except Exception as e:
-            print(f"Error al procesar PDF {pdf_path}: {e}")
-            import traceback
-            traceback.print_exc()
+            logger.error(f"Error en buscar_dni_en_pdf para {pdf_path}: {type(e).__name__}: {str(e)}")
+            logger.error(traceback.format_exc())
             return None, None
