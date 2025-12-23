@@ -51,29 +51,67 @@ class ArchivoSituacionFinal(models.Model):
         return f"Archivo {self.id} - {self.fecha_subida}"
     
     def extraer_y_procesar_pdfs(self):
+        import tempfile
+        import zipfile
+        import rarfile
+        import os
+        
         temp_dir = tempfile.mkdtemp()
         archivos_pdf = []
         
-        try:
-            # Determinar si es ZIP o RAR
-            if self.archivo.name.endswith('.zip'):
-                with zipfile.ZipFile(self.archivo.path, 'r') as zip_ref:
-                    zip_ref.extractall(temp_dir)
-            elif self.archivo.name.endswith('.rar'):
-                with rarfile.RarFile(self.archivo.path, 'r') as rar_ref:
-                    rar_ref.extractall(temp_dir)
+        # Verificar que el archivo existe
+        if not os.path.exists(self.archivo.path):
+            raise FileNotFoundError(f"El archivo no existe: {self.archivo.path}")
+        
+        # Determinar si es ZIP o RAR
+        if self.archivo.name.endswith('.zip'):
+            # Verificar si es un ZIP válido
+            if not zipfile.is_zipfile(self.archivo.path):
+                raise ValueError(f"No es un archivo ZIP válido: {self.archivo.path}")
             
-            # Buscar recursivamente archivos PDF
-            for root, dirs, files in os.walk(temp_dir):
-                for file in files:
-                    if file.lower().endswith('.pdf'):
-                        archivos_pdf.append(os.path.join(root, file))
+            with zipfile.ZipFile(self.archivo.path, 'r') as zip_ref:
+                # Extraer todos los archivos
+                zip_ref.extractall(temp_dir)
+                
+        elif self.archivo.name.endswith('.rar'):
+            with rarfile.RarFile(self.archivo.path, 'r') as rar_ref:
+                rar_ref.extractall(temp_dir)
+        else:
+            raise ValueError(f"Formato no soportado: {self.archivo.name}")
+        
+        # Buscar recursivamente archivos PDF
+        for root, dirs, files in os.walk(temp_dir):
+            for file in files:
+                if file.lower().endswith('.pdf'):
+                    full_path = os.path.join(root, file)
+                    archivos_pdf.append(full_path)
+        
+        return archivos_pdf
+    
+    # def extraer_y_procesar_pdfs(self):
+    #     temp_dir = tempfile.mkdtemp()
+    #     archivos_pdf = []
+        
+    #     try:
+    #         # Determinar si es ZIP o RAR
+    #         if self.archivo.name.endswith('.zip'):
+    #             with zipfile.ZipFile(self.archivo.path, 'r') as zip_ref:
+    #                 zip_ref.extractall(temp_dir)
+    #         elif self.archivo.name.endswith('.rar'):
+    #             with rarfile.RarFile(self.archivo.path, 'r') as rar_ref:
+    #                 rar_ref.extractall(temp_dir)
             
-            return archivos_pdf
+    #         # Buscar recursivamente archivos PDF
+    #         for root, dirs, files in os.walk(temp_dir):
+    #             for file in files:
+    #                 if file.lower().endswith('.pdf'):
+    #                     archivos_pdf.append(os.path.join(root, file))
             
-        except Exception as e:
-            print(f"Error al extraer archivo: {e}")
-            return []
+    #         return archivos_pdf
+            
+    #     except Exception as e:
+    #         print(f"Error al extraer archivo: {e}")
+    #         return []
     
     def buscar_dni_en_pdf(self, pdf_path):
         import logging
