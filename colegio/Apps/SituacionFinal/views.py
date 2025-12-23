@@ -45,116 +45,116 @@ def lista_archivos(request):
 @csrf_exempt
 def procesar_archivo(request, pk):
     if request.method == 'POST':
-        try:
-            archivo = ArchivoSituacionFinal.objects.get(pk=pk)
-            
-            if archivo.procesado:
-                return JsonResponse({
-                    'success': False,
-                    'message': 'Este archivo ya ha sido procesado'
-                })
-            
-            # Extraer PDFs
-            pdfs = archivo.extraer_y_procesar_pdfs()
-            
-            resultados = []
-            procesados = 0
-            errores = 0
-            
-            for pdf_path in pdfs:
-                try:
-                    dni, situacion = archivo.buscar_dni_en_pdf(pdf_path)
-                    
-                    if dni:
-                        # Buscar alumno por DNI
-                        try:
-                            alumno = Alumno.objects.get(DNI=dni)
+        # try:
+        archivo = ArchivoSituacionFinal.objects.get(pk=pk)
+        
+        if archivo.procesado:
+            return JsonResponse({
+                'success': False,
+                'message': 'Este archivo ya ha sido procesado'
+            })
+        
+        # Extraer PDFs
+        pdfs = archivo.extraer_y_procesar_pdfs()
+        
+        resultados = []
+        procesados = 0
+        errores = 0
+        
+        for pdf_path in pdfs:
+            # try:
+                dni, situacion = archivo.buscar_dni_en_pdf(pdf_path)
+                
+                if dni:
+                    # Buscar alumno por DNI
+                    # try:
+                        alumno = Alumno.objects.get(DNI=dni)
+                        
+                        # Buscar matrícula activa del alumno
+                        matricula = Matricula.objects.filter(
+                            Alumno=alumno,
+                            AnoAcademico__activo=True
+                        ).first()
+                        
+                        if matricula:
+                            # Crear o actualizar situación final
+                            situacion_final, created = SituacionFinal.objects.update_or_create(
+                                matricula=matricula,
+                                defaults={
+                                    'archivo_pdf': os.path.basename(pdf_path),
+                                    'dni_encontrado': dni,
+                                    'situacion_final': situacion or 'No encontrada'
+                                }
+                            )
                             
-                            # Buscar matrícula activa del alumno
-                            matricula = Matricula.objects.filter(
-                                Alumno=alumno,
-                                AnoAcademico__activo=True
-                            ).first()
-                            
-                            if matricula:
-                                # Crear o actualizar situación final
-                                situacion_final, created = SituacionFinal.objects.update_or_create(
-                                    matricula=matricula,
-                                    defaults={
-                                        'archivo_pdf': os.path.basename(pdf_path),
-                                        'dni_encontrado': dni,
-                                        'situacion_final': situacion or 'No encontrada'
-                                    }
-                                )
-                                
-                                resultados.append({
-                                    'pdf': os.path.basename(pdf_path),
-                                    'dni': dni,
-                                    'alumno': alumno.NombreCompleto(),
-                                    'situacion': situacion or 'No encontrada',
-                                    'estado': 'PROCESADO'
-                                })
-                                procesados += 1
-                            else:
-                                resultados.append({
-                                    'pdf': os.path.basename(pdf_path),
-                                    'dni': dni,
-                                    'alumno': 'No encontrado',
-                                    'situacion': 'Matrícula no encontrada',
-                                    'estado': 'ERROR'
-                                })
-                                errores += 1
-                        except Alumno.DoesNotExist:
+                            resultados.append({
+                                'pdf': os.path.basename(pdf_path),
+                                'dni': dni,
+                                'alumno': alumno.NombreCompleto(),
+                                'situacion': situacion or 'No encontrada',
+                                'estado': 'PROCESADO'
+                            })
+                            procesados += 1
+                        else:
                             resultados.append({
                                 'pdf': os.path.basename(pdf_path),
                                 'dni': dni,
                                 'alumno': 'No encontrado',
-                                'situacion': 'Alumno no registrado',
+                                'situacion': 'Matrícula no encontrada',
                                 'estado': 'ERROR'
                             })
                             errores += 1
-                    else:
-                        resultados.append({
-                            'pdf': os.path.basename(pdf_path),
-                            'dni': 'No encontrado',
-                            'alumno': 'N/A',
-                            'situacion': 'DNI no encontrado en PDF',
-                            'estado': 'ERROR'
-                        })
-                        errores += 1
-                        
-                except Exception as e:
+                    # except Alumno.DoesNotExist:
+                    #     resultados.append({
+                    #         'pdf': os.path.basename(pdf_path),
+                    #         'dni': dni,
+                    #         'alumno': 'No encontrado',
+                    #         'situacion': 'Alumno no registrado',
+                    #         'estado': 'ERROR'
+                    #     })
+                    #     errores += 1
+                else:
                     resultados.append({
                         'pdf': os.path.basename(pdf_path),
-                        'dni': 'Error',
-                        'alumno': str(e)[:50],
-                        'situacion': 'Error al procesar',
+                        'dni': 'No encontrado',
+                        'alumno': 'N/A',
+                        'situacion': 'DNI no encontrado en PDF',
                         'estado': 'ERROR'
                     })
                     errores += 1
-            
-            # Actualizar estadísticas del archivo
-            archivo.procesado = True
-            archivo.total_procesados = procesados
-            archivo.total_errores = errores
-            archivo.save()
-            
-            return JsonResponse({
-                'success': True,
-                'message': f'Procesados: {procesados}, Errores: {errores}',
-                'resultados': resultados
-            })
-            
-        except ArchivoSituacionFinal.DoesNotExist:
-            return JsonResponse({
-                'success': False,
-                'message': 'Archivo no encontrado'
-            })
-        except Exception as e:
-            return JsonResponse({
-                'success': False,
-                'message': f'Error: {str(e)}'
-            })
+                    
+            # except Exception as e:
+            #     resultados.append({
+            #         'pdf': os.path.basename(pdf_path),
+            #         'dni': 'Error',
+            #         'alumno': str(e)[:50],
+            #         'situacion': 'Error al procesar',
+            #         'estado': 'ERROR'
+            #     })
+            #     errores += 1
+        
+        # Actualizar estadísticas del archivo
+        archivo.procesado = True
+        archivo.total_procesados = procesados
+        archivo.total_errores = errores
+        archivo.save()
+        
+        return JsonResponse({
+            'success': True,
+            'message': f'Procesados: {procesados}, Errores: {errores}',
+            'resultados': resultados
+        })
+        
+        # except ArchivoSituacionFinal.DoesNotExist:
+        #     return JsonResponse({
+        #             'success': False,
+        #             'message': 'Archivo no encontrado'
+        #         })
+        # except Exception as e:
+        #     return JsonResponse({
+        #         'success': False,
+        #         'message': f'Error: {str(e)}'
+        #     })
     
     return JsonResponse({
         'success': False,
