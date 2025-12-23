@@ -167,24 +167,31 @@ class SituacionFinalListView(ListView):
 def eliminar_archivo(request, pk):
     if request.method == 'POST':
         try:
-            situacion = get_object_or_404(SituacionFinal, pk=pk)
-            alumno_nombre = situacion.matricula.Alumno.NombreCompleto()
-            situacion_valor = situacion.situacion_final
-            situacion_id = situacion.id
+            # CAMBIA: ArchivoSituacionFinal en lugar de SituacionFinal
+            archivo = get_object_or_404(ArchivoSituacionFinal, pk=pk)
+            nombre_archivo = archivo.archivo.name
+            archivo_id = archivo.id
             
-            # Eliminar (se elimina en cascada según la configuración del modelo)
-            situacion.delete()
+            # Opcional: Eliminar el archivo físico
+            if archivo.archivo and os.path.exists(archivo.archivo.path):
+                try:
+                    os.remove(archivo.archivo.path)
+                except Exception as e:
+                    print(f"Error eliminando archivo físico: {e}")
+            
+            # Eliminar el objeto
+            archivo.delete()
             
             return JsonResponse({
                 'success': True,
-                'message': f'Situación eliminada correctamente',
-                'detalle': f'Se eliminó: {alumno_nombre} - {situacion_valor}'
+                'message': 'Archivo eliminado correctamente',
+                'detalle': f'Se eliminó: {nombre_archivo}'
             })
             
-        except SituacionFinal.DoesNotExist:
+        except ArchivoSituacionFinal.DoesNotExist:
             return JsonResponse({
                 'success': False,
-                'message': 'Situación no encontrada'
+                'message': 'Archivo no encontrado'
             })
         except Exception as e:
             return JsonResponse({
