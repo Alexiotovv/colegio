@@ -52,11 +52,15 @@ class ArchivoSituacionFinal(models.Model):
         return f"Archivo {self.id} - {self.fecha_subida}"
     
     def extraer_y_procesar_pdfs(self):
-        temp_dir = tempfile.mkdtemp()
+        # **MODIFICACIÓN CLAVE**: Especificar encoding 'utf-8' al crear el directorio temporal
+        temp_dir = tempfile.mkdtemp(prefix='situacion_final_')
+        
+        # Asegurarse de que la ruta se maneje como string Unicode
+        temp_dir = os.fsdecode(temp_dir)
+        
         archivos_pdf = []
         
-        # try:
-            # Determinar si es ZIP o RAR
+        # El resto de tu código permanece igual...
         if self.archivo.name.endswith('.zip'):
             with zipfile.ZipFile(self.archivo.path, 'r') as zip_ref:
                 zip_ref.extractall(temp_dir)
@@ -68,9 +72,30 @@ class ArchivoSituacionFinal(models.Model):
         for root, dirs, files in os.walk(temp_dir):
             for file in files:
                 if file.lower().endswith('.pdf'):
-                    archivos_pdf.append(os.path.join(root, file))
+                    # Asegurar que la ruta se decodifica correctamente
+                    full_path = os.path.join(root, file)
+                    archivos_pdf.append(os.fsdecode(full_path))
         
         return archivos_pdf
+        # temp_dir = tempfile.mkdtemp()
+        # archivos_pdf = []
+        
+        # # try:
+        #     # Determinar si es ZIP o RAR
+        # if self.archivo.name.endswith('.zip'):
+        #     with zipfile.ZipFile(self.archivo.path, 'r') as zip_ref:
+        #         zip_ref.extractall(temp_dir)
+        # elif self.archivo.name.endswith('.rar'):
+        #     with rarfile.RarFile(self.archivo.path, 'r') as rar_ref:
+        #         rar_ref.extractall(temp_dir)
+        
+        # # Buscar recursivamente archivos PDF
+        # for root, dirs, files in os.walk(temp_dir):
+        #     for file in files:
+        #         if file.lower().endswith('.pdf'):
+        #             archivos_pdf.append(os.path.join(root, file))
+        
+        # return archivos_pdf
             
         # except Exception as e:
         #     print(f"Error al extraer archivo: {e}")
