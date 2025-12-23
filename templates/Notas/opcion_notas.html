@@ -1,87 +1,87 @@
 {% extends 'base/home_newtemplate.html' %}
 {% block title %}Listar Notas{% endblock title %}
 {% block form %}
-<form name="notas" method="POST" id="id_estados" data-post-url="{% url 'app_opcion_notas' %}">{% csrf_token %}
-<div class="col-md-12">
-	{% for group in user.groups.all %}
-		{% if group.name == 'Administrador' or group.name == 'Asistente'%}
-			<br>
-			<h4><span class="icon-pencil2"></span> Habilitar el Ingreso de Notas Para los Docentes: </h4>
-			<div class="row">
-				<div class="col-md-3">
-					<div class="form-group">
-						<div class="custom-control custom-switch">
-						    <input type="checkbox" {{ ingnotas }} class="custom-control-input" id="customSwitch1" onchange="IngresoNotas(this)" name="ingNotas">
-						    <label class="custom-control-label" for="customSwitch1" >Notas del Bimestre</label>
-				    	</div>
+	<form name="notas" method="POST" id="id_estados" data-post-url="{% url 'app_opcion_notas' %}">{% csrf_token %}
+	<div class="col-md-12">
+		{% for group in user.groups.all %}
+			{% if group.name == 'Administrador' or group.name == 'Asistente'%}
+				<br>
+				<h4><span class="icon-pencil2"></span> Habilitar el Ingreso de Notas Para los Docentes: </h4>
+				<div class="row">
+					<div class="col-md-3">
+						<div class="form-group">
+							<div class="custom-control custom-switch">
+								<input type="checkbox" {{ ingnotas }} class="custom-control-input" id="customSwitch1" onchange="IngresoNotas(this)" name="ingNotas">
+								<label class="custom-control-label" for="customSwitch1" >Notas del Bimestre</label>
+							</div>
+						</div>
+					</div>
+					<div class="col-md-3">
+						<div class="form-group">
+							<div class="custom-control custom-switch">
+								<input type="checkbox" class="custom-control-input" id="customSwitch2" {{ ingavances }} name="ingAvances" onchange="IngresoAvance(this)">
+									<label class="custom-control-label" for="customSwitch2" >Avance de Notas</label>
+							</div>
+						</div>
 					</div>
 				</div>
-				<div class="col-md-3">
-					<div class="form-group">
-						<div class="custom-control custom-switch">
-							<input type="checkbox" class="custom-control-input" id="customSwitch2" {{ ingavances }} name="ingAvances" onchange="IngresoAvance(this)">
-							    <label class="custom-control-label" for="customSwitch2" >Avance de Notas</label>
-					    </div>
+				<!-- <div class="row">
+					<div class="col-md-4">
+						<a href="" class="btn btn-outline-primary" style="height:60px; width:160px" id="IngresoNotasBimestre"><span class="icon-file-text"></span> Notas del Bimestre</a>
 					</div>
-				</div>
-			</div>
-			<!-- <div class="row">
-				<div class="col-md-4">
-					<a href="" class="btn btn-outline-primary" style="height:60px; width:160px" id="IngresoNotasBimestre"><span class="icon-file-text"></span> Notas del Bimestre</a>
-				</div>
-				<div class="col-md-4">
-					<a href="" class="btn btn-outline-success" style="height:60px; width:160px" id="IngresoNotasAvance"><span class="icon-file-text2"></span>  Avance de Notas</a>
-				</div>
-				<div class="col-md-4">
-				</div>
-			</div> -->
-		{% endif %}
-	{% endfor %}
+					<div class="col-md-4">
+						<a href="" class="btn btn-outline-success" style="height:60px; width:160px" id="IngresoNotasAvance"><span class="icon-file-text2"></span>  Avance de Notas</a>
+					</div>
+					<div class="col-md-4">
+					</div>
+				</div> -->
+			{% endif %}
+		{% endfor %}
 
-	{% for group in user.groups.all %}
-		{% if group.name == 'Docente'%}
-			<div class="row">
-				{% if  chk_bimestre == 'on'  %}
-					<!-- <div class="col-md-4">
-						<a href="{% url 'app_listar_notas' %}" class="btn btn-outline-primary" style="height:60px; width:160px" id="IngresoNotasBimestre" >Notas del Bimestre</a>
-					</div> -->
-				{% endif %}
-				{% if  chk_avance == 'on'  %}
-					<!-- <div class="col-md-4">
-						<a href="{% url 'app_listar_avancenotas' %}" class="btn btn-outline-success" style="height:60px; width:160px" id="IngresoNotasAvance">Avance de Notas</a>
-					</div> -->
-				{% endif %}
+		{% for group in user.groups.all %}
+			{% if group.name == 'Docente'%}
+				<div class="row">
+					{% if  chk_bimestre == 'on'  %}
+						<!-- <div class="col-md-4">
+							<a href="{% url 'app_listar_notas' %}" class="btn btn-outline-primary" style="height:60px; width:160px" id="IngresoNotasBimestre" >Notas del Bimestre</a>
+						</div> -->
+					{% endif %}
+					{% if  chk_avance == 'on'  %}
+						<!-- <div class="col-md-4">
+							<a href="{% url 'app_listar_avancenotas' %}" class="btn btn-outline-success" style="height:60px; width:160px" id="IngresoNotasAvance">Avance de Notas</a>
+						</div> -->
+					{% endif %}
 
 
-			</div>
-		{% endif %}
-	{% endfor %}
-</form>
+				</div>
+			{% endif %}
+		{% endfor %}
+	</form>
 
-<script>
-	function IngresoNotas(obj) {
-		var btn1 = document.getElementById('IngresoNotasBimestre');
-		if (obj.checked) {
-			//Activa el botón
-			//btn1.style.display ="";
-			notas.submit();
-		}else{
-			//Desactiva el botón
-			//btn1.style.display ="none";
-			notas.submit();
+	<script>
+		function IngresoNotas(obj) {
+			var btn1 = document.getElementById('IngresoNotasBimestre');
+			if (obj.checked) {
+				//Activa el botón
+				//btn1.style.display ="";
+				notas.submit();
+			}else{
+				//Desactiva el botón
+				//btn1.style.display ="none";
+				notas.submit();
+			}
+
 		}
 
-	}
-
-	function IngresoAvance(obj) {
-		var btn2 = document.getElementById('IngresoNotasAvance');
-		if (obj.checked) {
-			//Activa el botón
-			notas.submit();
-		}else{
-			//Desactiva el botón
-			notas.submit();
+		function IngresoAvance(obj) {
+			var btn2 = document.getElementById('IngresoNotasAvance');
+			if (obj.checked) {
+				//Activa el botón
+				notas.submit();
+			}else{
+				//Desactiva el botón
+				notas.submit();
+			}
 		}
-	}
-</script>
+	</script>
 {% endblock %}

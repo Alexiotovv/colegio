@@ -1,0 +1,44 @@
+{% extends 'base/home_newtemplate.html' %}
+{% block title %}Situación Final{% endblock title %}
+{% block form %}
+<div class="container mt-4">
+    <h2>Situaciones Finales Registradas</h2>
+    
+    <div class="card">
+        <div class="card-body">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Alumno</th>
+                        <th>DNI</th>
+                        <th>Grado y Sección</th>
+                        <th>Situación Final</th>
+                        <th>Fecha Procesamiento</th>
+                        <th>PDF Origen</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for situacion in situaciones %}
+                    <tr>
+                        <td>{{ situacion.matricula.Alumno.NombreCompleto }}</td>
+                        <td>{{ situacion.dni_encontrado }}</td>
+                        <td>{{ situacion.matricula.Grado }} {{ situacion.matricula.Seccion }}</td>
+                        <td>
+                            <span class="badge {% if situacion.situacion_final == 'Promovido de Grado' %}bg-success{% else %}bg-warning{% endif %}">
+                                {{ situacion.situacion_final }}
+                            </span>
+                        </td>
+                        <td>{{ situacion.fecha_procesamiento|date:"d/m/Y H:i" }}</td>
+                        <td>{{ situacion.archivo_pdf|truncatechars:20 }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="text-center">No hay situaciones finales registradas</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -247,7 +247,23 @@
       {% endif %}
 
       {% if group.name == 'Administrador' or group.name == 'Asistente'%}
-      <li>    
+      <li>
+        <a href="javascript:;" class="has-arrow">
+            <div class="parent-icon"><i class="lni lni-layers"></i>
+            </div>
+            <div class="menu-title">SubirSituaciónfinal</div>
+          </a>
+          <ul>
+              
+            <li> <a href="{% url 'subir_archivo' %}"><i class="bx bx-right-arrow-alt"></i>Subir Archivos</a></li>
+            <li> 
+              <a href="{% url 'listar_archivos' %}"><i class="bx bx-right-arrow-alt"></i>Listar Archivos</a>
+            </li>
+            <li> <a href="{% url 'listar_situaciones' %}"><i class="bx bx-right-arrow-alt"></i>Listar Situaciones</a></li>
+          </ul>
+        </li>
+      
+      <!-- <li>
         <a href="javascript:;" class="has-arrow">
             <div class="parent-icon"><i class="lni lni-layers"></i>
             </div>
@@ -261,7 +277,7 @@
             </li>
             <li> <a href="{% url 'app_montopension_list' %}"><i class="bx bx-right-arrow-alt"></i>Configuraciones</a></li>
           </ul>
-        </li>
+        </li> -->
         
       {% endif %}
 

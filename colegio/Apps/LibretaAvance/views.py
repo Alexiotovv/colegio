@@ -18,6 +18,7 @@ from colegio.Apps.Docente.models import Docente
 from colegio.Apps.PeriodoAcademico.models import PAcademico
 from colegio.Apps.Competencias.models import CompetenciaCurso
 from colegio.Apps.Pagos.models import Pagos
+from colegio.Apps.SituacionFinal.models import SituacionFinal
 # from colegio.Apps.OtrasOpciones.views import FinalPrim, FinalSecun, calculo_promedio, numeros_a_letras
 from colegio.Apps.OtrasOpciones.views import *
 
@@ -444,8 +445,19 @@ def ImprimirNotasPrimaria(request):
                         n['nota4']=n4['nota']
 
         #SitFinal=SituacionFinalPrimaria(gradonivel,alumnos_idmat,paca,SitFinalnotas4)
-        SitFinal=SituacionFinalPrimaria_2023(alumnos_idmat,paca,SitFinalnotas4_2023,gradonivel)
-        
+        #SitFinal=SituacionFinalPrimaria_2023(alumnos_idmat,paca,SitFinalnotas4_2023,gradonivel)
+        situaciones_finales = SituacionFinal.objects.filter(
+            matricula__in=matricula
+        ).select_related('matricula')
+
+        # Convertir a formato similar al de la función antigua
+        SitFinal = []
+        for situacion in situaciones_finales:
+            SitFinal.append({
+                'idMat': situacion.matricula.id,
+                'sitfinal': (situacion.situacion_final or 'NO REGISTRADA').upper(),
+                # 'titulo_curso': 'SITUACIÓN FINAL'  # Puedes ajustar esto si lo necesitas
+            })
         
         contexto2={'SitFinal':SitFinal,'nombrepaca':nombrepaca,'apreciaciones':apreciaciones,'notas':notas,'result':result,'tutor':tutor,'matricula':matricula,'nivel':nivel,'paca':paca,'ano':ano,'gradonivel':gradonivel,'seccion':seccion,'grado':grado,'nivelcorto':nivelcorto}#para libreta de avance
         return render(request,'libretas/LibretaPrimaria.html',contexto2)
@@ -564,8 +576,21 @@ def ImprimirNotasSecundaria(request):
         SitFinalnotas4_2023 = dictfetchall(cursor)
         #######end para situacion final
 
-        SitFinal=SituacionFinalSecundaria_2023(alumnos_idmat,paca,SitFinalnotas4_2023,gradonivel)        
-       
+        # SitFinal=SituacionFinalSecundaria_2023(alumnos_idmat,paca,SitFinalnotas4_2023,gradonivel)        
+        situaciones_finales = SituacionFinal.objects.filter(
+            matricula__in=matricula
+        ).select_related('matricula')
+
+        # Convertir a formato similar al de la función antigua
+        SitFinal = []
+        for situacion in situaciones_finales:
+            SitFinal.append({
+                'idMat': situacion.matricula.id,
+                'sitfinal': (situacion.situacion_final or 'NO REGISTRADA').upper(),
+                # 'titulo_curso': 'SITUACIÓN FINAL'  # Puedes ajustar esto si lo necesitas
+            })
+
+
         contexto2={'SitFinal':SitFinal,
                    'nombrepaca':nombrepaca,
                    'apreciaciones':apreciaciones,

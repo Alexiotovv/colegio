@@ -855,7 +855,42 @@
                         {% endifnotequal %}
 
 
+
                         <div class="col-6">
+                            <table class="" border>
+                                <thead>
+                                    <tr>
+                                        <th style="background-color: rgb(226, 225, 225);
+                                            padding-bottom: 0px;
+                                            padding-top: 0px;
+                                            text-align: center;
+                                            -webkit-print-color-adjust: exact;font-size: 8px;width: 250px;color: black;">
+                                            SITUACIÓN FINAL
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td style="padding-bottom: 0px;
+                                        padding-top: 0px;
+                                        padding-left: 5px;
+                                        -webkit-print-color-adjust: exact;font-size: 8px;color: black;text-align-last:center;">
+                                            {% for sf in SitFinal %}
+                                                {% if sf.idMat == mat.id %}
+                                                    {{ sf.sitfinal }}
+                                                {% endif %}
+                                            {% endfor %}
+                                        </td>
+                                        
+                                    </tr>
+                                   
+                                    
+                                </tbody>
+                            </table>
+                        </div>
+
+
+                        <!--<div class="col-6">
                             <table class="" border>
                                 <thead><tr><th colspan="2" style="background-color: rgb(226, 225, 225);
                                     padding-bottom: 0px;
@@ -922,10 +957,10 @@
                                     
                                 </tbody>
                             </table>
-                        </div>
+                        </div>-->
 
 
-                        <div class="col-6">
+                        <!--<div class="col-6">
                             <br>
                             <table class="" border>
                                 <thead>
@@ -959,7 +994,7 @@
                                     </tr>    
                                 </tbody>
                             </table>
-                        </div>
+                        </div>-->
 
                     </div><!-- CLAVE DE EVALUACIÓN -->
                 
