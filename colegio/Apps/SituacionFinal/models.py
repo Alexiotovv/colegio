@@ -51,10 +51,7 @@ class ArchivoSituacionFinal(models.Model):
         return f"Archivo {self.id} - {self.fecha_subida}"
     
     def extraer_y_procesar_pdfs(self):
-        """
-        Solución para Python 3.6 con problemas de Unicode
-        Usa 'unzip' del sistema que maneja mejor los caracteres
-        """
+
         import tempfile
         import os
         import subprocess
@@ -62,108 +59,108 @@ class ArchivoSituacionFinal(models.Model):
         
         temp_dir = tempfile.mkdtemp()
         
-        try:
+        # try:
             # Verificar que el archivo existe
-            if not hasattr(self.archivo, 'path') or not os.path.exists(self.archivo.path):
-                print(f"DEBUG: Archivo no existe: {getattr(self.archivo, 'path', 'No tiene path')}")
-                return []
-            
-            # Solo procesar ZIP por ahora
-            if not self.archivo.name.lower().endswith('.zip'):
-                print(f"DEBUG: No es archivo ZIP: {self.archivo.name}")
-                return []
-            
-            # Asegurar que 'unzip' está instalado
-            try:
-                subprocess.run(['which', 'unzip'], check=True, capture_output=True)
-            except subprocess.CalledProcessError:
-                print("DEBUG: Instalando unzip...")
-                subprocess.run(['apt-get', 'update'], capture_output=True)
-                subprocess.run(['apt-get', 'install', '-y', 'unzip'], capture_output=True)
-            
-            zip_path = self.archivo.path
-            
-            # PASO 1: Listar archivos en el ZIP
-            try:
-                result = subprocess.run(
-                    ['unzip', '-l', zip_path],
-                    capture_output=True,
-                    text=True,
-                    timeout=30,
-                    encoding='utf-8',
-                    errors='ignore'
-                )
-                
-                if result.returncode != 0:
-                    print(f"DEBUG: Error al listar ZIP: {result.stderr}")
-                    return []
-                
-                # Buscar PDFs en la lista
-                pdf_files_in_zip = []
-                for line in result.stdout.split('\n'):
-                    if '.pdf' in line.lower():
-                        # El nombre del archivo es la última columna
-                        parts = line.strip().split()
-                        if len(parts) >= 4:
-                            filename = parts[-1]
-                            if filename.lower().endswith('.pdf'):
-                                pdf_files_in_zip.append(filename)
-                
-                print(f"DEBUG: PDFs encontrados en ZIP: {len(pdf_files_in_zip)}")
-                
-                if not pdf_files_in_zip:
-                    print("DEBUG: No hay PDFs en el archivo ZIP")
-                    return []
-                
-            except Exception as e:
-                print(f"DEBUG: Error al listar ZIP: {e}")
-                return []
-            
-            # PASO 2: Extraer SOLO los PDFs
-            archivos_pdf = []
-            
-            for pdf_file in pdf_files_in_zip:
-                try:
-                    # Crear nombre seguro para el archivo extraído
-                    safe_name = f"documento_{len(archivos_pdf)+1}.pdf"
-                    dest_path = os.path.join(temp_dir, safe_name)
-                    
-                    # Extraer archivo específico con unzip
-                    cmd = ['unzip', '-p', zip_path, pdf_file]
-                    result = subprocess.run(
-                        cmd,
-                        capture_output=True,
-                        timeout=30
-                    )
-                    
-                    if result.returncode == 0 and result.stdout:
-                        # Guardar el PDF
-                        with open(dest_path, 'wb') as f:
-                            f.write(result.stdout)
-                        
-                        # Verificar que es un PDF válido
-                        if os.path.getsize(dest_path) > 100:  # Al menos 100 bytes
-                            archivos_pdf.append(dest_path)
-                            print(f"DEBUG: Extraído: {pdf_file} -> {safe_name}")
-                        else:
-                            os.remove(dest_path)
-                    else:
-                        print(f"DEBUG: Error extrayendo {pdf_file}: {result.stderr}")
-                        
-                except Exception as e:
-                    print(f"DEBUG: Error procesando {pdf_file}: {e}")
-                    continue
-            
-            print(f"DEBUG: Total PDFs extraídos: {len(archivos_pdf)}")
-            return archivos_pdf
-            
-        except Exception as e:
-            print(f"DEBUG: Error general en extraer_y_procesar_pdfs: {e}")
+        if not hasattr(self.archivo, 'path') or not os.path.exists(self.archivo.path):
+            print(f"DEBUG: Archivo no existe: {getattr(self.archivo, 'path', 'No tiene path')}")
             return []
-        finally:
-            # Para debug, no eliminar temporalmente
-            # shutil.rmtree(temp_dir, ignore_errors=True)
-            pass
+        
+        # Solo procesar ZIP por ahora
+        if not self.archivo.name.lower().endswith('.zip'):
+            print(f"DEBUG: No es archivo ZIP: {self.archivo.name}")
+            return []
+        
+        # Asegurar que 'unzip' está instalado
+        # try:
+        subprocess.run(['which', 'unzip'], check=True, capture_output=True)
+        # except subprocess.CalledProcessError:
+        #     print("DEBUG: Instalando unzip...")
+        #     subprocess.run(['apt-get', 'update'], capture_output=True)
+        #     subprocess.run(['apt-get', 'install', '-y', 'unzip'], capture_output=True)
+        
+        zip_path = self.archivo.path
+        
+        # PASO 1: Listar archivos en el ZIP
+        # try:
+        result = subprocess.run(
+            ['unzip', '-l', zip_path],
+            capture_output=True,
+            text=True,
+            timeout=30,
+            encoding='utf-8',
+            errors='ignore'
+        )
+        
+        if result.returncode != 0:
+            print(f"DEBUG: Error al listar ZIP: {result.stderr}")
+            return []
+        
+        # Buscar PDFs en la lista
+        pdf_files_in_zip = []
+        for line in result.stdout.split('\n'):
+            if '.pdf' in line.lower():
+                # El nombre del archivo es la última columna
+                parts = line.strip().split()
+                if len(parts) >= 4:
+                    filename = parts[-1]
+                    if filename.lower().endswith('.pdf'):
+                        pdf_files_in_zip.append(filename)
+        
+        print(f"DEBUG: PDFs encontrados en ZIP: {len(pdf_files_in_zip)}")
+        
+        if not pdf_files_in_zip:
+            print("DEBUG: No hay PDFs en el archivo ZIP")
+            return []
+            
+        # except Exception as e:
+        #     print(f"DEBUG: Error al listar ZIP: {e}")
+        #     return []
+        
+        # PASO 2: Extraer SOLO los PDFs
+        archivos_pdf = []
+        
+        for pdf_file in pdf_files_in_zip:
+            # try:
+            # Crear nombre seguro para el archivo extraído
+            safe_name = f"documento_{len(archivos_pdf)+1}.pdf"
+            dest_path = os.path.join(temp_dir, safe_name)
+            
+            # Extraer archivo específico con unzip
+            cmd = ['unzip', '-p', zip_path, pdf_file]
+            result = subprocess.run(
+                cmd,
+                capture_output=True,
+                timeout=30
+            )
+            
+            if result.returncode == 0 and result.stdout:
+                # Guardar el PDF
+                with open(dest_path, 'wb') as f:
+                    f.write(result.stdout)
+                
+                # Verificar que es un PDF válido
+                if os.path.getsize(dest_path) > 100:  # Al menos 100 bytes
+                    archivos_pdf.append(dest_path)
+                    print(f"DEBUG: Extraído: {pdf_file} -> {safe_name}")
+                else:
+                    os.remove(dest_path)
+            else:
+                print(f"DEBUG: Error extrayendo {pdf_file}: {result.stderr}")
+                    
+            # except Exception as e:
+            #     print(f"DEBUG: Error procesando {pdf_file}: {e}")
+            #     continue
+        
+        print(f"DEBUG: Total PDFs extraídos: {len(archivos_pdf)}")
+        return archivos_pdf
+            
+        # except Exception as e:
+        #     print(f"DEBUG: Error general en extraer_y_procesar_pdfs: {e}")
+        #     return []
+        # finally:
+        #     # Para debug, no eliminar temporalmente
+        #     # shutil.rmtree(temp_dir, ignore_errors=True)
+        #     pass
     
     # def extraer_y_procesar_pdfs(self):
     #     temp_dir = tempfile.mkdtemp()
@@ -191,76 +188,76 @@ class ArchivoSituacionFinal(models.Model):
     #         return []
     
     def buscar_dni_en_pdf(self, pdf_path):
-        try:
-            import PyPDF2
-            import re
-            import sys
+        # try:
+        import PyPDF2
+        import re
+        import sys
+        
+        print(f"DEBUG: Buscando en PDF: {pdf_path}")
+        
+        with open(pdf_path, 'rb') as file:
+            pdf_reader = PyPDF2.PdfReader(file)
             
-            print(f"DEBUG: Buscando en PDF: {pdf_path}")
+            if len(pdf_reader.pages) == 0:
+                print("DEBUG: PDF sin páginas")
+                return None, None
             
-            with open(pdf_path, 'rb') as file:
-                pdf_reader = PyPDF2.PdfReader(file)
-                
-                if len(pdf_reader.pages) == 0:
-                    print("DEBUG: PDF sin páginas")
-                    return None, None
-                
-                dni = None
-                situacion = None
-                
-                # BUSCAR DNI en primera página
-                primera_pagina = pdf_reader.pages[0]
-                texto_primera = primera_pagina.extract_text()
-                
-                if texto_primera:
-                    # Buscar DNI con diferentes patrones
-                    patrones_dni = [
-                        r'DNI:\s*(\d{8})',
-                        r'DNI\s*(\d{8})',
-                        r'Documento:\s*(\d{8})',
-                        r'D\.N\.I\.:\s*(\d{8})'
-                    ]
-                    
-                    for patron in patrones_dni:
-                        match = re.search(patron, texto_primera, re.IGNORECASE)
-                        if match:
-                            dni = match.group(1)
-                            print(f"DEBUG: DNI encontrado: {dni}")
-                            break
-                
-                # BUSCAR SITUACIÓN en todas las páginas
-                situaciones_buscar = [
-                    'Promovido de Grado',
-                    'Requiere Recuperación',
-                    'Permanece en el Grado'
+            dni = None
+            situacion = None
+            
+            # BUSCAR DNI en primera página
+            primera_pagina = pdf_reader.pages[0]
+            texto_primera = primera_pagina.extract_text()
+            
+            if texto_primera:
+                # Buscar DNI con diferentes patrones
+                patrones_dni = [
+                    r'DNI:\s*(\d{8})',
+                    r'DNI\s*(\d{8})',
+                    r'Documento:\s*(\d{8})',
+                    r'D\.N\.I\.:\s*(\d{8})'
                 ]
                 
-                for page_num, page in enumerate(pdf_reader.pages):
-                    texto_pagina = page.extract_text()
-                    
-                    if not texto_pagina:
-                        continue
-                    
-                    # Buscar línea con "Situación al finalizar"
-                    lineas = texto_pagina.split('\n')
-                    
-                    for linea in lineas:
-                        if 'Situación al finalizar' in linea:
-                            print(f"DEBUG: Encontrado 'Situación al finalizar' en página {page_num+1}")
-                            print(f"DEBUG: Línea completa: {linea[:100]}...")
-                            
-                            # Buscar las situaciones exactas
-                            for situacion_buscar in situaciones_buscar:
-                                if situacion_buscar in linea:
-                                    situacion = situacion_buscar
-                                    print(f"DEBUG: Situación encontrada: {situacion}")
-                                    return dni, situacion
+                for patron in patrones_dni:
+                    match = re.search(patron, texto_primera, re.IGNORECASE)
+                    if match:
+                        dni = match.group(1)
+                        print(f"DEBUG: DNI encontrado: {dni}")
+                        break
+            
+            # BUSCAR SITUACIÓN en todas las páginas
+            situaciones_buscar = [
+                'Promovido de Grado',
+                'Requiere Recuperación',
+                'Permanece en el Grado'
+            ]
+            
+            for page_num, page in enumerate(pdf_reader.pages):
+                texto_pagina = page.extract_text()
                 
-                print(f"DEBUG: Resultado - DNI: {dni}, Situación: {situacion}")
-                return dni, situacion
+                if not texto_pagina:
+                    continue
                 
-        except Exception as e:
-            print(f"DEBUG: Error en buscar_dni_en_pdf: {e}")
-            import traceback
-            traceback.print_exc()
-            return None, None
+                # Buscar línea con "Situación al finalizar"
+                lineas = texto_pagina.split('\n')
+                
+                for linea in lineas:
+                    if 'Situación al finalizar' in linea:
+                        print(f"DEBUG: Encontrado 'Situación al finalizar' en página {page_num+1}")
+                        print(f"DEBUG: Línea completa: {linea[:100]}...")
+                        
+                        # Buscar las situaciones exactas
+                        for situacion_buscar in situaciones_buscar:
+                            if situacion_buscar in linea:
+                                situacion = situacion_buscar
+                                print(f"DEBUG: Situación encontrada: {situacion}")
+                                return dni, situacion
+            
+            print(f"DEBUG: Resultado - DNI: {dni}, Situación: {situacion}")
+            return dni, situacion
+                
+        # except Exception as e:
+        #     print(f"DEBUG: Error en buscar_dni_en_pdf: {e}")
+        #     import traceback
+        #     traceback.print_exc()
+        #     return None, None
