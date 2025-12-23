@@ -74,81 +74,81 @@ class ArchivoSituacionFinal(models.Model):
             return []
     
     def buscar_dni_en_pdf(self, pdf_path):
-        try:
-            with open(pdf_path, 'rb') as file:
-                pdf_reader = PyPDF2.PdfReader(file)
+        # try:
+        with open(pdf_path, 'rb') as file:
+            pdf_reader = PyPDF2.PdfReader(file)
+            
+            if len(pdf_reader.pages) == 0:
+                return None, None
+            
+            dni = None
+            situacion = None
+            
+            # 1. BUSCAR DNI
+            primera_pagina = pdf_reader.pages[0]
+            texto_primera = primera_pagina.extract_text()
+            
+            if texto_primera:
+                import re
+                # Buscar cualquier número de 8 dígitos cerca de "DNI"
+                dni_match = re.search(r'DNI[:\s]*(\d{8})', texto_primera, re.IGNORECASE)
+                if dni_match:
+                    dni = dni_match.group(1)
+            
+            # 2. BUSCAR SITUACIÓN FINAL - MÁS ROBUSTA
+            # Analizar línea por línea
+            for page_num, page in enumerate(pdf_reader.pages):
+                texto_pagina = page.extract_text()
                 
-                if len(pdf_reader.pages) == 0:
-                    return None, None
+                if not texto_pagina:
+                    continue
                 
-                dni = None
-                situacion = None
+                # Dividir por líneas
+                lineas = texto_pagina.split('\n')
                 
-                # 1. BUSCAR DNI
-                primera_pagina = pdf_reader.pages[0]
-                texto_primera = primera_pagina.extract_text()
-                
-                if texto_primera:
-                    import re
-                    # Buscar cualquier número de 8 dígitos cerca de "DNI"
-                    dni_match = re.search(r'DNI[:\s]*(\d{8})', texto_primera, re.IGNORECASE)
-                    if dni_match:
-                        dni = dni_match.group(1)
-                
-                # 2. BUSCAR SITUACIÓN FINAL - MÁS ROBUSTA
-                # Analizar línea por línea
-                for page_num, page in enumerate(pdf_reader.pages):
-                    texto_pagina = page.extract_text()
-                    
-                    if not texto_pagina:
-                        continue
-                    
-                    # Dividir por líneas
-                    lineas = texto_pagina.split('\n')
-                    
-                    for linea in lineas:
-                        # Buscar línea que contenga "Situación al finalizar"
-                        if 'Situación al finalizar' in linea:
-                            print(f"Línea encontrada: {linea}")
+                for linea in lineas:
+                    # Buscar línea que contenga "Situación al finalizar"
+                    if 'Situación al finalizar' in linea:
+                        print(f"Línea encontrada: {linea}")
+                        
+                        # Dividir la línea para obtener la parte después de "Situación..."
+                        partes = linea.split('Situación al finalizar el período lectivo')
+                        if len(partes) > 1:
+                            texto_despues = partes[1].strip()
                             
-                            # Dividir la línea para obtener la parte después de "Situación..."
-                            partes = linea.split('Situación al finalizar el período lectivo')
-                            if len(partes) > 1:
-                                texto_despues = partes[1].strip()
-                                
-                                # Limpiar el texto
-                                # Quitar posibles caracteres especiales al inicio
-                                texto_despues = texto_despues.lstrip('|:;- ')
-                                
-                                # Tomar hasta el siguiente salto de línea implícito o 50 caracteres
-                                situacion_candidato = texto_despues[:100].strip()
-                                
-                                # Buscar palabras clave en el candidato
-                                palabras_clave = ['Promovido', 'Repite', 'Recuperación']
-                                for palabra in palabras_clave:
-                                    if palabra in situacion_candidato:
-                                        # Tomar la palabra clave y algunas palabras alrededor
-                                        palabras = situacion_candidato.split()
-                                        for i, palabra_linea in enumerate(palabras):
-                                            if palabra in palabra_linea:
-                                                # Tomar algunas palabras alrededor
-                                                inicio = max(0, i-2)
-                                                fin = min(len(palabras), i+3)
-                                                situacion = ' '.join(palabras[inicio:fin])
-                                                break
-                                        if situacion:
+                            # Limpiar el texto
+                            # Quitar posibles caracteres especiales al inicio
+                            texto_despues = texto_despues.lstrip('|:;- ')
+                            
+                            # Tomar hasta el siguiente salto de línea implícito o 50 caracteres
+                            situacion_candidato = texto_despues[:100].strip()
+                            
+                            # Buscar palabras clave en el candidato
+                            palabras_clave = ['Promovido', 'Repite', 'Recuperación']
+                            for palabra in palabras_clave:
+                                if palabra in situacion_candidato:
+                                    # Tomar la palabra clave y algunas palabras alrededor
+                                    palabras = situacion_candidato.split()
+                                    for i, palabra_linea in enumerate(palabras):
+                                        if palabra in palabra_linea:
+                                            # Tomar algunas palabras alrededor
+                                            inicio = max(0, i-2)
+                                            fin = min(len(palabras), i+3)
+                                            situacion = ' '.join(palabras[inicio:fin])
                                             break
-                                
-                                if situacion:
-                                    break
-                    
-                    if situacion:
-                        break
+                                    if situacion:
+                                        break
+                            
+                            if situacion:
+                                break
                 
-                return dni, situacion
+                if situacion:
+                    break
+            
+            return dni, situacion
                 
-        except Exception as e:
-            print(f"Error al procesar PDF {pdf_path}: {e}")
-            import traceback
-            traceback.print_exc()
-            return None, None
+        # except Exception as e:
+        #     print(f"Error al procesar PDF {pdf_path}: {e}")
+        #     import traceback
+        #     traceback.print_exc()
+        #     return None, None
