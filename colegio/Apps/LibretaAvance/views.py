@@ -461,7 +461,7 @@ def ImprimirNotasPrimaria(request):
             SitFinal.append({
                 'idMat': situacion.matricula.id,
                 'sitfinal': (situacion.situacion_final or 'NO REGISTRADA').upper(),
-                # 'titulo_curso': 'SITUACIÓN FINAL'  # Puedes ajustar esto si lo necesitas
+                'cursos': (situacion.cursos or '-').upper(),  
             })
         
         contexto2={'SitFinal':SitFinal,'nombrepaca':nombrepaca,'apreciaciones':apreciaciones,'notas':notas,'result':result,'tutor':tutor,'matricula':matricula,'nivel':nivel,'paca':paca,'ano':ano,'gradonivel':gradonivel,'seccion':seccion,'grado':grado,'nivelcorto':nivelcorto}#para libreta de avance
@@ -592,7 +592,7 @@ def ImprimirNotasSecundaria(request):
             SitFinal.append({
                 'idMat': situacion.matricula.id,
                 'sitfinal': (situacion.situacion_final or 'NO REGISTRADA').upper(),
-                # 'titulo_curso': 'SITUACIÓN FINAL'  # Puedes ajustar esto si lo necesitas
+                'cursos': (situacion.cursos or '-').upper(),
             })
 
 
