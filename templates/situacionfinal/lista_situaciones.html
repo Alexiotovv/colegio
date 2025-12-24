@@ -13,6 +13,7 @@
                         <th>DNI</th>
                         <th>Grado y Sección</th>
                         <th>Situación Final</th>
+                        <th>CursosRecup.</th>
                         <th>Fecha Procesamiento</th>
                         <th>PDF Origen</th>
                     </tr>
@@ -28,6 +29,7 @@
                                 {{ situacion.situacion_final }}
                             </span>
                         </td>
+                        <td>{{ situacion.cursos|default:"-" }}</td>
                         <td>{{ situacion.fecha_procesamiento|date:"d/m/Y H:i" }}</td>
                         <td>{{ situacion.archivo_pdf|truncatechars:20 }}</td>
                     </tr>
