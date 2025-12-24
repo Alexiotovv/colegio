@@ -890,77 +890,7 @@
                         </div>
 
 
-                        <!--<div class="col-6">
-                            <table class="" border>
-                                <thead><tr><th colspan="2" style="background-color: rgb(226, 225, 225);
-                                    padding-bottom: 0px;
-                                    padding-top: 0px;
-                                    text-align: center;
-                                    -webkit-print-color-adjust: exact;font-size: 8px;width: 250px;color: black;">SITUACIÓN FINAL</th></tr></thead>
-                                <tbody>
-                                    <tr><td style="padding-bottom: 0px;
-                                        padding-top: 0px;
-                                        padding-left: 5px;
-                                        -webkit-print-color-adjust: exact;font-size: 8px;color: black;">
-                                            PROMOVIDO
-                                        </td>
-                                        <td style="padding-bottom: 0px;
-                                        padding-top: 0px;
-                                        text-align: center;
-                                        -webkit-print-color-adjust: exact;font-size: 8px;color: black;width: 50px;">
-                                        {% for sf in SitFinal %}
-                                            {% if sf.idMat == mat.id %}
-                                                {% ifequal sf.sitfinal 'PROMOVIDO'  %} 
-                                                    X
-                                                {% endifequal %}
-                                            {% endif %}
-                                        {% endfor %}
-                                        </td>
-                                    </tr>
-                                    <tr><td style="padding-bottom: 0px;
-                                        padding-top: 0px;
-                                        padding-left: 5px;
-                                        -webkit-print-color-adjust: exact;font-size: 8px;color: black;">
-                                        PASA A RECUPERACIÓN
-                                        </td>
-                                        <td style="padding-bottom: 0px;
-                                        padding-top: 0px;
-                                        text-align: center;
-                                        -webkit-print-color-adjust: exact;font-size: 8px;color: black;">
-                                        {% for sf in SitFinal %}
-                                            {% if sf.idMat == mat.id %}
-                                                {% ifequal sf.sitfinal 'RECUPERACIÓN'  %} 
-                                                    X
-                                                {% endifequal %}
-                                            {% endif %}
-                                        {% endfor %}
-                                        </td>
-                                    </tr>
-                                    <tr><td style="padding-bottom: 0px;
-                                        padding-top: 0px;
-                                        padding-left: 5px;
-                                        -webkit-print-color-adjust: exact;font-size: 8px;color: black;">
-                                        REPITE
-                                        </td>
-                                        <td style="padding-bottom: 0px;
-                                        padding-top: 0px;
-                                        -webkit-print-color-adjust: exact;font-size: 8px;color: black;">
-                                        {% for sf in SitFinal %}
-                                            {% if sf.idMat == mat.id %}
-                                                {% ifequal sf.sitfinal 'REPITE'  %} 
-                                                    X
-                                                {% endifequal %}
-                                            {% endif %}
-                                        {% endfor %}
-                                        </td>
-                                    </tr>
-                                    
-                                </tbody>
-                            </table>
-                        </div>-->
-
-
-                        <!--<div class="col-6">
+                        <div class="col-6">
                             <br>
                             <table class="" border>
                                 <thead>
@@ -972,7 +902,7 @@
                                             -webkit-print-color-adjust: exact;font-size: 8px;width: 250px;color: black;">
                                             {% for sf in SitFinal %}
                                                 {% if sf.idMat == mat.id %}
-                                                    <p>{{sf.titulo_curso}}</p>
+                                                    <p>CURSOS DE RECUPERACIÓN</p>
                                                 {% endif %}
                                             {% endfor %}
                                         </th>
@@ -983,18 +913,14 @@
                                         <td style="padding-bottom: 0px; padding-top: 0px; text-align: center; -webkit-print-color-adjust: exact;font-size: 8px;color: black;width: 50px;">
                                         {% for sf in SitFinal %}
                                             {% if sf.idMat == mat.id %}
-                                                {% if sf.sitfinal == 'REPITE' %}
-                                                    <p>{{sf.cursos_repite}}</p>
-                                                {% else %}
-                                                    <p>{{sf.cursos_recuperacion}}</p>
-                                                {% endif %}
+                                                <p>{{sf.cursos}}</p>
                                             {% endif %}
                                         {% endfor %}
                                         </td>
                                     </tr>    
                                 </tbody>
                             </table>
-                        </div>-->
+                        </div>
 
                     </div><!-- CLAVE DE EVALUACIÓN -->
                 

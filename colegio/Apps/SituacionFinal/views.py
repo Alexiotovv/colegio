@@ -31,6 +31,7 @@ class ArchivoListView(ListView):
     context_object_name = 'archivos'
     ordering = ['-fecha_subida']
 
+
 @csrf_exempt
 def procesar_archivo(request, pk):
     if request.method == 'POST':
@@ -52,7 +53,7 @@ def procesar_archivo(request, pk):
         
         for pdf_path in pdfs:
             # try:
-            dni, situacion = archivo.buscar_dni_en_pdf(pdf_path)
+            dni, situacion, cursos = archivo.buscar_dni_en_pdf(pdf_path)
             
             if dni:
                 # Buscar alumno por DNI
@@ -67,12 +68,14 @@ def procesar_archivo(request, pk):
                     
                     if matricula:
                         # Crear o actualizar situación final
+                        print(cursos)
                         situacion_final, created = SituacionFinal.objects.update_or_create(
                             matricula=matricula,
                             defaults={
                                 'archivo_pdf': os.path.basename(pdf_path),
                                 'dni_encontrado': dni,
-                                'situacion_final': situacion or 'No encontrada'
+                                'situacion_final': situacion or 'No encontrada',
+                                'cursos': cursos or ''
                             }
                         )
                         

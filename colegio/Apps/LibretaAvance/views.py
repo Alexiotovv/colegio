@@ -183,9 +183,9 @@ def ImprimirLibretasxAlumno(request):
         for situacion in situaciones_finales:
             SitFinal.append({
                 'idMat': situacion.matricula.id,
-                'sitfinal': (situacion.situacion_final or 'NO REGISTRADA').upper(),
-                # 'titulo_curso': 'SITUACIÓN FINAL'  # Puedes ajustar esto si lo necesitas
-            })
+                'sitfinal': (situacion.situacion_final or '-').upper(),
+                'cursos': (situacion.cursos or '-').upper(),  
+        })
 
 
         contexto2={'SitFinal':SitFinal,'nombrepaca':nombrepaca,'apreciaciones':apreciaciones,'notas':notas,'result':result,'tutor':tutor,'matricula':matricula,'nivel':nivel,'paca':paca,'ano':ano,'gradonivel':gradonivel,'seccion':seccion,'grado':grado,'nivelcorto':nivelcorto}#para libreta
