@@ -1,0 +1,182 @@
+<!-- colegio/Apps/SituacionFinal/templates/situacionfinal/actualizar_situacion.html -->
+{% extends 'base/home_newtemplate.html' %}
+{% load static %}
+{% block title %}Actualizar Situación Final{% endblock %}
+
+{% block form %}
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-header bg-warning text-white">
+            <h4 class="mb-0">
+                <i class="fas fa-edit"></i> Actualizar Situación Final
+            </h4>
+        </div>
+        <div class="card-body">
+            <!-- Información del alumno -->
+            <div class="card mb-4">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0"><i class="fas fa-user-graduate"></i> Información del Alumno</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong>Nombre completo:</strong> {{ alumno.NombreCompleto }}</p>
+                            <p><strong>DNI:</strong> {{ situacion_existente.dni_encontrado }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Grado/Sección:</strong> {{ matricula.Grado }} - {{ matricula.Seccion }}</p>
+                            <p><strong>Año académico:</strong> {{ matricula.AnoAcademico.Ano }}</p>
+                        </div>
+                    </div>
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i> 
+                        Actualizando registro existente. Fecha original: {{ situacion_existente.fecha_procesamiento|date:"d/m/Y H:i" }}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Formulario de actualización -->
+            <form method="POST" id="actualizarForm">
+                {% csrf_token %}
+                
+                <!-- Mostrar errores generales del formulario -->
+                {% if form.non_field_errors %}
+                    <div class="alert alert-danger">
+                        {% for error in form.non_field_errors %}
+                            {{ error }}
+                        {% endfor %}
+                    </div>
+                {% endif %}
+                
+                <!-- DNI (solo lectura) -->
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="{{ form.dni.id_for_label }}">{{ form.dni.label }}</label>
+                            {{ form.dni }}
+                            <small class="form-text text-muted">DNI del alumno (no editable)</small>
+                            {% if form.dni.errors %}
+                                <div class="alert alert-danger mt-2">
+                                    {{ form.dni.errors }}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Campos del formulario -->
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="{{ form.situacion_final.id_for_label }}">{{ form.situacion_final.label }} *</label>
+                            {{ form.situacion_final }}
+                            {% if form.situacion_final.errors %}
+                                <div class="alert alert-danger mt-2">
+                                    {{ form.situacion_final.errors }}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="{{ form.archivo_pdf.id_for_label }}">{{ form.archivo_pdf.label }}</label>
+                            {{ form.archivo_pdf }}
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Cursos -->
+                <div class="form-group">
+                    <label for="{{ form.cursos.id_for_label }}">{{ form.cursos.label }}</label>
+                    {{ form.cursos }}
+                    <small class="form-text text-muted">
+                        Ingrese los cursos separados por guiones o comas. Ej: COMUNICACIÓN - MATEMÁTICA
+                    </small>
+                    {% if form.cursos.errors %}
+                        <div class="alert alert-danger mt-2">
+                            {{ form.cursos.errors }}
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <div class="mt-4">
+                    <button type="submit" class="btn btn-warning">
+                        <i class="fas fa-save"></i> Actualizar Situación
+                    </button>
+                    <a href="{% url 'listar_situaciones' %}" class="btn btn-secondary">
+                        <i class="fas fa-times"></i> Cancelar
+                    </a>
+                    <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#confirmarEliminarModal">
+                        <i class="fas fa-trash"></i> Eliminar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para confirmar eliminación -->
+<div class="modal fade" id="confirmarEliminarModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirmar Eliminación</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>¿Está seguro de eliminar la situación final de <strong>{{ alumno.NombreCompleto }}</strong>?</p>
+                <p>Situación actual: <span class="badge bg-warning">{{ situacion_existente.situacion_final }}</span></p>
+                <div class="alert alert-danger">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    Esta acción NO se puede deshacer. Se eliminará permanentemente el registro.
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <form method="POST" action="{% url 'eliminar_situacion' situacion_existente.id %}" style="display: inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fas fa-trash"></i> Eliminar Permanentemente
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block js1 %}
+<script>
+$(document).ready(function() {
+    // Hacer el campo DNI de solo lectura
+    $('#id_dni').prop('readonly', true);
+    
+    // Mostrar/ocultar cursos según situación seleccionada
+    $('#situacion_select').change(function() {
+        if ($(this).val() === 'Requiere Recuperación' || $(this).val() === 'Permanece en el Grado') {
+            $('#cursos_input').attr('required', true);
+        } else {
+            $('#cursos_input').removeAttr('required');
+        }
+    });
+    
+    // Validación del formulario
+    $('#actualizarForm').submit(function(e) {
+        var situacion = $('#situacion_select').val();
+        var cursos = $('#cursos_input').val().trim();
+        
+        if ((situacion === 'Requiere Recuperación' || situacion === 'Permanece en el Grado') && !cursos) {
+            e.preventDefault();
+            alert('Debe especificar los cursos para "' + situacion + '"');
+            $('#cursos_input').focus();
+            return false;
+        }
+        
+        return true;
+    });
+    
+    // Inicializar validación según valor actual
+    $('#situacion_select').trigger('change');
+});
+</script>
+{% endblock %}

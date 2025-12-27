@@ -75,112 +75,6 @@ class ArchivoSituacionFinal(models.Model):
             return []
     
 
-    # def buscar_dni_en_pdf(self, pdf_path):
-    #     try:
-    #         with open(pdf_path, 'rb') as file:
-    #             pdf_reader = PyPDF2.PdfReader(file)
-                
-    #             if len(pdf_reader.pages) == 0:
-    #                 return None, None, None
-                
-    #             dni = None
-    #             situacion = None
-    #             cursos = None
-                
-    #             # 1. BUSCAR DNI
-    #             primera_pagina = pdf_reader.pages[0]
-    #             texto_primera = primera_pagina.extract_text()
-                
-    #             if texto_primera:
-    #                 dni_match = re.search(r'DNI[:\s]*(\d{8})', texto_primera, re.IGNORECASE)
-    #                 if dni_match:
-    #                     dni = dni_match.group(1)
-                
-    #             # 2. PROCESAR TODAS LAS PÁGINAS
-    #             for page in pdf_reader.pages:
-    #                 texto_pagina = page.extract_text()
-                    
-    #                 if not texto_pagina:
-    #                     continue
-                    
-    #                 # A. Buscar SITUACIÓN
-    #                 if not situacion:
-    #                     if 'Requiere Recuperación' in texto_pagina:
-    #                         situacion = 'Requiere Recuperación'
-    #                     elif 'Promovido' in texto_pagina:
-    #                         situacion = 'Promovido'
-    #                     elif 'Permanece en el Grado' in texto_pagina:
-    #                         situacion = 'Permanece en el Grado'
-                    
-    #                 # B. Buscar CURSOS (solo si la situación es Recuperación)
-    #                 if situacion == 'Requiere Recuperación' and not cursos:
-    #                     frase_busqueda = 'Competencia(s) que no alcanzaron el nivel  de logro en las áreas o talleres'
-                        
-    #                     if frase_busqueda in texto_pagina:
-    #                         print("DEBUG: Encontrada frase de competencias")
-                            
-    #                         # Buscar la posición de la frase
-    #                         inicio = texto_pagina.find(frase_busqueda)
-                            
-    #                         if inicio != -1:
-    #                             # Tomar texto después de la frase
-    #                             texto_despues = texto_pagina[inicio + len(frase_busqueda):]
-                                
-    #                             # Si hay ":", tomar después de ":"
-    #                             if ':' in texto_despues:
-    #                                 texto_despues = texto_despues.split(':', 1)[1]
-                                
-    #                             # Dividir en líneas
-    #                             lineas = texto_despues.split('\n')
-                                
-    #                             # EXCLUIR específicamente los patrones de paginado
-    #                             patrones_excluir = [
-    #                                 'Página 1 de 4',
-    #                                 'Página 2 de 4', 
-    #                                 'Página 3 de 4',
-    #                                 'Página 4 de 4',
-                                    
-    #                             ]
-                                
-    #                             # Buscar la PRIMERA línea que NO sea paginado
-    #                             for linea in lineas:
-    #                                 linea_limpia = linea.strip()
-                                    
-    #                                 # Saltar líneas vacías o muy cortas
-    #                                 if not linea_limpia or len(linea_limpia) < 2:
-    #                                     continue
-                                    
-    #                                 # Verificar si es paginado (comparación exacta o parcial)
-    #                                 es_paginado = False
-    #                                 for patron in patrones_excluir:
-    #                                     if patron in linea_limpia or linea_limpia.startswith('Página'):
-    #                                         es_paginado = True
-    #                                         print(f"DEBUG: Excluyendo (paginado): {linea_limpia}")
-    #                                         break
-                                    
-    #                                 # Si NO es paginado y tiene contenido, es el curso
-    #                                 if not es_paginado and len(linea_limpia) > 2:
-    #                                     cursos = linea_limpia
-                                        
-    #                                     # Limpiar caracteres especiales
-    #                                     cursos = re.sub(r'[^\w\sáéíóúÁÉÍÓÚñÑ\-.,;]', ' ', cursos)
-    #                                     cursos = re.sub(r'\s+', ' ', cursos).strip()
-                                        
-    #                                     print(f"DEBUG: Cursos encontrados: {cursos}")
-    #                                     break
-                    
-    #                 # Si ya tenemos ambos, salir
-    #                 if situacion and (cursos or situacion != 'Requiere Recuperación'):
-    #                     break
-                
-    #             return dni, situacion, cursos
-                
-    #     except Exception as e:
-    #         print(f"Error al procesar PDF {pdf_path}: {e}")
-    #         import traceback
-    #         traceback.print_exc()
-    #         return None, None, None
-
     def buscar_dni_en_pdf(self, pdf_path):
         try:
             with open(pdf_path, 'rb') as file:
@@ -219,11 +113,11 @@ class ArchivoSituacionFinal(models.Model):
                             situacion = 'Permanece en el Grado'
                     
                     # B. Buscar CURSOS (solo si la situación es Recuperación)
-                    if situacion == 'Requiere Recuperación' and not cursos:
+                    if (situacion == 'Requiere Recuperación' or situacion == 'Permanece en el Grado') and not cursos:
                         frase_busqueda = 'Competencia(s) que no alcanzaron el nivel  de logro en las áreas o talleres'
                         
                         if frase_busqueda in texto_pagina:
-                            print("DEBUG: Encontrada frase de competencias")
+                            print(f"DEBUG: Encontrada frase de competencias para {situacion}")
                             
                             # Buscar la posición de la frase
                             inicio = texto_pagina.find(frase_busqueda)
@@ -250,7 +144,7 @@ class ArchivoSituacionFinal(models.Model):
                                     # Verificar si es curso de recuperación
                                     if self._es_curso_recuperacion(linea_limpia):
                                         cursos = linea_limpia
-                                        print(f"DEBUG: Cursos identificados (antes de limpiar): {cursos}")
+                                        print(f"DEBUG: Cursos identificados para {situacion}: {cursos}")    
                                         break
                     
                     # Si ya tenemos ambos, salir

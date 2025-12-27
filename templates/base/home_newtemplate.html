@@ -28,10 +28,12 @@
   <link rel="stylesheet" href="/static/assets/plugins/notifications/css/lobibox.min.css" />
   {% comment %} <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script> {% endcomment %}
   
-  
-
-
 {% endblock css %}
+
+{% block css1 %}
+
+{% endblock css1 %}
+
 
 {% block content %}
 <!--wrapper-->
@@ -256,10 +258,9 @@
           <ul>
               
             <li> <a href="{% url 'subir_archivo' %}"><i class="bx bx-right-arrow-alt"></i>Subir Archivos</a></li>
-            <li> 
-              <a href="{% url 'listar_archivos' %}"><i class="bx bx-right-arrow-alt"></i>Listar Archivos</a>
-            </li>
+            <li> <a href="{% url 'listar_archivos' %}"><i class="bx bx-right-arrow-alt"></i>Listar Archivos</a></li>
             <li> <a href="{% url 'listar_situaciones' %}"><i class="bx bx-right-arrow-alt"></i>Listar Situaciones</a></li>
+            <li> <a href="{% url 'registro_manual' %}"><i class="bx bx-right-arrow-alt"></i>Registrar Manual</a></li>
           </ul>
         </li>
       

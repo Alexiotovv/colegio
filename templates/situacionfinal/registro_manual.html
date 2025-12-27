@@ -1,0 +1,285 @@
+<!-- colegio/Apps/SituacionFinal/templates/situacionfinal/registro_manual.html -->
+{% extends 'base/home_newtemplate.html' %}
+{% load static %}
+{% block title %}Registro Manual - Situación Final{% endblock %}
+
+{% block form %}
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">
+                <i class="fas fa-user-edit"></i> Registro Manual de Situación Final
+            </h4>
+        </div>
+        <div class="card-body">
+            <!-- Mensajes de Django -->
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show">
+                        {{ message|safe }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+            
+            <form method="POST" id="registroForm">
+                {% csrf_token %}
+                
+                <!-- Mostrar errores generales del formulario -->
+                {% if form.non_field_errors %}
+                    <div class="alert alert-danger">
+                        {% for error in form.non_field_errors %}
+                            {{ error }}
+                        {% endfor %}
+                    </div>
+                {% endif %}
+                
+                <!-- DNI y búsqueda -->
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="{{ form.dni.id_for_label }}">{{ form.dni.label }} *</label>
+                            <div class="input-group">
+                                {{ form.dni }}
+                                <button type="button" class="btn btn-info" id="btnBuscarAlumno">
+                                    <i class="fas fa-search"></i> Buscar
+                                </button>
+                            </div>
+                            {% if form.dni.errors %}
+                                <div class="alert alert-danger mt-2">
+                                    {{ form.dni.errors }}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Información del alumno (dinámica) -->
+                <div class="card mb-4" id="infoAlumno" style="display: none;">
+                    <div class="card-header bg-info text-white">
+                        <h5 class="mb-0"><i class="fas fa-user-graduate"></i> Información del Alumno</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p><strong>Nombre completo:</strong> <span id="alumnoNombre"></span></p>
+                                <p><strong>DNI:</strong> <span id="alumnoDNI"></span></p>
+                                <p><strong>Estado:</strong> <span id="alumnoEstado"></span></p>
+                            </div>
+                            <div class="col-md-6">
+                                <p><strong>Matrícula activa:</strong> <span id="matriculaExiste" class="badge bg-success"></span></p>
+                                <p><strong>Grado/Sección:</strong> <span id="alumnoGradoSeccion"></span></p>
+                                <p><strong>Año académico:</strong> <span id="alumnoAnoAcademico"></span></p>
+                            </div>
+                        </div>
+                        
+                        <!-- ALERTA DE SITUACIÓN EXISTENTE -->
+                        <div class="alert alert-warning" id="alertSituacionExistente" style="display: none;">
+                            <i class="fas fa-exclamation-triangle"></i> 
+                            <strong>Atención:</strong> Este alumno ya tiene una situación final registrada para el año actual.
+                            <div id="infoSituacionExistente" class="mt-2"></div>
+                            <div class="mt-2">
+                                <a href="#" id="btnActualizarSituacion" class="btn btn-warning btn-sm">
+                                    <i class="fas fa-edit"></i> Actualizar situación existente
+                                </a>
+                            </div>
+                        </div>
+                        
+                        <div class="alert alert-danger" id="alertNoMatricula" style="display: none;">
+                            <i class="fas fa-exclamation-triangle"></i> 
+                            El alumno no tiene matrícula activa. No podrá registrar situación final.
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Campos del formulario -->
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="{{ form.situacion_final.id_for_label }}">{{ form.situacion_final.label }} *</label>
+                            {{ form.situacion_final }}
+                            {% if form.situacion_final.errors %}
+                                <div class="alert alert-danger mt-2">
+                                    {{ form.situacion_final.errors }}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="{{ form.archivo_pdf.id_for_label }}">{{ form.archivo_pdf.label }}</label>
+                            {{ form.archivo_pdf }}
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Cursos (visible solo para Recuperación) -->
+                <div class="form-group" id="cursosGroup">
+                    <label for="{{ form.cursos.id_for_label }}">{{ form.cursos.label }}</label>
+                    {{ form.cursos }}
+                    <small class="form-text text-muted">
+                        Ingrese los cursos separados por guiones o comas. Ej: COMUNICACIÓN - MATEMÁTICA
+                    </small>
+                    {% if form.cursos.errors %}
+                        <div class="alert alert-danger mt-2">
+                            {{ form.cursos.errors }}
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <div class="mt-4">
+                    <button type="submit" class="btn btn-success" id="btnGuardar">
+                        <i class="fas fa-save"></i> Guardar Situación Final
+                    </button>
+                    <a href="{% url 'listar_situaciones' %}" class="btn btn-secondary">
+                        <i class="fas fa-times"></i> Cancelar
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block js1 %}
+<script>
+$(document).ready(function() {
+    // Variables para control
+    var tieneMatricula = false;
+    var tieneSituacion = false;
+    var matriculaId = null;
+    
+    // Ocultar cursos inicialmente
+    $('#cursosGroup').hide();
+    
+    // Mostrar/ocultar cursos según situación seleccionada
+    $('#situacion_select').change(function() {
+        if ($(this).val() === 'Requiere Recuperación') {
+            $('#cursosGroup').show();
+            $('#cursos_input').attr('required', true);
+        } else {
+            $('#cursosGroup').hide();
+            $('#cursos_input').removeAttr('required');
+        }
+    });
+    
+    // Buscar alumno por DNI
+    $('#btnBuscarAlumno').click(function() {
+        buscarAlumno();
+    });
+    
+    // Buscar automáticamente al cambiar DNI
+    $('#dni_buscar').on('keyup', function(e) {
+        if ($(this).val().length === 8) {
+            buscarAlumno();
+        }
+    });
+    
+    function buscarAlumno() {
+        var dni = $('#dni_buscar').val().trim();
+        
+        if (!dni || dni.length !== 8) {
+            alert('Ingrese un DNI válido de 8 dígitos');
+            return;
+        }
+        
+        $('#btnBuscarAlumno').prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Buscando...');
+        $('#infoAlumno').hide();
+        $('#alertSituacionExistente').hide();
+        $('#alertNoMatricula').hide();
+        
+        $.ajax({
+            url: '{% url "buscar_alumno_dni" %}',
+            data: { 'dni': dni },
+            dataType: 'json',
+            success: function(data) {
+                if (data.existe) {
+                    // Mostrar información del alumno
+                    $('#alumnoNombre').text(data.alumno.nombre_completo);
+                    $('#alumnoDNI').text(data.alumno.dni);
+                    $('#alumnoEstado').text(data.alumno.estado);
+                    
+                    tieneMatricula = data.matricula && data.matricula.existe;
+                    tieneSituacion = data.tiene_situacion;
+                    matriculaId = data.matricula ? data.matricula.matricula_id : null;
+                    
+                    if (tieneMatricula) {
+                        $('#matriculaExiste').text('SÍ').removeClass('bg-danger').addClass('bg-success');
+                        $('#alumnoGradoSeccion').text(data.matricula.grado + ' - ' + data.matricula.seccion);
+                        $('#alumnoAnoAcademico').text(data.matricula.ano_academico);
+                        
+                        // Verificar si ya tiene situación registrada
+                        if (tieneSituacion) {
+                            $('#alertSituacionExistente').show();
+                            $('#infoSituacionExistente').html(`
+                                <strong>Situación actual:</strong> ${data.situacion_actual}<br>
+                                <strong>Cursos:</strong> ${data.cursos_actual || 'Ninguno'}
+                            `);
+                            
+                            // Configurar botón para actualizar
+                            $('#btnActualizarSituacion').attr('href', `/situacionfinal/actualizar/${matriculaId}/`);
+                            
+                            // Deshabilitar botón de guardar nuevo
+                            $('#btnGuardar').prop('disabled', true)
+                                .html('<i class="fas fa-ban"></i> Ya tiene situación registrada');
+                        } else {
+                            $('#alertSituacionExistente').hide();
+                            $('#btnGuardar').prop('disabled', false)
+                                .html('<i class="fas fa-save"></i> Guardar Situación Final');
+                        }
+                        
+                        $('#alertNoMatricula').hide();
+                    } else {
+                        $('#matriculaExiste').text('NO').removeClass('bg-success').addClass('bg-danger');
+                        $('#alumnoGradoSeccion').text('No disponible');
+                        $('#alumnoAnoAcademico').text('No disponible');
+                        $('#alertNoMatricula').show();
+                        $('#btnGuardar').prop('disabled', true);
+                    }
+                    
+                    $('#infoAlumno').fadeIn();
+                } else {
+                    alert(data.mensaje);
+                    $('#infoAlumno').hide();
+                    $('#btnGuardar').prop('disabled', false);
+                }
+            },
+            error: function() {
+                alert('Error al conectar con el servidor');
+                $('#btnBuscarAlumno').prop('disabled', false).html('<i class="fas fa-search"></i> Buscar');
+            },
+            complete: function() {
+                $('#btnBuscarAlumno').prop('disabled', false).html('<i class="fas fa-search"></i> Buscar');
+            }
+        });
+    }
+    
+    // Validación del formulario
+    $('#registroForm').submit(function(e) {
+        if (!tieneMatricula) {
+            e.preventDefault();
+            alert('El alumno no tiene matrícula activa. No se puede registrar.');
+            return false;
+        }
+        
+        if (tieneSituacion) {
+            e.preventDefault();
+            alert('Este alumno ya tiene una situación final registrada. Use la opción "Actualizar situación existente".');
+            return false;
+        }
+        
+        var situacion = $('#situacion_select').val();
+        var cursos = $('#cursos_input').val().trim();
+        
+        if (situacion === 'Requiere Recuperación' && !cursos) {
+            e.preventDefault();
+            alert('Debe especificar los cursos para "Requiere Recuperación"');
+            $('#cursos_input').focus();
+            return false;
+        }
+        
+        return true;
+    });
+});
+</script>
+{% endblock %}

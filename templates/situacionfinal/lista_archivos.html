@@ -26,7 +26,7 @@
                     {% for archivo in archivos %}
                     <tr>
                         <td>{{ archivo.id }}</td>
-                        <td>{{ archivo.archivo.name|slice:"30:" }}</td>
+                        <td>{{ archivo.archivo.name }}</td>
                         <td>{{ archivo.fecha_subida|date:"d/m/Y H:i" }}</td>
                         <td>
                             {% if archivo.procesado %}
