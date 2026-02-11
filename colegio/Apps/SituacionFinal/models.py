@@ -96,65 +96,42 @@ class ArchivoSituacionFinal(models.Model):
                     if dni_match:
                         dni = dni_match.group(1)
                 
-                # 2. PROCESAR TODAS LAS PÁGINAS
+                # 2. BUSCAR SITUACIÓN
                 for page in pdf_reader.pages:
                     texto_pagina = page.extract_text()
-                    
-                    if not texto_pagina:
-                        continue
-                    
-                    # A. Buscar SITUACIÓN
-                    if not situacion:
+                    if texto_pagina:
                         if 'Requiere Recuperación' in texto_pagina:
                             situacion = 'Requiere Recuperación'
+                            break
                         elif 'Promovido' in texto_pagina:
                             situacion = 'Promovido'
+                            break
                         elif 'Permanece en el Grado' in texto_pagina:
                             situacion = 'Permanece en el Grado'
-                    
-                    # B. Buscar CURSOS (solo si la situación es Recuperación)
-                    if (situacion == 'Requiere Recuperación' or situacion == 'Permanece en el Grado') and not cursos:
-                        frase_busqueda = 'Competencia(s) que no alcanzaron el nivel  de logro en las áreas o talleres'
-                        
-                        if frase_busqueda in texto_pagina:
-                            print(f"DEBUG: Encontrada frase de competencias para {situacion}")
-                            
-                            # Buscar la posición de la frase
-                            inicio = texto_pagina.find(frase_busqueda)
-                            
-                            if inicio != -1:
-                                # Tomar texto después de la frase
-                                texto_despues = texto_pagina[inicio + len(frase_busqueda):]
-                                
-                                # Si hay ":", tomar después de ":"
-                                if ':' in texto_despues:
-                                    texto_despues = texto_despues.split(':', 1)[1]
-                                
-                                # Dividir en líneas
-                                lineas = texto_despues.split('\n')
-                                
-                                # Buscar la PRIMERA línea que NO sea paginado y SÍ sea curso
-                                for linea in lineas:
-                                    linea_limpia = linea.strip()
-                                    
-                                    # Saltar líneas vacías o muy cortas
-                                    if not linea_limpia or len(linea_limpia) < 2:
-                                        continue
-                                    
-                                    # Verificar si es curso de recuperación
-                                    if self._es_curso_recuperacion(linea_limpia):
-                                        cursos = linea_limpia
-                                        print(f"DEBUG: Cursos identificados para {situacion}: {cursos}")    
-                                        break
-                    
-                    # Si ya tenemos ambos, salir
-                    if situacion and (cursos or situacion != 'Requiere Recuperación'):
-                        break
+                            break
                 
-                # 3. LIMPIAR PAGINADO DEL FINAL de los cursos (NUEVO)
-                if cursos:
-                    cursos = self._limpiar_paginado_final(cursos)
-                    print(f"DEBUG: Cursos finales (después de limpiar): {cursos}")
+                # 3. BUSCAR CURSOS (SOLO desde página 3 en adelante)
+                if situacion in ['Requiere Recuperación', 'Permanece en el Grado']:
+                    # Empezar desde la página 3 (índice 2)
+                    for page_num in range(2, len(pdf_reader.pages)):
+                        page = pdf_reader.pages[page_num]
+                        texto_pagina = page.extract_text()
+                        
+                        if not texto_pagina:
+                            continue
+                        
+                        print(f"DEBUG: Buscando cursos en página {page_num + 1}")
+                        
+                        # Usar la nueva función que maneja cursos específicos
+                        cursos_encontrados = self._buscar_cursos_en_texto(texto_pagina)
+                        
+                        if cursos_encontrados:
+                            cursos = cursos_encontrados
+                            print(f"DEBUG: Cursos encontrados: {cursos}")
+                            
+                            # Limpiar paginado
+                            cursos = self._limpiar_paginado_final(cursos)
+                            break
                 
                 return dni, situacion, cursos
                 
@@ -163,6 +140,143 @@ class ArchivoSituacionFinal(models.Model):
             import traceback
             traceback.print_exc()
             return None, None, None
+
+
+
+    def _buscar_cursos_en_texto(self, texto_pagina):
+        """
+        Versión simplificada que maneja líneas rotas
+        """
+        if not texto_pagina:
+            return None
+        
+        # 1. Primero reemplazar saltos de línea problemáticos
+        # Unir "EDUCACIÓN\nFÍSICA" → "EDUCACIÓN FÍSICA"
+        # Unir "EDUCACIÓN\nRELIGIOSA" → "EDUCACIÓN RELIGIOSA"
+        
+        texto_arreglado = texto_pagina
+        
+        # Patrones comunes de cursos divididos
+        patrones_unir = [
+            (r'EDUCACIÓN\s*\n\s*FÍSICA', 'EDUCACIÓN FÍSICA'),
+            (r'EDUCACIÓN\s*\n\s*RELIGIOSA', 'EDUCACIÓN RELIGIOSA'),
+            (r'ARTE\s+Y\s*\n\s*CULTURA', 'ARTE Y CULTURA'),
+            (r'CIENCIA\s+Y\s*\n\s*TECNOLOGÍA', 'CIENCIA Y TECNOLOGÍA'),
+            (r'DESARROLLO\s+PERSONAL,\s+CIUDADANÍA\s+Y\s*\n\s*CÍVICA', 'DESARROLLO PERSONAL, CIUDADANÍA Y CÍVICA'),
+        ]
+        
+        for patron, reemplazo in patrones_unir:
+            texto_arreglado = re.sub(patron, reemplazo, texto_arreglado, flags=re.IGNORECASE)
+        
+        # 2. Buscar lista de cursos separados por guiones
+        texto_upper = texto_arreglado.upper()
+        
+        # Patrón para encontrar listas de cursos: texto en mayúsculas con guiones
+        patron_lista = r'([A-ZÁÉÍÓÚÑ][A-ZÁÉÍÓÚÑ\s,\-]+(?:\s*-\s*[A-ZÁÉÍÓÚÑ][A-ZÁÉÍÓÚÑ\s,\-]+)+)'
+        matches = re.findall(patron_lista, texto_upper)
+        
+        if matches:
+            # Tomar la lista más larga
+            lista_mas_larga = max(matches, key=len)
+            
+            # Buscar en el texto original (con las correcciones)
+            pos = texto_upper.find(lista_mas_larga)
+            if pos != -1:
+                cursos_texto = texto_arreglado[pos:pos + len(lista_mas_larga)].strip()
+                
+                # Separar por guiones y limpiar
+                partes = [p.strip() for p in cursos_texto.split('-')]
+                
+                # Post-procesar: unir "EDUCACIÓN" con "FÍSICA" o "RELIGIOSA"
+                partes_finales = []
+                i = 0
+                
+                while i < len(partes):
+                    if i + 1 < len(partes):
+                        # Si encontramos "EDUCACIÓN" seguido de "FÍSICA"
+                        if (partes[i].upper() == "EDUCACIÓN" and 
+                            partes[i + 1].upper() == "FÍSICA"):
+                            partes_finales.append("EDUCACIÓN FÍSICA")
+                            i += 2
+                            continue
+                        
+                        # Si encontramos "EDUCACIÓN" seguido de "RELIGIOSA"
+                        elif (partes[i].upper() == "EDUCACIÓN" and 
+                            partes[i + 1].upper() == "RELIGIOSA"):
+                            partes_finales.append("EDUCACIÓN RELIGIOSA")
+                            i += 2
+                            continue
+                    
+                    # Agregar la parte normal
+                    partes_finales.append(partes[i])
+                    i += 1
+                
+                # Filtrar cursos válidos
+                cursos_validos = [
+                    "INGLÉS COMO LENGUA EXTRANJERA",
+                    "PERSONAL SOCIAL",
+                    "DESARROLLO PERSONAL, CIUDADANÍA Y CÍVICA",
+                    "CIENCIAS SOCIALES",
+                    "EDUCACIÓN FÍSICA",
+                    "ARTE Y CULTURA",
+                    "COMUNICACIÓN",
+                    "INGLÉS",
+                    "MATEMÁTICA",
+                    "CIENCIA Y TECNOLOGÍA",
+                    "EDUCACIÓN RELIGIOSA",
+                    "EDUCACIÓN PARA EL TRABAJO",
+                    "IDIOMA CHINO MANDARÍN"
+                ]
+                
+                # Filtrar solo cursos válidos
+                cursos_filtrados = []
+                for curso in partes_finales:
+                    if any(curso_valido in curso.upper() for curso_valido in cursos_validos):
+                        cursos_filtrados.append(curso)
+                
+                if cursos_filtrados:
+                    # Limpiar "Firma del Docente o Tutor" del último curso
+                    cursos_finales_limpios = []
+                    
+                    for curso in cursos_filtrados:
+                        # Buscar "Firma del Docente o" en el curso
+                        pos_firma = curso.upper().find('FIRMA DEL DOCENTE O')
+                        if pos_firma != -1:
+                            # Cortar el texto antes de "Firma del Docente o"
+                            curso_limpio = curso[:pos_firma].strip()
+                            # También limpiar si queda un guión o coma al final
+                            curso_limpio = curso_limpio.rstrip(' ,-')
+                            cursos_finales_limpios.append(curso_limpio)
+                        else:
+                            cursos_finales_limpios.append(curso)
+                    
+                    # Actualizar cursos_filtrados con los limpiados
+                    cursos_filtrados = cursos_finales_limpios
+                    
+                    # También verificar si el último curso termina con esos textos
+                    if cursos_filtrados:
+                        ultimo_curso = cursos_filtrados[-1]
+                        # Patrones a eliminar del final
+                        patrones_firma = [
+                            'Firma del Docente o',
+                            'Firma del Tutor',
+                            'Firma del Director',
+                            'Firma:'
+                        ]
+                        
+                        for patron in patrones_firma:
+                            if patron in ultimo_curso:
+                                # Encontrar la posición
+                                pos = ultimo_curso.find(patron)
+                                ultimo_curso = ultimo_curso[:pos].strip()
+                                ultimo_curso = ultimo_curso.rstrip(' ,-')
+                                cursos_filtrados[-1] = ultimo_curso
+                                break
+                
+                if cursos_filtrados:
+                    return ' - '.join(cursos_filtrados)
+        
+        return None
 
     def _limpiar_paginado_final(self, texto_cursos):
         """Limpia el paginado del final del texto de cursos"""
@@ -275,171 +389,3 @@ class ArchivoSituacionFinal(models.Model):
             return True
         
         return False
-
-
-    # def buscar_dni_en_pdf(self, pdf_path):
-    #     try:
-    #         with open(pdf_path, 'rb') as file:
-    #             pdf_reader = PyPDF2.PdfReader(file)
-                
-    #             if len(pdf_reader.pages) == 0:
-    #                 return None, None, None
-                
-    #             dni = None
-    #             situacion = None
-    #             cursos = None
-                
-    #             # 1. BUSCAR DNI
-    #             primera_pagina = pdf_reader.pages[0]
-    #             texto_primera = primera_pagina.extract_text()
-                
-    #             if texto_primera:
-    #                 dni_match = re.search(r'DNI[:\s]*(\d{8})', texto_primera, re.IGNORECASE)
-    #                 if dni_match:
-    #                     dni = dni_match.group(1)
-                
-    #             # 2. PROCESAR TODAS LAS PÁGINAS
-    #             for page in pdf_reader.pages:
-    #                 texto_pagina = page.extract_text()
-                    
-    #                 if not texto_pagina:
-    #                     continue
-                    
-    #                 # A. Buscar SITUACIÓN
-    #                 if not situacion:
-    #                     # Buscar "Requiere Recuperación" directamente
-    #                     if 'Requiere Recuperación' in texto_pagina:
-    #                         situacion = 'Requiere Recuperación'
-    #                     elif 'Promovido' in texto_pagina:
-    #                         situacion = 'Promovido'
-    #                     elif 'Permanece en el Grado' in texto_pagina:
-    #                         situacion = 'Permanece en el Grado'
-                    
-    #                 # B. Buscar CURSOS (solo si la situación es Recuperación)
-    #                 if situacion == 'Requiere Recuperación' and not cursos:
-    #                     # Frase de búsqueda
-    #                     frase_busqueda = 'Competencia(s) que no alcanzaron el nivel  de logro en las áreas o talleres'
-    #                     print("Requiere Recuperación")
-    #                     print("Imprimiendo texto de la página")
-    #                     print(texto_pagina)
-    #                     if frase_busqueda in texto_pagina:
-    #                         print("encontroooooooooooooooooooooooooooooooooooooooooooooooooooooooooo")
-    #                         # Encontrar la posición de la frase
-    #                         inicio = texto_pagina.find(frase_busqueda)
-                            
-    #                         if inicio != -1:
-    #                             # Tomar texto después de la frase
-    #                             texto_despues = texto_pagina[inicio + len(frase_busqueda):]
-                                
-    #                             # Buscar hasta el próximo salto de línea o límite
-    #                             # Primero buscar ":"
-    #                             if ':' in texto_despues:
-    #                                 # Tomar después de ":"
-    #                                 texto_despues = texto_despues.split(':', 1)[1]
-                                
-    #                             # Tomar los siguientes 100 caracteres (suficiente para cursos)
-    #                             texto_cursos = texto_despues[:200].strip()
-                                
-    #                             # Limpiar: quitar líneas vacías, espacios extras
-    #                             lineas_cursos = [linea.strip() for linea in texto_cursos.split('\n') 
-    #                                         if linea.strip() and len(linea.strip()) > 1]
-                                
-    #                             if lineas_cursos:
-    #                                 # Tomar la primera línea no vacía después de la frase
-    #                                 cursos = lineas_cursos[0]
-                                    
-    #                                 # Limpiar caracteres especiales
-    #                                 cursos = re.sub(r'[^\w\sáéíóúÁÉÍÓÚñÑ\-]', ' ', cursos)
-    #                                 cursos = re.sub(r'\s+', ' ', cursos).strip()
-                    
-    #                 # Si ya tenemos ambos, salir
-    #                 if situacion and (cursos or situacion != 'Requiere Recuperación'):
-    #                     break
-                
-    #             return dni, situacion, cursos
-                
-    #     except Exception as e:
-    #         print(f"Error al procesar PDF {pdf_path}: {e}")
-    #         import traceback
-    #         traceback.print_exc()
-    #         return None, None, None
-
-    # def buscar_dni_en_pdf(self, pdf_path):
-    #     # try:
-    #     with open(pdf_path, 'rb') as file:
-    #         pdf_reader = PyPDF2.PdfReader(file)
-            
-    #         if len(pdf_reader.pages) == 0:
-    #             return None, None
-            
-    #         dni = None
-    #         situacion = None
-            
-    #         # 1. BUSCAR DNI
-    #         primera_pagina = pdf_reader.pages[0]
-    #         texto_primera = primera_pagina.extract_text()
-            
-    #         if texto_primera:
-    #             import re
-    #             # Buscar cualquier número de 8 dígitos cerca de "DNI"
-    #             dni_match = re.search(r'DNI[:\s]*(\d{8})', texto_primera, re.IGNORECASE)
-    #             if dni_match:
-    #                 dni = dni_match.group(1)
-            
-    #         # 2. BUSCAR SITUACIÓN FINAL - MÁS ROBUSTA
-    #         # Analizar línea por línea
-    #         for page_num, page in enumerate(pdf_reader.pages):
-    #             texto_pagina = page.extract_text()
-                
-    #             if not texto_pagina:
-    #                 continue
-                
-    #             # Dividir por líneas
-    #             lineas = texto_pagina.split('\n')
-                
-    #             for linea in lineas:
-    #                 # Buscar línea que contenga "Situación al finalizar"
-    #                 if 'Situación al finalizar' in linea:
-    #                     print(f"Línea encontrada: {linea}")
-                        
-    #                     # Dividir la línea para obtener la parte después de "Situación..."
-    #                     partes = linea.split('Situación al finalizar el período lectivo')
-    #                     if len(partes) > 1:
-    #                         texto_despues = partes[1].strip()
-                            
-    #                         # Limpiar el texto
-    #                         # Quitar posibles caracteres especiales al inicio
-    #                         texto_despues = texto_despues.lstrip('|:;- ')
-                            
-    #                         # Tomar hasta el siguiente salto de línea implícito o 50 caracteres
-    #                         situacion_candidato = texto_despues[:100].strip()
-                            
-    #                         # Buscar palabras clave en el candidato
-    #                         palabras_clave = ['Promovido', 'Repite', 'Recuperación']
-    #                         for palabra in palabras_clave:
-    #                             if palabra in situacion_candidato:
-    #                                 # Tomar la palabra clave y algunas palabras alrededor
-    #                                 palabras = situacion_candidato.split()
-    #                                 for i, palabra_linea in enumerate(palabras):
-    #                                     if palabra in palabra_linea:
-    #                                         # Tomar algunas palabras alrededor
-    #                                         inicio = max(0, i-2)
-    #                                         fin = min(len(palabras), i+3)
-    #                                         situacion = ' '.join(palabras[inicio:fin])
-    #                                         break
-    #                                 if situacion:
-    #                                     break
-                            
-    #                         if situacion:
-    #                             break
-                
-    #             if situacion:
-    #                 break
-            
-    #         return dni, situacion
-                
-    #     # except Exception as e:
-    #     #     print(f"Error al procesar PDF {pdf_path}: {e}")
-    #     #     import traceback
-    #     #     traceback.print_exc()
-    #     #     return None, None

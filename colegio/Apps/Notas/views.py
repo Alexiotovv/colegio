@@ -514,19 +514,43 @@ def NotasNuevoSaveBimestre(request):
 	
 	grado =  td.grado
 	seccion = td.seccion#Aqui es el truco para filtrar que Alumnos tienen Nota o No
-	notas = Notas.objects.filter(Curso__id=td.idCurso, Matricula__Seccion=td.seccion, Matricula__Grado=td.grado, Matricula__AnoAcademico=ano.id,PAcademico__id=td.idPAcademico)
+	
+	print("idCurso: ",td.idCurso)
+	print("Seccion: ",td.seccion)
+	print("Grado: ",td.grado)
+	print("IdAno: ",ano.id)
+	print("IdPacademico: ",td.idPAcademico)
 
-	if notas:#Si existen Alumnos entonces devuelve alumnos vacio
-		alumnos = ''		
+	notas = NotasComp.objects.filter(
+		Curso__id=td.idCurso, 
+		Matricula__Seccion=td.seccion, 
+		Matricula__Grado=td.grado,
+		Matricula__AnoAcademico=ano.id,
+		PAcademico__id=td.idPAcademico
+		)
+
+	if notas.exists():  # Esto devuelve True solo si hay registros
+		alumnos = ''
 	else:
-		alumnos = Matricula.objects.filter(Grado=td.grado,Seccion=td.seccion,AnoAcademico=ano.id,Alumno__Estado='A').order_by('Alumno__ApellidoPaterno','Alumno__ApellidoMaterno','Alumno__Nombres')
+		alumnos = Matricula.objects.filter(
+			Grado=td.grado,
+			Seccion=td.seccion,
+			AnoAcademico=ano.id,
+			Alumno__Estado='A'
+		).order_by(
+			'Alumno__ApellidoPaterno',
+			'Alumno__ApellidoMaterno',
+			'Alumno__Nombres'
+		)
+		
+		
 	
 	contexto={'grado':grado,'seccion':seccion,'curso':curso,'ano':ano,'paca':paca,'doce':doce,'alumnos':alumnos}
 	
 	if request.method=='POST':
 
 		for alu in alumnos:
-			nota = Notas()
+			nota = NotasComp()
 			cur = Curso()
 			cur.id = td.idCurso
 			nota.Curso = cur
@@ -551,7 +575,7 @@ def NotasNuevoSaveBimestre(request):
 			
 		grabo='registrado'
 		
-		notita = Notas.objects.filter(Docente__User__id=request.user.id, Curso__id=td.idCurso, Matricula__Grado=td.grado, Matricula__Seccion=td.seccion,Matricula__AnoAcademico=ano.id,PAcademico__id=paca.id).order_by('Matricula__Alumno__ApellidoPaterno','Matricula__Alumno__ApellidoMaterno','Matricula__Alumno__Nombres')
+		notita = NotasComp.objects.filter(Docente__User__id=request.user.id, Curso__id=td.idCurso, Matricula__Grado=td.grado, Matricula__Seccion=td.seccion,Matricula__AnoAcademico=ano.id,PAcademico__id=paca.id).order_by('Matricula__Alumno__ApellidoPaterno','Matricula__Alumno__ApellidoMaterno','Matricula__Alumno__Nombres')
 		context = {'grabo':grabo,'curso':curso,'grado':grado,'seccion':seccion,'notita':notita}
 
 		persona = TempDatos.objects.filter(User=request.user.id)
@@ -570,7 +594,7 @@ def NotasNuevoSaveUno(request):
 	contexto={'curso':curso,'matri':matri,'ano':ano,'paca':paca}
 	
 	if request.method=='POST':
-		notas = Notas()
+		notas = NotasComp()
 
 		pac = PAcademico()
 		pac.id = request.POST.get("PAcademico")

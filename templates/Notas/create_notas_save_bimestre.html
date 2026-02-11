@@ -37,7 +37,7 @@
 		  	{% else %}
 		  		<div class="alert alert-dismissible alert-danger">
 				  <button type="button" class="close" data-dismiss="alert">&times;</button>
-				  <strong>Los Sentimos!</strong> Ya Existen Notas Registradas para el Grado:<STRONG>{{ grado }}</STRONG>, Sección: <STRONG>"{{ seccion }}",</STRONG> Curso: <strong>{{ curso.Nombre }},</strong> de éste Año y Periodo Académico. Por favor, revise sus Notas en <a href="{% url 'app_buscar_notas' %}">Búsqueda Avanzada </a> o intente Nuevamente en <a href="{% url 'app_nota_nuevo' %}">Ingresar Notas de Libreta x Grado</a>, Gracias..!!
+				  <strong>Los Sentimos!</strong> Ya Existen Notas Registradas para el Grado:<STRONG>{{ grado }}</STRONG>, Sección: <STRONG>"{{ seccion }}",</STRONG> Curso: <strong>{{ curso.Nombre }},</strong> de éste Año y Periodo Académico. Por favor, revise sus Notas en <a href="{% url 'app_buscar_notas' %}">Búsqueda Avanzada </a> o intente Nuevamente en <a href="{% url 'app_nota_nuevo_comp' %}">Ingresar Notas de Libreta x Grado</a>, Gracias..!!
 				</div>
 				
 		  	{% endif %}
