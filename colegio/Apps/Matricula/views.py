@@ -113,71 +113,160 @@ def NewMatriculaAlumno(request):
 		guar=''
 		contexto={'lista_anos':lista_anos,'guar':guar,'mensaje_dni':mensaje_dni}
 		return render(request,'matricula/new_matricula_alumno.html',contexto)
-
+	
 def ImportarArchivo(request):
-	if request.method=='POST':
-		file=ImportFile(request.POST,request.FILES)	
-		if file.is_valid():
-			nombre_archivo=request.FILES['file']
-			fs = FileSystemStorage(location=settings.MEDIA_ROOT)
+    if request.method=='POST':
+        file=ImportFile(request.POST, request.FILES)	
+        if file.is_valid():
+            nombre_archivo=request.FILES['file']
+            fs = FileSystemStorage(location=settings.MEDIA_ROOT)
+            
+            filename = fs.save(nombre_archivo.name, nombre_archivo)
+            file_path = fs.path(filename)
+            df=pd.read_excel(file_path, engine="openpyxl")
+            
+            # Limpiar DNI desde el inicio
+            df['DNI'] = df['DNI'].astype(str).str.strip().str.zfill(8)
+            
+            ultimo_ano = AnoAcademico.objects.last()
+            
+            if not ultimo_ano:
+                # Manejar caso cuando no hay año académico
+                fs.delete(filename)
+                context={'resultado': 'Error: No hay año académico configurado'}
+                return render(request,'matricula/mensaje_importado.html',context)
+            
+            # Primero, marcar todos como inactivos
+            Alumno.objects.all().update(Estado='R')
+            
+            registrados = 0
+            no_registrados = 0
+            errores = []
+            
+            for index, row in df.iterrows():
+                try:
+                    dni = str(row['DNI']).strip().zfill(8)
+                    Nombres = row['Nombres']
+                    ApellidoPaterno = row['ApellidoPaterno']
+                    ApellidoMaterno = row['ApellidoMaterno']
+                    Direccion = row['Direccion']
+                    FechaNacimiento = row['FechaNacimiento']
+                    Sexo = row['Sexo']
+                    Grado = row['Grado']
+                    Seccion = row['Seccion']
+                    FechaMat = row['FechaMat']
+                    
+                    # Buscar o crear alumno
+                    alumno, created = Alumno.objects.update_or_create(
+                        DNI=dni,
+                        defaults={
+                            'Nombres': Nombres,
+                            'ApellidoPaterno': ApellidoPaterno,
+                            'ApellidoMaterno': ApellidoMaterno,
+                            'Direccion': Direccion,
+                            'FechaNacimiento': FechaNacimiento,
+                            'Sexo': Sexo,
+                            'Estado': 'A'
+                        }
+                    )
+                    
+                    if created:
+                        registrados += 1
+                    else:
+                        no_registrados += 1
+                        # Actualizar estado a activo si ya existía
+                        alumno.Estado = 'A'
+                        alumno.save()
+                    
+                    # Crear o actualizar matrícula
+                    Matricula.objects.update_or_create(
+                        Alumno=alumno,
+                        AnoAcademico=ultimo_ano,
+                        defaults={
+                            'Grado': Grado,
+                            'Seccion': Seccion,
+                            'FechaMat': FechaMat
+                        }
+                    )
+                    
+                except Exception as e:
+                    errores.append(f"Fila {index+2}: {str(e)}")
+            
+            cantidad_activos = Alumno.objects.filter(Estado='A').count()
+            resultado = f"Se crearon {registrados} alumnos nuevos. Se actualizaron {no_registrados} alumnos existentes. Total alumnos activos: {cantidad_activos}"
+            
+            if errores:
+                resultado += f"\nErrores encontrados: {len(errores)}"
+            
+            fs.delete(filename)
+            context={'resultado': resultado}
+            return render(request,'matricula/mensaje_importado.html',context)
+    else:
+        file=ImportFile()
+        return render(request,'matricula/importar_matriculas.html',{'form':file})
+# def ImportarArchivo(request):
+# 	if request.method=='POST':
+# 		file=ImportFile(request.POST,request.FILES)	
+# 		if file.is_valid():
+# 			nombre_archivo=request.FILES['file']
+# 			fs = FileSystemStorage(location=settings.MEDIA_ROOT)
 			
-			filename = fs.save(nombre_archivo.name, nombre_archivo)
-			file_path = fs.path(filename)
-			df=pd.read_excel(file_path, engine="openpyxl")
-			dni_list = df['DNI'].astype(str).str.strip().str.zfill(8).tolist()
+# 			filename = fs.save(nombre_archivo.name, nombre_archivo)
+# 			file_path = fs.path(filename)
+# 			df=pd.read_excel(file_path, engine="openpyxl")
+# 			dni_list = df['DNI'].astype(str).str.strip().str.zfill(8).tolist()
 
-			no_registrados=0
-			registrados=0
-			ultimo_ano = AnoAcademico.objects.last()
+# 			no_registrados=0
+# 			registrados=0
+# 			ultimo_ano = AnoAcademico.objects.last()
 
-			if len(dni_list)>0:
-			# 	#Aquí se hara la importación a la base de datos
-				for index, row in df.iterrows():
-					print("entro al for del dataframe")
-					dni = str(row['DNI']).strip()
-					Nombres = row['Nombres']
-					ApellidoPaterno = row['ApellidoPaterno']
-					ApellidoMaterno = row['ApellidoMaterno']
-					Direccion = row['Direccion']
-					FechaNacimiento = row['FechaNacimiento']
-					Sexo = row['Sexo']
-					Grado=row['Grado']
-					Seccion=row['Seccion']
-					FechaMat=row['FechaMat']
-					# Solo guardar si no existe ya en la base de datos
-					if not Alumno.objects.filter(DNI=dni).exists():	
-						registrados+=1
-						alumno = Alumno.objects.create(
-							Nombres=Nombres,
-							ApellidoPaterno=ApellidoPaterno,
-							ApellidoMaterno=ApellidoMaterno,
-							Direccion=Direccion,
-							FechaNacimiento=FechaNacimiento,
-							Sexo=Sexo,
-							DNI=dni,
-							Estado='A'
-						)
-						Matricula.objects.create(
-							Alumno=alumno,
-							AnoAcademico=ultimo_ano,
-							Grado=Grado,
-							Seccion=Seccion,
-							FechaMat=FechaMat
-						)
-					else:
-						no_registrados+=1
+# 			if len(dni_list)>0:
+# 			# 	#Aquí se hara la importación a la base de datos
+# 				for index, row in df.iterrows():
+# 					dni = str(row['DNI']).strip()
+# 					Nombres = row['Nombres']
+# 					ApellidoPaterno = row['ApellidoPaterno']
+# 					ApellidoMaterno = row['ApellidoMaterno']
+# 					Direccion = row['Direccion']
+# 					FechaNacimiento = row['FechaNacimiento']
+# 					Sexo = row['Sexo']
+# 					Grado=row['Grado']
+# 					Seccion=row['Seccion']
+# 					FechaMat=row['FechaMat']
+# 					# Solo guardar si no existe en la base de datos
+# 					if not Alumno.objects.filter(DNI=dni).exists():	
+# 						registrados+=1
+# 						alumno = Alumno.objects.create(
+# 							Nombres=Nombres,
+# 							ApellidoPaterno=ApellidoPaterno,
+# 							ApellidoMaterno=ApellidoMaterno,
+# 							Direccion=Direccion,
+# 							FechaNacimiento=FechaNacimiento,
+# 							Sexo=Sexo,
+# 							DNI=dni,
+# 							Estado='A'
+# 						)
+# 						Matricula.objects.create(
+# 							Alumno=alumno,
+# 							AnoAcademico=ultimo_ano,
+# 							Grado=Grado,
+# 							Seccion=Seccion,
+# 							FechaMat=FechaMat
+# 						)
+# 					else:
+# 						no_registrados+=1
 						
-				Alumno.objects.filter(Estado='A').update(Estado='R')
-				Alumno.objects.filter(DNI__in=dni_list).update(Estado='A')
-				cantidad_dnis = len(dni_list)
-				resultado=f"Se importaron {registrados} registros correctamente. No se importaron {no_registrados} registros. Cantidad de Alumnos Estado=Activo: {cantidad_dnis}"
+# 				Alumno.objects.filter(Estado='A').update(Estado='R')
+# 				Alumno.objects.filter(DNI__in=dni_list).update(Estado='A')
+# 				cantidad_dnis = len(dni_list)
+# 				resultado=f"Se importaron {registrados} registros correctamente. No se importaron {no_registrados} registros. Cantidad de Alumnos Estado=Activo: {cantidad_dnis}"
 				
-				fs.delete(filename)
-			context={'resultado':resultado}
-			return render(request,'matricula/mensaje_importado.html',context)
-	else:
-		file=ImportFile()#ImportFile es el Form
-		return render(request,'matricula/importar_matriculas.html',{'form':file})
+# 				fs.delete(filename)
+# 			context={'resultado':resultado}
+# 			return render(request,'matricula/mensaje_importado.html',context)
+# 	else:
+# 		file=ImportFile()#ImportFile es el Form
+# 		return render(request,'matricula/importar_matriculas.html',{'form':file})
 
 def CompruebaCeldasVacias(m1,m2,m3,m4,m5,m6,m7,m8,m9,m10,m11,m12):
 	if m1=='' or m2=='' or m3=='' or m4=='' or m5=='' or m6=='' or m7=='' or m8=='' or m9=='' or m10=='' or m11=='' or m12=='':
