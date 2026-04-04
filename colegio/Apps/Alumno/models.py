@@ -7,7 +7,7 @@ class Alumno (models.Model):
     ApellidoMaterno = models.CharField(max_length=60,default='-')
     Nombres = models.CharField(max_length=60)
     Direccion = models.CharField(max_length=100,default='-')
-    DNI = models.CharField(max_length=8, unique=True, default='-')
+    DNI = models.CharField(max_length=10, unique=True, default='-')
     FechaNacimiento = models.DateField()
     SEXOS =  (('M','Masculino'),('F','Femenino'))
     Sexo = models.CharField(max_length=1,choices=SEXOS,default='M')
