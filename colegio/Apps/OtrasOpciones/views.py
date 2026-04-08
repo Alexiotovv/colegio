@@ -70,17 +70,17 @@ def ImprimirResumenAnual(request):
 		
 		if str(grado).find("PRIM")!= -1:			
 			#Ruta de Primaria
-			Ruta = "/var/www/vhosts/colegio_venv/colegio/media/files/RESUMEN_FINAL_PRIMARIA.xlsx"
+			Ruta = "/var/www/vhosts/colegio_venv_37/colegio/media/files/RESUMEN_FINAL_PRIMARIA.xlsx"
 			#Ruta = "media/files/RESUMEN_FINAL_PRIMARIA.xlsx"
 		else:
 			#Ruta de Secundaria 1SEC, 2SEC, 3SEC,4SEC
 			if str(grado).find("1SEC")!= -1 or str(grado).find("2SEC")!= -1 or str(grado).find("3SEC")!= -1 or str(grado).find("4SEC")!= -1:
-				Ruta = "/var/www/vhosts/colegio_venv/colegio/media/files/RESUMEN_FINAL_SECUNDARIA_1_2.xlsx"
+				Ruta = "/var/www/vhosts/colegio_venv_37/colegio/media/files/RESUMEN_FINAL_SECUNDARIA_1_2.xlsx"
 				#Ruta = "media/files/RESUMEN_FINAL_SECUNDARIA_1_2.xlsx"
 			else:
 				#Ruta de 5SEC
 				#var/www/vhosts/colegio
-				Ruta = "/var/www/vhosts/colegio_venv/colegio/media/files/RESUMEN_FINAL_SECUNDARIA.xlsx"
+				Ruta = "/var/www/vhosts/colegio_venv_37/colegio/media/files/RESUMEN_FINAL_SECUNDARIA.xlsx"
 				#Ruta = "media/files/RESUMEN_FINAL_SECUNDARIA.xlsx"
 		Libro = load_workbook(Ruta)
 		Hoja1 = Libro.active
