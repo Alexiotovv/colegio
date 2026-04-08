@@ -471,7 +471,7 @@ def DeleteAvanceNotasxCurso(request):
 	
 def InsertaNotasEnExcel(consolidado_notas,matriculas,nivel,gradonivel,seccion,periodo,cursos):
 	if str(nivel)=='SEC':		
-		Ruta = "/var/www/vhosts/colegio_venv/colegio/media/files/PLANTILLA_AVANCE_SECUNDARIA.xlsx"
+		Ruta = "/var/www/vhosts/colegio_venv_37/colegio/media/files/PLANTILLA_AVANCE_SECUNDARIA.xlsx"
 		#Ruta = "media/files/PLANTILLA_AVANCE_SECUNDARIA.xlsx"
 		Libro =load_workbook(Ruta)			
 		Hoja1 = Libro.active
@@ -516,7 +516,7 @@ def InsertaNotasEnExcel(consolidado_notas,matriculas,nivel,gradonivel,seccion,pe
 		Libro.save(Ruta)
 	else:
 		#Ruta de Primaria
-		Ruta = "/var/www/vhosts/colegio_venv/colegio/media/files/PLANTILLA_AVANCE_PRIMARIA.xlsx"
+		Ruta = "/var/www/vhosts/colegio_venv_37/colegio/media/files/PLANTILLA_AVANCE_PRIMARIA.xlsx"
 		#Ruta = "media/files/PLANTILLA_AVANCE_PRIMARIA.xlsx"
 		Libro =load_workbook(Ruta)			
 		Hoja1 = Libro.active
