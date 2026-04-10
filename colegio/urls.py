@@ -43,4 +43,5 @@ urlpatterns = [
     path('', include('colegio.Apps.ServiciosExternos.urls')),
     path('', include('django.contrib.auth.urls')), #new
     path('', include('colegio.Apps.SituacionFinal.urls')),
+    path('', include(('colegio.Apps.PagosImportacion.urls', 'PagosImportacion'), namespace='PagosImportacion')),
 ]

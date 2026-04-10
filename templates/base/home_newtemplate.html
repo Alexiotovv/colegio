@@ -272,14 +272,41 @@
           </a>
           <ul>
               
-            <li> <a href="{% url 'applistar_pagos' %}"><i class="bx bx-right-arrow-alt"></i>Listar Pagos</a></li>
+            <!-- <li> <a href="{% url 'applistar_pagos' %}"><i class="bx bx-right-arrow-alt"></i>Listar Pagos</a></li>
             <li> 
               <a href="{% url 'app_gestionar_cronograma' %}"><i class="bx bx-right-arrow-alt"></i>Gestionar Cronograma</a>
             </li>
-            <li> <a href="{% url 'app_montopension_list' %}"><i class="bx bx-right-arrow-alt"></i>Configuraciones</a></li>
+            <li> <a href="{% url 'app_montopension_list' %}"><i class="bx bx-right-arrow-alt"></i>Configuraciones</a></li> -->
+
+            <li>
+              <a class="dropdown-item" href="{% url 'PagosImportacion:importar' %}">
+                  <i class="fas fa-upload"></i> Importar Pagos
+              </a>
+            </li>
+            <li>
+              <a class="dropdown-item" href="{% url 'PagosImportacion:listar_importaciones' %}">
+                  <i class="fas fa-history"></i> Historial de Importaciones
+              </a>
+            </li>
+            <li>
+              <a class="dropdown-item" href="{% url 'PagosImportacion:buscar_pagos' %}">
+                  <i class="fas fa-search"></i> Buscar Pagos
+              </a>
+            </li>
+            <li><hr class="dropdown-divider"></li>
+            <li>
+              <a class="dropdown-item text-danger" href="{% url 'PagosImportacion:limpiar_pagos' %}">
+                  <i class="fas fa-trash"></i> Limpiar Pagos
+              </a>
+            </li>
+
           </ul>
         </li>
         
+
+              
+
+
       {% endif %}
 
           {% endfor %}

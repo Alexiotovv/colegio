@@ -1,0 +1,163 @@
+{% extends 'base/home_newtemplate.html' %}
+{% block title %}Detalle de Importación #{{ importacion.id }}{% endblock title %}
+
+{% block form %}
+<div class="container-fluid mt-4">
+    <div class="card">
+        <div class="card-header bg-info text-white">
+            <h3>
+                <i class="fas fa-info-circle"></i> Detalle de Importación #{{ importacion.id }}
+                <a href="{% url 'PagosImportacion:listar_importaciones' %}" class="btn btn-light float-right">
+                    <i class="fas fa-arrow-left"></i> Volver
+                </a>
+            </h3>
+        </div>
+        <div class="card-body">
+            <!-- Resumen -->
+            <div class="row mb-4">
+                <div class="col-md-3">
+                    <div class="card bg-light">
+                        <div class="card-body text-center">
+                            <h5>Fecha</h5>
+                            <p class="h4">{{ importacion.fecha_importacion|date:"d/m/Y H:i" }}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card bg-light">
+                        <div class="card-body text-center">
+                            <h5>Año</h5>
+                            <p class="h4">{{ importacion.anio }}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card bg-primary text-white">
+                        <div class="card-body text-center">
+                            <h5>Total Registros</h5>
+                            <p class="h4">{{ total_pagos }}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card bg-success text-white">
+                        <div class="card-body text-center">
+                            <h5>Archivo</h5>
+                            <p class="h6">{{ importacion.nombre_archivo|truncatechars:30 }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Tabla horizontal con todos los registros -->
+            <div class="table-responsive">
+                <table class="table table-striped table-bordered table-hover">
+                    <thead class="bg-primary text-white">
+                        <tr>
+                            <th>#</th>
+                            <th>Estudiante</th>
+                            <th>DNI</th>
+                            <th>Nivel</th>
+                            <th>Grado</th>
+                            <th>Sección</th>
+                            <th>Marzo</th>
+                            <th>Abril</th>
+                            <th>Mayo</th>
+                            <th>Junio</th>
+                            <th>Julio</th>
+                            <th>Agosto</th>
+                            <th>Setiembre</th>
+                            <th>Octubre</th>
+                            <th>Noviembre</th>
+                            <th>Diciembre</th>
+                            <th>TOTAL</th>
+                            <th>PAGADO</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for pago in pagos %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ pago.estudiante|truncatechars:50 }}</td>
+                            <td>{{ pago.dni }}</td>
+                            <td>{{ pago.nivel }}</td>
+                            <td>{{ pago.grado }}</td>
+                            <td>{{ pago.seccion }}</td>
+                            
+                            <!-- Marzo -->
+                            <td class="{% if 'DEBE' in pago.marzo %}table-warning{% elif pago.marzo != '-' and pago.marzo != 'NO' %}table-success{% endif %}">
+                                {{ pago.marzo|default:"-" }}
+                            </td>
+                            
+                            <!-- Abril -->
+                            <td class="{% if 'DEBE' in pago.abril %}table-warning{% elif pago.abril != '-' and pago.abril != 'NO' %}table-success{% endif %}">
+                                {{ pago.abril|default:"-" }}
+                            </td>
+                            
+                            <!-- Mayo -->
+                            <td class="{% if 'DEBE' in pago.mayo %}table-warning{% elif pago.mayo != '-' and pago.mayo != 'NO' %}table-success{% endif %}">
+                                {{ pago.mayo|default:"-" }}
+                            </td>
+                            
+                            <!-- Junio -->
+                            <td class="{% if 'DEBE' in pago.junio %}table-warning{% elif pago.junio != '-' and pago.junio != 'NO' %}table-success{% endif %}">
+                                {{ pago.junio|default:"-" }}
+                            </td>
+                            
+                            <!-- Julio -->
+                            <td class="{% if 'DEBE' in pago.julio %}table-warning{% elif pago.julio != '-' and pago.julio != 'NO' %}table-success{% endif %}">
+                                {{ pago.julio|default:"-" }}
+                            </td>
+                            
+                            <!-- Agosto -->
+                            <td class="{% if 'DEBE' in pago.agosto %}table-warning{% elif pago.agosto != '-' and pago.agosto != 'NO' %}table-success{% endif %}">
+                                {{ pago.agosto|default:"-" }}
+                            </td>
+                            
+                            <!-- Setiembre -->
+                            <td class="{% if 'DEBE' in pago.setiembre %}table-warning{% elif pago.setiembre != '-' and pago.setiembre != 'NO' %}table-success{% endif %}">
+                                {{ pago.setiembre|default:"-" }}
+                            </td>
+                            
+                            <!-- Octubre -->
+                            <td class="{% if 'DEBE' in pago.octubre %}table-warning{% elif pago.octubre != '-' and pago.octubre != 'NO' %}table-success{% endif %}">
+                                {{ pago.octubre|default:"-" }}
+                            </td>
+                            
+                            <!-- Noviembre -->
+                            <td class="{% if 'DEBE' in pago.noviembre %}table-warning{% elif pago.noviembre != '-' and pago.noviembre != 'NO' %}table-success{% endif %}">
+                                {{ pago.noviembre|default:"-" }}
+                            </td>
+                            
+                            <!-- Diciembre -->
+                            <td class="{% if 'DEBE' in pago.diciembre %}table-warning{% elif pago.diciembre != '-' and pago.diciembre != 'NO' %}table-success{% endif %}">
+                                {{ pago.diciembre|default:"-" }}
+                            </td>
+                            
+                            <td><strong>{{ pago.total|default:"0" }}</strong></td>
+                            <td><strong>{{ pago.pagado|default:"0" }}</strong></td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="18" class="text-center">No hay registros de pago en esta importación</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Leyenda de colores -->
+            <div class="row mt-3">
+                <div class="col-md-12">
+                    <div class="alert alert-info">
+                        <strong>Leyenda:</strong>
+                        <span class="badge bg-success">Verde</span> = Pagado 
+                        <span class="badge bg-warning">Amarillo</span> = Deuda (DEBE)
+                        <span class="badge bg-secondary">Gris</span> = Sin pago o pendiente
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

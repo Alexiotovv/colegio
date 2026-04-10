@@ -1,0 +1,63 @@
+{% extends 'base/home_newtemplate.html' %}
+{% block title %}Limpiar Pagos{% endblock title %}
+
+{% block form %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-danger text-white">
+                    <h3>
+                        <i class="fas fa-trash-alt"></i> Limpiar Pagos
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-warning">
+                        <strong><i class="fas fa-exclamation-triangle"></i> Advertencia:</strong>
+                        Esta acción eliminará permanentemente todos los registros de pagos del año seleccionado.
+                        Esta operación no se puede deshacer.
+                    </div>
+                    
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="anio" class="form-label">Seleccionar Año:</label>
+                            <select name="anio" id="anio" class="form-control" required>
+                                <option value="">-- Seleccione un año --</option>
+                                {% for year in "2020,2021,2022,2023,2024,2025,2026,2027"|split:"," %}
+                                <option value="{{ year }}" {% if year == anio_actual|stringformat:"s" %}selected{% endif %}>
+                                    {{ year }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" id="confirmar" required>
+                            <label class="form-check-label" for="confirmar">
+                                Confirmo que deseo eliminar todos los pagos del año seleccionado
+                            </label>
+                        </div>
+                        
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-danger" id="btnEliminar" disabled>
+                                <i class="fas fa-trash"></i> Eliminar Pagos
+                            </button>
+                            <a href="{% url 'PagosImportacion:importar' %}" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left"></i> Cancelar
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Habilitar botón solo si el checkbox está marcado
+    document.getElementById('confirmar').addEventListener('change', function() {
+        document.getElementById('btnEliminar').disabled = !this.checked;
+    });
+</script>
+{% endblock %}

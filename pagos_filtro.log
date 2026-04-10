@@ -1,0 +1,432 @@
+"GET /pagos/importar/ HTTP/1.1" 200 42302
+"GET /pagos/importar/ HTTP/1.1" 200 42302
+"POST /pagos/importar/ HTTP/1.1" 302 0
+"POST /pagos/importar/ HTTP/1.1" 302 0
+"GET /pagos/importaciones/ HTTP/1.1" 200 39808
+"GET /pagos/importaciones/ HTTP/1.1" 200 39808
+"GET /pagos/importacion/5/ HTTP/1.1" 200 101332
+"GET /pagos/importacion/5/ HTTP/1.1" 200 101332
+"GET /pagos/importacion/5/ HTTP/1.1" 200 101332
+"GET /pagos/importacion/5/ HTTP/1.1" 200 101332
+"GET /pagos/importar/ HTTP/1.1" 200 42678
+"GET /pagos/importar/ HTTP/1.1" 200 42678
+"GET /pagos/importar/ HTTP/1.1" 200 42678
+"GET /pagos/importar/ HTTP/1.1" 200 42678
+"GET /pagos/importar/ HTTP/1.1" 200 42678
+"GET /pagos/importar/ HTTP/1.1" 200 42678
+"GET /pagos/buscar/ HTTP/1.1" 200 84281
+"GET /pagos/buscar/ HTTP/1.1" 200 84281
+"GET /pagos/importar/ HTTP/1.1" 200 42678
+"GET /pagos/importar/ HTTP/1.1" 200 42678
+"GET /pagos/importar/ HTTP/1.1" 200 42302
+"GET /pagos/importar/ HTTP/1.1" 200 42302
+"POST /pagos/importar/ HTTP/1.1" 302 0
+"POST /pagos/importar/ HTTP/1.1" 302 0
+"GET /pagos/importaciones/ HTTP/1.1" 200 39808
+"GET /pagos/importaciones/ HTTP/1.1" 200 39808
+"GET /pagos/importacion/6/ HTTP/1.1" 200 101332
+"GET /pagos/importacion/6/ HTTP/1.1" 200 101332
+Internal Server Error: /pagos/limpiar/
+Traceback (most recent call last):
+  File "/home/alex/.local/lib/python3.10/site-packages/django/core/handlers/exception.py", line 34, in inner
+    response = get_response(request)
+  File "/home/alex/.local/lib/python3.10/site-packages/django/core/handlers/base.py", line 126, in _get_response
+    response = self.process_exception_by_middleware(e, request)
+  File "/home/alex/.local/lib/python3.10/site-packages/django/core/handlers/base.py", line 124, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/home/alex/.local/lib/python3.10/site-packages/django/contrib/auth/decorators.py", line 21, in _wrapped_view
+    return view_func(request, *args, **kwargs)
+  File "/home/alex/Desktop/Proyectos/colegio_env/colegio/colegio/Apps/PagosImportacion/views.py", line 113, in limpiar_pagos
+    return render(request, 'pagos_importacion/limpiar_pagos.html', context)
+  File "/home/alex/.local/lib/python3.10/site-packages/django/shortcuts.py", line 36, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+  File "/home/alex/.local/lib/python3.10/site-packages/django/template/loader.py", line 61, in render_to_string
+    template = get_template(template_name, using=using)
+  File "/home/alex/.local/lib/python3.10/site-packages/django/template/loader.py", line 15, in get_template
+    return engine.get_template(template_name)
+  File "/home/alex/.local/lib/python3.10/site-packages/django/template/backends/django.py", line 34, in get_template
+    return Template(self.engine.get_template(template_name), self)
+  File "/home/alex/.local/lib/python3.10/site-packages/django/template/engine.py", line 144, in get_template
+    template, origin = self.find_template(template_name)
+  File "/home/alex/.local/lib/python3.10/site-packages/django/template/engine.py", line 126, in find_template
+    template = loader.get_template(name, skip=skip)
+  File "/home/alex/.local/lib/python3.10/site-packages/django/template/loaders/base.py", line 29, in get_template
+    return Template(
+  File "/home/alex/.local/lib/python3.10/site-packages/django/template/base.py", line 156, in __init__
+    self.nodelist = self.compile_nodelist()
+  File "/home/alex/.local/lib/python3.10/site-packages/django/template/base.py", line 194, in compile_nodelist
+    return parser.parse()
+  File "/home/alex/.local/lib/python3.10/site-packages/django/template/base.py", line 478, in parse
+    raise self.error(token, e)
+  File "/home/alex/.local/lib/python3.10/site-packages/django/template/base.py", line 476, in parse
+    compiled_result = compile_func(self, token)
+  File "/home/alex/.local/lib/python3.10/site-packages/django/template/loader_tags.py", line 266, in do_extends
+    nodelist = parser.parse()
+  File "/home/alex/.local/lib/python3.10/site-packages/django/template/base.py", line 478, in parse
+    raise self.error(token, e)
+  File "/home/alex/.local/lib/python3.10/site-packages/django/template/base.py", line 476, in parse
+    compiled_result = compile_func(self, token)
+  File "/home/alex/.local/lib/python3.10/site-packages/django/template/loader_tags.py", line 209, in do_block
+    nodelist = parser.parse(('endblock',))
+  File "/home/alex/.local/lib/python3.10/site-packages/django/template/base.py", line 478, in parse
+    raise self.error(token, e)
+  File "/home/alex/.local/lib/python3.10/site-packages/django/template/base.py", line 476, in parse
+    compiled_result = compile_func(self, token)
+  File "/home/alex/.local/lib/python3.10/site-packages/django/template/defaulttags.py", line 809, in do_for
+    sequence = parser.compile_filter(bits[in_index + 1])
+  File "/home/alex/.local/lib/python3.10/site-packages/django/template/base.py", line 563, in compile_filter
+    return FilterExpression(token, self)
+  File "/home/alex/.local/lib/python3.10/site-packages/django/template/base.py", line 657, in __init__
+    filter_func = parser.find_filter(filter_name)
+  File "/home/alex/.local/lib/python3.10/site-packages/django/template/base.py", line 569, in find_filter
+    raise TemplateSyntaxError("Invalid filter: '%s'" % filter_name)
+django.template.exceptions.TemplateSyntaxError: Invalid filter: 'split'
+Internal Server Error: /pagos/limpiar/
+Traceback (most recent call last):
+  File "/home/alex/.local/lib/python3.10/site-packages/django/core/handlers/exception.py", line 34, in inner
+    response = get_response(request)
+  File "/home/alex/.local/lib/python3.10/site-packages/django/core/handlers/base.py", line 126, in _get_response
+    response = self.process_exception_by_middleware(e, request)
+  File "/home/alex/.local/lib/python3.10/site-packages/django/core/handlers/base.py", line 124, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/home/alex/.local/lib/python3.10/site-packages/django/contrib/auth/decorators.py", line 21, in _wrapped_view
+    return view_func(request, *args, **kwargs)
+  File "/home/alex/Desktop/Proyectos/colegio_env/colegio/colegio/Apps/PagosImportacion/views.py", line 113, in limpiar_pagos
+    return render(request, 'pagos_importacion/limpiar_pagos.html', context)
+  File "/home/alex/.local/lib/python3.10/site-packages/django/shortcuts.py", line 36, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+  File "/home/alex/.local/lib/python3.10/site-packages/django/template/loader.py", line 61, in render_to_string
+    template = get_template(template_name, using=using)
+  File "/home/alex/.local/lib/python3.10/site-packages/django/template/loader.py", line 15, in get_template
+    return engine.get_template(template_name)
+  File "/home/alex/.local/lib/python3.10/site-packages/django/template/backends/django.py", line 34, in get_template
+    return Template(self.engine.get_template(template_name), self)
+  File "/home/alex/.local/lib/python3.10/site-packages/django/template/engine.py", line 144, in get_template
+    template, origin = self.find_template(template_name)
+  File "/home/alex/.local/lib/python3.10/site-packages/django/template/engine.py", line 126, in find_template
+    template = loader.get_template(name, skip=skip)
+  File "/home/alex/.local/lib/python3.10/site-packages/django/template/loaders/base.py", line 29, in get_template
+    return Template(
+  File "/home/alex/.local/lib/python3.10/site-packages/django/template/base.py", line 156, in __init__
+    self.nodelist = self.compile_nodelist()
+  File "/home/alex/.local/lib/python3.10/site-packages/django/template/base.py", line 194, in compile_nodelist
+    return parser.parse()
+  File "/home/alex/.local/lib/python3.10/site-packages/django/template/base.py", line 478, in parse
+    raise self.error(token, e)
+  File "/home/alex/.local/lib/python3.10/site-packages/django/template/base.py", line 476, in parse
+    compiled_result = compile_func(self, token)
+  File "/home/alex/.local/lib/python3.10/site-packages/django/template/loader_tags.py", line 266, in do_extends
+    nodelist = parser.parse()
+  File "/home/alex/.local/lib/python3.10/site-packages/django/template/base.py", line 478, in parse
+    raise self.error(token, e)
+  File "/home/alex/.local/lib/python3.10/site-packages/django/template/base.py", line 476, in parse
+    compiled_result = compile_func(self, token)
+  File "/home/alex/.local/lib/python3.10/site-packages/django/template/loader_tags.py", line 209, in do_block
+    nodelist = parser.parse(('endblock',))
+  File "/home/alex/.local/lib/python3.10/site-packages/django/template/base.py", line 478, in parse
+    raise self.error(token, e)
+  File "/home/alex/.local/lib/python3.10/site-packages/django/template/base.py", line 476, in parse
+    compiled_result = compile_func(self, token)
+  File "/home/alex/.local/lib/python3.10/site-packages/django/template/defaulttags.py", line 809, in do_for
+    sequence = parser.compile_filter(bits[in_index + 1])
+  File "/home/alex/.local/lib/python3.10/site-packages/django/template/base.py", line 563, in compile_filter
+    return FilterExpression(token, self)
+  File "/home/alex/.local/lib/python3.10/site-packages/django/template/base.py", line 657, in __init__
+    filter_func = parser.find_filter(filter_name)
+  File "/home/alex/.local/lib/python3.10/site-packages/django/template/base.py", line 569, in find_filter
+    raise TemplateSyntaxError("Invalid filter: '%s'" % filter_name)
+django.template.exceptions.TemplateSyntaxError: Invalid filter: 'split'
+"GET /pagos/limpiar/ HTTP/1.1" 500 190707
+"GET /pagos/limpiar/ HTTP/1.1" 500 190707
+Not Found: /pagos/importacion/6/
+Not Found: /pagos/importacion/6/
+"GET /pagos/importacion/6/ HTTP/1.1" 404 1796
+"GET /pagos/importacion/6/ HTTP/1.1" 404 1796
+"GET /pagos/importaciones/ HTTP/1.1" 200 39357
+"GET /pagos/importaciones/ HTTP/1.1" 200 39357
+"GET /pagos/importar/ HTTP/1.1" 200 42302
+"GET /pagos/importar/ HTTP/1.1" 200 42302
+"POST /pagos/importar/ HTTP/1.1" 302 0
+"POST /pagos/importar/ HTTP/1.1" 302 0
+"GET /pagos/importaciones/ HTTP/1.1" 200 39810
+"GET /pagos/importaciones/ HTTP/1.1" 200 39810
+"GET /pagos/importacion/7/ HTTP/1.1" 200 3248416
+"GET /pagos/importacion/7/ HTTP/1.1" 200 3248416
+"GET /pagos/importacion/7/ HTTP/1.1" 200 3249246
+"GET /pagos/importacion/7/ HTTP/1.1" 200 3249246
+"GET /pagos/importacion/7/ HTTP/1.1" 200 3248416
+"GET /pagos/importacion/7/ HTTP/1.1" 200 3248416
+"GET / HTTP/1.1" 200 38176
+"GET / HTTP/1.1" 200 38176
+"GET /libretas/libretas_avances_sec_comp/ HTTP/1.1" 200 42360
+"GET /libretas/libretas_avances_sec_comp/ HTTP/1.1" 200 42360
+Grado: 1SEC, Sección: A, Mes filtrado: 0
+Total de alumnos después del filtro: 34
+"POST /libretas/libretas_avances_sec_comp/ HTTP/1.1" 200 4437712
+"POST /libretas/libretas_avances_sec_comp/ HTTP/1.1" 200 4437712
+"GET /static/css/bootstrap.scss HTTP/1.1" 404 1678
+"GET /static/css/bootstrap.scss HTTP/1.1" 404 1678
+"GET /static/js/jquery-3.3.1.min.js HTTP/1.1" 404 1690
+"GET /static/js/jquery-3.3.1.min.js HTTP/1.1" 404 1690
+"GET /libretas/libretas_avances_sec_comp/ HTTP/1.1" 200 42360
+"GET /libretas/libretas_avances_sec_comp/ HTTP/1.1" 200 42360
+=== INICIO FILTRADO DE PAGOS ===
+Parámetros: hasta_mes=3, anio=2026
+Total de registros de pago encontrados: 1349
+Meses requeridos para estar al día: [3]
+✅ ALUMNO FILTRADO: DNI=-, Nombre=LOPEZ CAMIÑAS FLAVIA MARIANGEL KARIME, Meses pagados=[3]
+✅ ALUMNO FILTRADO: DNI=62598477, Nombre=GALAN CURINUQUI DAYRON IVAN, Meses pagados=[3]
+✅ ALUMNO FILTRADO: DNI=91143286, Nombre=CONTRERAS ALADO DENZEL JOY, Meses pagados=[3]
+✅ ALUMNO FILTRADO: DNI=79952015, Nombre=GOMEZ ORBE ESTEFANY NICOL, Meses pagados=[3]
+✅ ALUMNO FILTRADO: DNI=79440105, Nombre=VELASQUEZ BANIO ABBY, Meses pagados=[3]
+✅ ALUMNO FILTRADO: DNI=78316823, Nombre=REYNEL FERNANDEZ KIANDRA CRISTHELL, Meses pagados=[3]
+Total de alumnos que cumplen con pagos hasta mes 3: 6
+DNIs filtrados: ['-', '62598477', '91143286', '79952015', '79440105', '78316823']
+=== FIN FILTRADO DE PAGOS ===
+
+Grado: 1SEC, Sección: A, Mes filtrado: 3
+Total de alumnos después del filtro: 1
+"POST /libretas/libretas_avances_sec_comp/ HTTP/1.1" 200 134028
+"POST /libretas/libretas_avances_sec_comp/ HTTP/1.1" 200 134028
+"GET /static/css/bootstrap.scss HTTP/1.1" 404 1678
+"GET /static/css/bootstrap.scss HTTP/1.1" 404 1678
+"GET /static/js/jquery-3.3.1.min.js HTTP/1.1" 404 1690
+"GET /static/js/jquery-3.3.1.min.js HTTP/1.1" 404 1690
+"GET /libretas/libretas_avances_sec_comp/ HTTP/1.1" 200 42360
+"GET /libretas/libretas_avances_sec_comp/ HTTP/1.1" 200 42360
+"GET /libretas/libretas_avances_sec_comp/ HTTP/1.1" 200 42360
+"GET /libretas/libretas_avances_sec_comp/ HTTP/1.1" 200 42360
+=== INICIO FILTRADO DE PAGOS ===
+Parámetros: hasta_mes=3, anio=2026
+Total de registros de pago encontrados: 1349
+Meses requeridos para estar al día: [3]
+✅ ALUMNO FILTRADO: DNI=-, Nombre=LOPEZ CAMIÑAS FLAVIA MARIANGEL KARIME, Meses pagados=[3]
+✅ ALUMNO FILTRADO: DNI=62598477, Nombre=GALAN CURINUQUI DAYRON IVAN, Meses pagados=[3]
+✅ ALUMNO FILTRADO: DNI=91143286, Nombre=CONTRERAS ALADO DENZEL JOY, Meses pagados=[3]
+✅ ALUMNO FILTRADO: DNI=79952015, Nombre=GOMEZ ORBE ESTEFANY NICOL, Meses pagados=[3]
+✅ ALUMNO FILTRADO: DNI=79440105, Nombre=VELASQUEZ BANIO ABBY, Meses pagados=[3]
+✅ ALUMNO FILTRADO: DNI=78316823, Nombre=REYNEL FERNANDEZ KIANDRA CRISTHELL, Meses pagados=[3]
+Total de alumnos que cumplen con pagos hasta mes 3: 6
+DNIs filtrados: ['-', '62598477', '91143286', '79952015', '79440105', '78316823']
+=== FIN FILTRADO DE PAGOS ===
+
+Grado: 1SEC, Sección: A, Mes filtrado: 3
+Total de alumnos después del filtro: 1
+"POST /libretas/libretas_avances_sec_comp/ HTTP/1.1" 200 134028
+"POST /libretas/libretas_avances_sec_comp/ HTTP/1.1" 200 134028
+"GET /static/css/bootstrap.scss HTTP/1.1" 404 1678
+"GET /static/css/bootstrap.scss HTTP/1.1" 404 1678
+"GET /static/js/jquery-3.3.1.min.js HTTP/1.1" 404 1690
+"GET /static/js/jquery-3.3.1.min.js HTTP/1.1" 404 1690
+=== INICIO FILTRADO DE PAGOS ===
+Parámetros: hasta_mes=3, anio=2026
+Total de registros de pago encontrados: 1349
+Meses requeridos para estar al día: [3]
+✅ ALUMNO FILTRADO: DNI=-, Nombre=LOPEZ CAMIÑAS FLAVIA MARIANGEL KARIME, Meses pagados=[3]
+✅ ALUMNO FILTRADO: DNI=62598477, Nombre=GALAN CURINUQUI DAYRON IVAN, Meses pagados=[3]
+✅ ALUMNO FILTRADO: DNI=91143286, Nombre=CONTRERAS ALADO DENZEL JOY, Meses pagados=[3]
+✅ ALUMNO FILTRADO: DNI=79952015, Nombre=GOMEZ ORBE ESTEFANY NICOL, Meses pagados=[3]
+✅ ALUMNO FILTRADO: DNI=79440105, Nombre=VELASQUEZ BANIO ABBY, Meses pagados=[3]
+✅ ALUMNO FILTRADO: DNI=78316823, Nombre=REYNEL FERNANDEZ KIANDRA CRISTHELL, Meses pagados=[3]
+Total de alumnos que cumplen con pagos hasta mes 3: 6
+DNIs filtrados: ['-', '62598477', '91143286', '79952015', '79440105', '78316823']
+=== FIN FILTRADO DE PAGOS ===
+
+Grado: 1SEC, Sección: A, Mes filtrado: 3
+Total de alumnos después del filtro: 1
+"POST /libretas/libretas_avances_sec_comp/ HTTP/1.1" 200 134028
+"POST /libretas/libretas_avances_sec_comp/ HTTP/1.1" 200 134028
+"GET /static/css/bootstrap.scss HTTP/1.1" 404 1678
+"GET /static/css/bootstrap.scss HTTP/1.1" 404 1678
+"GET /static/js/jquery-3.3.1.min.js HTTP/1.1" 404 1690
+"GET /static/js/jquery-3.3.1.min.js HTTP/1.1" 404 1690
+=== INICIO FILTRADO DE PAGOS ===
+Parámetros: hasta_mes=3, anio=2026
+Total de registros de pago encontrados: 1349
+Meses requeridos para estar al día: [3]
+✅ ALUMNO FILTRADO: DNI=-, Nombre=LOPEZ CAMIÑAS FLAVIA MARIANGEL KARIME, Meses pagados=[3]
+✅ ALUMNO FILTRADO: DNI=62598477, Nombre=GALAN CURINUQUI DAYRON IVAN, Meses pagados=[3]
+✅ ALUMNO FILTRADO: DNI=91143286, Nombre=CONTRERAS ALADO DENZEL JOY, Meses pagados=[3]
+✅ ALUMNO FILTRADO: DNI=79952015, Nombre=GOMEZ ORBE ESTEFANY NICOL, Meses pagados=[3]
+✅ ALUMNO FILTRADO: DNI=79440105, Nombre=VELASQUEZ BANIO ABBY, Meses pagados=[3]
+✅ ALUMNO FILTRADO: DNI=78316823, Nombre=REYNEL FERNANDEZ KIANDRA CRISTHELL, Meses pagados=[3]
+Total de alumnos que cumplen con pagos hasta mes 3: 6
+DNIs filtrados: ['-', '62598477', '91143286', '79952015', '79440105', '78316823']
+=== FIN FILTRADO DE PAGOS ===
+
+Grado: 1SEC, Sección: A, Mes filtrado: 3
+Total de alumnos después del filtro: 1
+"POST /libretas/libretas_avances_sec_comp/ HTTP/1.1" 200 134028
+"POST /libretas/libretas_avances_sec_comp/ HTTP/1.1" 200 134028
+"GET /static/css/bootstrap.scss HTTP/1.1" 404 1678
+"GET /static/css/bootstrap.scss HTTP/1.1" 404 1678
+"GET /static/js/jquery-3.3.1.min.js HTTP/1.1" 404 1690
+"GET /static/js/jquery-3.3.1.min.js HTTP/1.1" 404 1690
+Internal Server Error: /libretas/libretas_avances_sec_comp/
+Traceback (most recent call last):
+  File "/home/alex/.local/lib/python3.10/site-packages/django/core/handlers/exception.py", line 34, in inner
+    response = get_response(request)
+  File "/home/alex/.local/lib/python3.10/site-packages/django/core/handlers/base.py", line 126, in _get_response
+    response = self.process_exception_by_middleware(e, request)
+  File "/home/alex/.local/lib/python3.10/site-packages/django/core/handlers/base.py", line 124, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/home/alex/.local/lib/python3.10/site-packages/django/contrib/auth/decorators.py", line 21, in _wrapped_view
+    return view_func(request, *args, **kwargs)
+  File "/home/alex/Desktop/Proyectos/colegio_env/colegio/colegio/Apps/LibretaAvance/views.py", line 337, in ImprimirAvanceNotasSecundaria
+    dnis_filtrados = obtener_dnis_con_pagos_completos(mes_seleccionado)
+  File "/home/alex/Desktop/Proyectos/colegio_env/colegio/colegio/Apps/LibretaAvance/views.py", line 1062, in obtener_dnis_con_pagos_completos
+    valor_mes = getattr(pago, campo_mes)
+  File "/home/alex/Desktop/Proyectos/colegio_env/colegio/colegio/Apps/LibretaAvance/views.py", line 1043, in mes_pagado
+    return False
+NameError: name 're' is not defined
+Internal Server Error: /libretas/libretas_avances_sec_comp/
+Traceback (most recent call last):
+  File "/home/alex/.local/lib/python3.10/site-packages/django/core/handlers/exception.py", line 34, in inner
+    response = get_response(request)
+  File "/home/alex/.local/lib/python3.10/site-packages/django/core/handlers/base.py", line 126, in _get_response
+    response = self.process_exception_by_middleware(e, request)
+  File "/home/alex/.local/lib/python3.10/site-packages/django/core/handlers/base.py", line 124, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/home/alex/.local/lib/python3.10/site-packages/django/contrib/auth/decorators.py", line 21, in _wrapped_view
+    return view_func(request, *args, **kwargs)
+  File "/home/alex/Desktop/Proyectos/colegio_env/colegio/colegio/Apps/LibretaAvance/views.py", line 337, in ImprimirAvanceNotasSecundaria
+    dnis_filtrados = obtener_dnis_con_pagos_completos(mes_seleccionado)
+  File "/home/alex/Desktop/Proyectos/colegio_env/colegio/colegio/Apps/LibretaAvance/views.py", line 1062, in obtener_dnis_con_pagos_completos
+    valor_mes = getattr(pago, campo_mes)
+  File "/home/alex/Desktop/Proyectos/colegio_env/colegio/colegio/Apps/LibretaAvance/views.py", line 1043, in mes_pagado
+    return False
+NameError: name 're' is not defined
+"POST /libretas/libretas_avances_sec_comp/ HTTP/1.1" 500 97860
+"POST /libretas/libretas_avances_sec_comp/ HTTP/1.1" 500 97860
+Internal Server Error: /libretas/libretas_avances_sec_comp/
+Traceback (most recent call last):
+  File "/home/alex/.local/lib/python3.10/site-packages/django/core/handlers/exception.py", line 34, in inner
+    response = get_response(request)
+  File "/home/alex/.local/lib/python3.10/site-packages/django/core/handlers/base.py", line 126, in _get_response
+    response = self.process_exception_by_middleware(e, request)
+  File "/home/alex/.local/lib/python3.10/site-packages/django/core/handlers/base.py", line 124, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/home/alex/.local/lib/python3.10/site-packages/django/contrib/auth/decorators.py", line 21, in _wrapped_view
+    return view_func(request, *args, **kwargs)
+  File "/home/alex/Desktop/Proyectos/colegio_env/colegio/colegio/Apps/LibretaAvance/views.py", line 337, in ImprimirAvanceNotasSecundaria
+    dnis_filtrados = obtener_dnis_con_pagos_completos(mes_seleccionado)
+  File "/home/alex/Desktop/Proyectos/colegio_env/colegio/colegio/Apps/LibretaAvance/views.py", line 1062, in obtener_dnis_con_pagos_completos
+    valor_mes = getattr(pago, campo_mes)
+  File "/home/alex/Desktop/Proyectos/colegio_env/colegio/colegio/Apps/LibretaAvance/views.py", line 1043, in mes_pagado
+    return False
+NameError: name 're' is not defined
+Internal Server Error: /libretas/libretas_avances_sec_comp/
+Traceback (most recent call last):
+  File "/home/alex/.local/lib/python3.10/site-packages/django/core/handlers/exception.py", line 34, in inner
+    response = get_response(request)
+  File "/home/alex/.local/lib/python3.10/site-packages/django/core/handlers/base.py", line 126, in _get_response
+    response = self.process_exception_by_middleware(e, request)
+  File "/home/alex/.local/lib/python3.10/site-packages/django/core/handlers/base.py", line 124, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/home/alex/.local/lib/python3.10/site-packages/django/contrib/auth/decorators.py", line 21, in _wrapped_view
+    return view_func(request, *args, **kwargs)
+  File "/home/alex/Desktop/Proyectos/colegio_env/colegio/colegio/Apps/LibretaAvance/views.py", line 337, in ImprimirAvanceNotasSecundaria
+    dnis_filtrados = obtener_dnis_con_pagos_completos(mes_seleccionado)
+  File "/home/alex/Desktop/Proyectos/colegio_env/colegio/colegio/Apps/LibretaAvance/views.py", line 1062, in obtener_dnis_con_pagos_completos
+    valor_mes = getattr(pago, campo_mes)
+  File "/home/alex/Desktop/Proyectos/colegio_env/colegio/colegio/Apps/LibretaAvance/views.py", line 1043, in mes_pagado
+    return False
+NameError: name 're' is not defined
+"POST /libretas/libretas_avances_sec_comp/ HTTP/1.1" 500 97860
+"POST /libretas/libretas_avances_sec_comp/ HTTP/1.1" 500 97860
+"GET /libretas/libretas_avances_sec_comp/ HTTP/1.1" 200 42360
+"GET /libretas/libretas_avances_sec_comp/ HTTP/1.1" 200 42360
+Grado: 1SEC, Sección: A, Mes filtrado: 0
+Total de alumnos después del filtro: 34
+"POST /libretas/libretas_avances_sec_comp/ HTTP/1.1" 200 4437712
+"POST /libretas/libretas_avances_sec_comp/ HTTP/1.1" 200 4437712
+"GET /static/css/bootstrap.scss HTTP/1.1" 404 1678
+"GET /static/css/bootstrap.scss HTTP/1.1" 404 1678
+"GET /static/js/jquery-3.3.1.min.js HTTP/1.1" 404 1690
+"GET /static/js/jquery-3.3.1.min.js HTTP/1.1" 404 1690
+"GET /libretas/libretas_avances_sec_comp/ HTTP/1.1" 200 42360
+"GET /libretas/libretas_avances_sec_comp/ HTTP/1.1" 200 42360
+"GET /libretas/libretas_avances_sec_comp/ HTTP/1.1" 200 42360
+"GET /libretas/libretas_avances_sec_comp/ HTTP/1.1" 200 42360
+Internal Server Error: /libretas/libretas_avances_sec_comp/
+Traceback (most recent call last):
+  File "/home/alex/.local/lib/python3.10/site-packages/django/core/handlers/exception.py", line 34, in inner
+    response = get_response(request)
+  File "/home/alex/.local/lib/python3.10/site-packages/django/core/handlers/base.py", line 126, in _get_response
+    response = self.process_exception_by_middleware(e, request)
+  File "/home/alex/.local/lib/python3.10/site-packages/django/core/handlers/base.py", line 124, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/home/alex/.local/lib/python3.10/site-packages/django/contrib/auth/decorators.py", line 21, in _wrapped_view
+    return view_func(request, *args, **kwargs)
+  File "/home/alex/Desktop/Proyectos/colegio_env/colegio/colegio/Apps/LibretaAvance/views.py", line 337, in ImprimirAvanceNotasSecundaria
+    dnis_filtrados = obtener_dnis_con_pagos_completos(mes_seleccionado)
+  File "/home/alex/Desktop/Proyectos/colegio_env/colegio/colegio/Apps/LibretaAvance/views.py", line 1062, in obtener_dnis_con_pagos_completos
+    valor_mes = getattr(pago, campo_mes)
+  File "/home/alex/Desktop/Proyectos/colegio_env/colegio/colegio/Apps/LibretaAvance/views.py", line 1043, in mes_pagado
+    return False
+NameError: name 're' is not defined
+Internal Server Error: /libretas/libretas_avances_sec_comp/
+Traceback (most recent call last):
+  File "/home/alex/.local/lib/python3.10/site-packages/django/core/handlers/exception.py", line 34, in inner
+    response = get_response(request)
+  File "/home/alex/.local/lib/python3.10/site-packages/django/core/handlers/base.py", line 126, in _get_response
+    response = self.process_exception_by_middleware(e, request)
+  File "/home/alex/.local/lib/python3.10/site-packages/django/core/handlers/base.py", line 124, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/home/alex/.local/lib/python3.10/site-packages/django/contrib/auth/decorators.py", line 21, in _wrapped_view
+    return view_func(request, *args, **kwargs)
+  File "/home/alex/Desktop/Proyectos/colegio_env/colegio/colegio/Apps/LibretaAvance/views.py", line 337, in ImprimirAvanceNotasSecundaria
+    dnis_filtrados = obtener_dnis_con_pagos_completos(mes_seleccionado)
+  File "/home/alex/Desktop/Proyectos/colegio_env/colegio/colegio/Apps/LibretaAvance/views.py", line 1062, in obtener_dnis_con_pagos_completos
+    valor_mes = getattr(pago, campo_mes)
+  File "/home/alex/Desktop/Proyectos/colegio_env/colegio/colegio/Apps/LibretaAvance/views.py", line 1043, in mes_pagado
+    return False
+NameError: name 're' is not defined
+"POST /libretas/libretas_avances_sec_comp/ HTTP/1.1" 500 97860
+"POST /libretas/libretas_avances_sec_comp/ HTTP/1.1" 500 97860
+Grado: 1SEC, Sección: A, Mes filtrado: 3
+Total de alumnos después del filtro: 1
+"POST /libretas/libretas_avances_sec_comp/ HTTP/1.1" 200 134028
+"POST /libretas/libretas_avances_sec_comp/ HTTP/1.1" 200 134028
+"GET /static/css/bootstrap.scss HTTP/1.1" 404 1678
+"GET /static/css/bootstrap.scss HTTP/1.1" 404 1678
+"GET /static/js/jquery-3.3.1.min.js HTTP/1.1" 404 1690
+"GET /static/js/jquery-3.3.1.min.js HTTP/1.1" 404 1690
+Not Found: /pagos/importacion/7/
+Not Found: /pagos/importacion/7/
+"GET /pagos/importacion/7/ HTTP/1.1" 404 1796
+"GET /pagos/importacion/7/ HTTP/1.1" 404 1796
+"GET /pagos/importar/ HTTP/1.1" 200 42302
+"GET /pagos/importar/ HTTP/1.1" 200 42302
+"POST /pagos/importar/ HTTP/1.1" 302 0
+"POST /pagos/importar/ HTTP/1.1" 302 0
+"GET /pagos/importaciones/ HTTP/1.1" 200 39810
+"GET /pagos/importaciones/ HTTP/1.1" 200 39810
+"GET /pagos/importacion/8/ HTTP/1.1" 200 3257684
+"GET /pagos/importacion/8/ HTTP/1.1" 200 3257684
+Grado: 1SEC, Sección: A, Mes filtrado: 3
+Total de alumnos después del filtro: 19
+"POST /libretas/libretas_avances_sec_comp/ HTTP/1.1" 200 2481632
+"POST /libretas/libretas_avances_sec_comp/ HTTP/1.1" 200 2481632
+"GET /static/css/bootstrap.scss HTTP/1.1" 404 1678
+"GET /static/css/bootstrap.scss HTTP/1.1" 404 1678
+"GET /static/js/jquery-3.3.1.min.js HTTP/1.1" 404 1690
+"GET /static/js/jquery-3.3.1.min.js HTTP/1.1" 404 1690
+Grado: 1SEC, Sección: A, Mes filtrado: 3
+Total de alumnos después del filtro: 19
+"POST /libretas/libretas_avances_sec_comp/ HTTP/1.1" 200 2481632
+"POST /libretas/libretas_avances_sec_comp/ HTTP/1.1" 200 2481632
+"GET /static/css/bootstrap.scss HTTP/1.1" 404 1678
+"GET /static/css/bootstrap.scss HTTP/1.1" 404 1678
+"GET /static/js/jquery-3.3.1.min.js HTTP/1.1" 404 1690
+"GET /static/js/jquery-3.3.1.min.js HTTP/1.1" 404 1690
+"GET /libretas/libretas_avances_sec_comp/ HTTP/1.1" 200 42360
+"GET /libretas/libretas_avances_sec_comp/ HTTP/1.1" 200 42360
+Grado: 1SEC, Sección: A, Mes filtrado: 4
+Total de alumnos después del filtro: 3
+"POST /libretas/libretas_avances_sec_comp/ HTTP/1.1" 200 395440
+"POST /libretas/libretas_avances_sec_comp/ HTTP/1.1" 200 395440
+"GET /static/css/bootstrap.scss HTTP/1.1" 404 1678
+"GET /static/css/bootstrap.scss HTTP/1.1" 404 1678
+"GET /static/js/jquery-3.3.1.min.js HTTP/1.1" 404 1690
+"GET /static/js/jquery-3.3.1.min.js HTTP/1.1" 404 1690

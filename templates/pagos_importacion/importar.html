@@ -1,0 +1,92 @@
+{% extends 'base/home_newtemplate.html' %}
+{% block title %}Importar Pagos{% endblock title %}
+
+
+{% block form %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h3>Importar Pagos desde Excel</h3>
+                </div>
+                <div class="card-body">
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        
+                        {% for field in form %}
+                        <div class="mb-3">
+                            <label for="{{ field.id_for_label }}" class="form-label">
+                                {{ field.label }}
+                            </label>
+                            {{ field }}
+                            {% if field.help_text %}
+                            <div class="form-text">{{ field.help_text }}</div>
+                            {% endif %}
+                            {% if field.errors %}
+                            <div class="alert alert-danger mt-1">
+                                {{ field.errors }}
+                            </div>
+                            {% endif %}
+                        </div>
+                        {% endfor %}
+                        
+                        <div class="alert alert-info">
+                            <strong>Formato esperado:</strong>
+                            <ul>
+                                <li>Las cabeceras empiezan en la fila 4</li>
+                                <li>Los datos empiezan en la fila 5</li>
+                                <li>Columnas: #, Estudiante, DNI Est., Doc. Facturación, Nombre Facturación, Nivel, Grado, Sección, Marzo, Abril, Mayo, Junio, Julio, Agosto, Setiembre, Octubre, Noviembre, Diciembre, TOTAL, PAGADO</li>
+                            </ul>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-upload"></i> Importar
+                        </button>
+                        <a href="{% url 'PagosImportacion:listar_importaciones' %}" class="btn btn-secondary">
+                            Ver Historial
+                        </a>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h4>Últimas Importaciones</h4>
+                </div>
+                <div class="card-body">
+                    {% if ultimas_importaciones %}
+                    <div class="list-group">
+                        {% for imp in ultimas_importaciones %}
+                        <a href="{% url 'PagosImportacion:detalle_importacion' imp.id %}" class="list-group-item list-group-item-action">
+                            <strong>#{{ imp.id }}</strong> - {{ imp.fecha_importacion|date:"d/m/Y H:i" }}
+                            <br>
+                            <small>{{ imp.total_registros }} registros - {{ imp.nombre_archivo }}</small>
+                        </a>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <p class="text-muted">No hay importaciones previas</p>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h4>Acciones Rápidas</h4>
+                </div>
+                <div class="card-body">
+                    <a href="{% url 'PagosImportacion:limpiar_pagos' %}" class="btn btn-danger w-100 mb-2">
+                        <i class="fas fa-trash"></i> Limpiar Pagos
+                    </a>
+                    <a href="{% url 'PagosImportacion:buscar_pagos' %}" class="btn btn-info w-100">
+                        <i class="fas fa-search"></i> Buscar Pagos
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

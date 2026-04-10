@@ -37,6 +37,12 @@ from django.http import JsonResponse
 from colegio.Apps.Apis.models import Venta
 from django.db.models import Count
 
+import logging
+from colegio.Apps.PagosImportacion.models import PagoAlumno
+import re
+
+# Configurar logging
+logger = logging.getLogger(__name__)
 
 def ImprimirAvancesxAlumno(request):
 
@@ -238,9 +244,9 @@ def ImprimirAvanceNotasPrimaria(request):
         ano = request.POST.get("Ano")#El año que manda del form
         paca=request.POST.get("Pacademico")
         mes_seleccionado = int(request.POST.get("MesSeleccionado"))
-        fecha_inicio = request.POST.get("FechaInicio", "").strip()
-        fecha_fin = request.POST.get("FechaFin", "").strip()
-        habilitar_fechas = request.POST.get("HabilitarFechas") 
+        # fecha_inicio = request.POST.get("FechaInicio", "").strip()
+        # fecha_fin = request.POST.get("FechaFin", "").strip()
+        # habilitar_fechas = request.POST.get("HabilitarFechas") 
 
         nombrepaca=PAcademico.objects.get(id=paca)
         nivel=str(gradonivel)[1:len(gradonivel)] #extrae solo PRIM
@@ -263,17 +269,24 @@ def ImprimirAvanceNotasPrimaria(request):
         }
         
         #Validación: si hay rango de fechas activado, lo usamos
-        if habilitar_fechas == 'on' and fecha_inicio and fecha_fin:
-            dnis_filtrados = obtener_dnis_con_pagos_completos(mes_seleccionado, fecha_inicio, fecha_fin)
-            filtro['Alumno__DNI__in'] = dnis_filtrados
+        # if habilitar_fechas == 'on' and fecha_inicio and fecha_fin:
+        #     dnis_filtrados = obtener_dnis_con_pagos_completos(mes_seleccionado, fecha_inicio, fecha_fin)
+        #     filtro['Alumno__DNI__in'] = dnis_filtrados
             
-        elif mes_seleccionado != 0:
-            # Solo filtra por mes (sin fechas)
-            dnis_filtrados = obtener_dnis_con_pagos_completos(mes_seleccionado, '0001-01-01', '9999-12-31')
-            filtro['Alumno__DNI__in'] = dnis_filtrados
-
-        matricula = Matricula.objects.filter(
-            **filtro).order_by('Alumno__ApellidoPaterno','Alumno__ApellidoMaterno','Alumno__Nombres')
+        if mes_seleccionado != 0:
+            dnis_filtrados = obtener_dnis_con_pagos_completos(mes_seleccionado)
+            if dnis_filtrados:  # Solo aplicar filtro si hay resultados
+                filtro['Alumno__DNI__in'] = dnis_filtrados
+            else:
+                # Si no hay alumnos que cumplan, mostrar mensaje
+                messages.warning(request, f'No se encontraron alumnos con pagos al día hasta {["Marzo","Abril","Mayo","Junio","Julio","Agosto","Setiembre","Octubre","Noviembre","Diciembre"][mes_seleccionado-3]}')
+                filtro['Alumno__DNI__in'] = ['NINGUNO']  # Forzar resultados vacíos
+        
+        matricula = Matricula.objects.filter(**filtro).order_by('Alumno__ApellidoPaterno', 'Alumno__ApellidoMaterno', 'Alumno__Nombres')
+        
+        # Log para depuración
+        logger.info(f"Grado: {gradonivel}, Sección: {seccion}, Mes filtrado: {mes_seleccionado}")
+        logger.info(f"Total de alumnos después del filtro: {matricula.count()}")
        
         contexto2={'nombrepaca':nombrepaca,'grado':grado,'result':result,'tutor':tutor,'matricula':matricula,'nivel':nivel,'nombrepaca':nombrepaca,'ano':ano,'gradonivel':gradonivel,'seccion':seccion,'notas':notas}#para libreta de avance
         return render(request,'libretas/LibretaAvancePrimaria.html',contexto2)
@@ -294,9 +307,9 @@ def ImprimirAvanceNotasSecundaria(request):
         ano = request.POST.get("Ano")#El año que manda del form
         paca=request.POST.get("Pacademico")
         mes_seleccionado = int(request.POST.get("MesSeleccionado"))
-        fecha_inicio = request.POST.get("FechaInicio", "").strip()
-        fecha_fin = request.POST.get("FechaFin", "").strip()
-        habilitar_fechas = request.POST.get("HabilitarFechas")
+        # fecha_inicio = request.POST.get("FechaInicio", "").strip()
+        # fecha_fin = request.POST.get("FechaFin", "").strip()
+        # habilitar_fechas = request.POST.get("HabilitarFechas")
 
         #filtrado=request.POST.get("habilitarfiltro")
         nombrepaca=PAcademico.objects.get(id=paca)
@@ -321,18 +334,25 @@ def ImprimirAvanceNotasSecundaria(request):
             'Alumno__Estado': 'A'
         }
         
-        #Validación: si hay rango de fechas activado, lo usamos
-        if habilitar_fechas == 'on' and fecha_inicio and fecha_fin:
-            dnis_filtrados = obtener_dnis_con_pagos_completos(mes_seleccionado, fecha_inicio, fecha_fin)
-            filtro['Alumno__DNI__in'] = dnis_filtrados
+        # #Validación: si hay rango de fechas activado, lo usamos
+        # if habilitar_fechas == 'on' and fecha_inicio and fecha_fin:
+        #     dnis_filtrados = obtener_dnis_con_pagos_completos(mes_seleccionado, fecha_inicio, fecha_fin)
+        #     filtro['Alumno__DNI__in'] = dnis_filtrados
             
-        elif mes_seleccionado != 0:
-            # Solo filtra por mes (sin fechas)
-            dnis_filtrados = obtener_dnis_con_pagos_completos(mes_seleccionado, '0001-01-01', '9999-12-31')
-            filtro['Alumno__DNI__in'] = dnis_filtrados
-
-        matricula = Matricula.objects.filter(
-            **filtro).order_by('Alumno__ApellidoPaterno','Alumno__ApellidoMaterno','Alumno__Nombres')
+        if mes_seleccionado != 0:
+            dnis_filtrados = obtener_dnis_con_pagos_completos(mes_seleccionado)
+            if dnis_filtrados:  # Solo aplicar filtro si hay resultados
+                filtro['Alumno__DNI__in'] = dnis_filtrados
+            else:
+                # Si no hay alumnos que cumplan, mostrar mensaje
+                messages.warning(request, f'No se encontraron alumnos con pagos al día hasta {["Marzo","Abril","Mayo","Junio","Julio","Agosto","Setiembre","Octubre","Noviembre","Diciembre"][mes_seleccionado-3]}')
+                filtro['Alumno__DNI__in'] = ['NINGUNO']  # Forzar resultados vacíos
+        
+        matricula = Matricula.objects.filter(**filtro).order_by('Alumno__ApellidoPaterno', 'Alumno__ApellidoMaterno', 'Alumno__Nombres')
+        
+        # Log para depuración
+        logger.info(f"Grado: {gradonivel}, Sección: {seccion}, Mes filtrado: {mes_seleccionado}")
+        logger.info(f"Total de alumnos después del filtro: {matricula.count()}")
        
         
         contexto2={'nombrepaca':nombrepaca,'grado':grado,'result':result,'tutor':tutor,'matricula':matricula,'nivel':nivel,'ano':ano,'gradonivel':gradonivel,'seccion':seccion,'notas':notas}#para libreta de avance
@@ -990,38 +1010,67 @@ def CaliFinalSec(paca,notas):
                 n['promedio']=''
             # lista_promedios.append({'promedio':prom})
         return notas
+
+
+
+
+
+
+def obtener_dnis_con_pagos_completos(hasta_mes: int, fecha_inicio: str = None, fecha_fin: str = None):
+    """
+    Devuelve una lista de DNIs que tienen pagos completos hasta el mes indicado.
+    Ahora usa el DNI que fue extraído de Doc. Facturación durante la importación.
+    """
+    anio_actual = datetime.now().year
     
-def obtener_dnis_con_pagos_completos(hasta_mes: int, fecha_inicio: str, fecha_fin: str):
-    """
-    Devuelve una lista de DNIs que tienen pagos completos dentro del rango de fechas dado.
-    Si hasta_mes es distinto de 0, también filtra por los meses requeridos (3 a hasta_mes).
-    Aplica a modelos donde FechaPago es texto en formato 'YYYY-MM-DD'.
-    """
-
-    # Aseguramos que las fechas existan y estén bien formateadas
-    filtro = Q(
-        FechaPago__gte=fecha_inicio,
-        FechaPago__lte=fecha_fin
-    ) & ~Q(FechaPago='') & ~Q(FechaPago=None)
-
+    # Mapeo de número de mes a nombre del campo
+    mapa_mes_campo = {
+        3: 'marzo', 4: 'abril', 5: 'mayo', 6: 'junio',
+        7: 'julio', 8: 'agosto', 9: 'setiembre', 10: 'octubre',
+        11: 'noviembre', 12: 'diciembre'
+    }
+    
+    # Obtener todos los pagos del año actual que tengan DNI
+    pagos = PagoAlumno.objects.filter(
+        importacion__anio=anio_actual
+    ).exclude(dni__isnull=True).exclude(dni='')
+    
+    # print(f"Total registros con DNI válido: {pagos.count()}")
+    
+    def mes_pagado(valor_celda):
+        if not valor_celda or valor_celda == '-' or valor_celda == 'NO':
+            return False
+        if '(DEBE)' in str(valor_celda):
+            return False
+        match = re.search(r'[\d,.]+', str(valor_celda))
+        if match:
+            try:
+                monto = float(match.group().replace(',', ''))
+                return monto > 0
+            except ValueError:
+                return False
+        return False
+    
     if hasta_mes != 0:
         meses_requeridos = list(range(3, hasta_mes + 1))
-        filtro &= Q(ConceptoNumeroMes__in=meses_requeridos)
-
-        dnis = (
-            Venta.objects
-            .filter(filtro)
-            .values('Dni')
-            .annotate(total=Count('ConceptoNumeroMes', distinct=True))
-            .filter(total=len(meses_requeridos))
-            .values_list('Dni', flat=True)
-        )
+        dnis_validos = []
+        
+        for pago in pagos:
+            todos_pagados = True
+            for mes_num in meses_requeridos:
+                campo_mes = mapa_mes_campo.get(mes_num)
+                if campo_mes:
+                    valor_mes = getattr(pago, campo_mes)
+                    if not mes_pagado(valor_mes):
+                        todos_pagados = False
+                        break
+            
+            if todos_pagados and pago.dni not in dnis_validos:
+                dnis_validos.append(pago.dni)
+        
+        # print(f"DNIs encontrados que cumplen con pagos hasta mes {hasta_mes}: {len(dnis_validos)}")
+        return dnis_validos
     else:
-        dnis = (
-            Venta.objects
-            .filter(filtro)
-            .values_list('Dni', flat=True)
-            .distinct()
-        )
-
-    return dnis
+        dnis = list(pagos.values_list('dni', flat=True).distinct())
+        # print(f"Total DNIs únicos con al menos un pago: {len(dnis)}")
+        return dnis
