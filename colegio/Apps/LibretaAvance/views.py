@@ -1013,9 +1013,6 @@ def CaliFinalSec(paca,notas):
 
 
 
-
-
-
 def obtener_dnis_con_pagos_completos(hasta_mes: int, fecha_inicio: str = None, fecha_fin: str = None):
     """
     Devuelve una lista de DNIs que tienen pagos completos hasta el mes indicado.
